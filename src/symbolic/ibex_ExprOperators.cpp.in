@@ -13,8 +13,6 @@
 
 #include <sstream>
 
-using namespace std;
-
 namespace ibex {
 
 namespace {
@@ -133,7 +131,7 @@ BinaryOperatorDef get_binary_op(const char* op_name) {
 
 	@OPERATORS_MACRO_BINARY@
 
-	stringstream ss;
+	std::stringstream ss;
 	ss << "unkown operator \"" << op_name << "\"";
 	throw SyntaxError(ss.str());
 }
@@ -145,7 +143,7 @@ UnaryOperatorDef get_unary_op(const char* op_name) {
 
 	@OPERATORS_MACRO_UNARY@
 
-	stringstream ss;
+	std::stringstream ss;
 	ss << "unkown operator \"" << op_name << "\"";
 	throw SyntaxError(ss.str());
 }
