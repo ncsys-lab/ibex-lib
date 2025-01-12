@@ -11,7 +11,6 @@
 #include "ibex_ExprSize.h"
 #include "ibex_Expr.h"
 
-using namespace std;
 
 namespace ibex {
 

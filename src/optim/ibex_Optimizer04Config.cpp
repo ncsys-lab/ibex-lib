@@ -42,7 +42,6 @@
 #include <sstream>
 #include <vector>
 
-using namespace std;
 
 namespace ibex {
 
@@ -53,7 +52,7 @@ Optimizer04Config::Optimizer04Config(int argc, char** argv) {
 			ibex_error("usage: optimizer04 filename filtering linear_relaxation bisection strategy [beamsize] prec goal_prec timelimit randomseed");
 		}
 #ifdef _IBEX_WITH_AMPL_
-		std::size_t found = string(argv[1]).find(".nl");
+		std::size_t found = std::string(argv[1]).find(".nl");
 		if (found!=std::string::npos) {
 			AmplInterface interface (argv[1]);
 			sys = &rec(new System(interface));
@@ -171,7 +170,7 @@ Ctc& Optimizer04Config::get_ctc() {
 	else if (filtering =="3bcidhc4")
 		ctc = hc43bcidhc4;
 	else {
-		stringstream ss;
+		std::stringstream ss;
 		ss << "[optimizer04] " << filtering << " is not an implemented  contraction mode ";
 		ibex_error(ss.str().c_str());
 	}
@@ -235,7 +234,7 @@ Bsc& Optimizer04Config::get_bsc() {
 	        bs = &rec (new LSmear(*ext_sys,prec,
 				      rec(new OptimLargestFirst(ext_sys->goal_var(),true,prec,0.5))));
 	else {
-		stringstream ss;
+		std::stringstream ss;
 		ss << "[optimizer04] " << bisection << " is not an implemented  bisection mode ";
 		ibex_error(ss.str().c_str());
 	}

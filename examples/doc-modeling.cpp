@@ -12,7 +12,6 @@
 #include "ibex.h"
 #include <fstream>
 
-using namespace std;
 using namespace ibex;
 
 /**
@@ -21,13 +20,13 @@ using namespace ibex;
 
 int main() {
 
-	ofstream output;
+	std::ofstream output;
 	output.open ("doc-modeling.txt");
 
-	output << "================= this file is generated ==============" << endl;
+	output << "================= this file is generated ==============" << std::endl;
 
 	{
-	output << "! [func-eval-O]" << endl;
+	output << "! [func-eval-O]" << std::endl;
 	//! [func-eval-C]
 	const int nb_rows=2;
 	const int nb_cols=2;
@@ -62,34 +61,34 @@ int main() {
 
 	IntervalMatrix M = f.eval_matrix(box);
 
-	output << "A+B-C=" << M << endl;
+	output << "A+B-C=" << M << std::endl;
 	//! [func-eval-C]
-	output << "! [func-eval-O]" << endl;
+	output << "! [func-eval-O]" << std::endl;
 	}
 
 
 	{
-	output << "! [func-hansen-O]" << endl;
+	output << "! [func-hansen-O]" << std::endl;
 	//! [func-hansen-C]
 	Variable x,y;
 	Function f(x,y,Return(sqr(x)*y,sqr(y)*x));
 	IntervalMatrix H(2,2);
 	IntervalVector box(2,Interval(1,2));
 	f.hansen_matrix(box,H);
-	output << "Hansen matrix:\n" << H << endl;
+	output << "Hansen matrix:\n" << H << std::endl;
 	//! [func-hansen-C]
-	output << "! [func-hansen-O]" << endl;
+	output << "! [func-hansen-O]" << std::endl;
 	}
 
 	{
-	output << "! [func-cpp1-O]" << endl;
+	output << "! [func-cpp1-O]" << std::endl;
 	//! [func-cpp1-C]
 	Variable x("x");
 	Variable y("y");
 	Function f(x,y,sin(x+y)); // create the function (x,y)->sin(x+y)
-	output << f << endl;
+	output << f << std::endl;
 	//! [func-cpp1-C]
-	output << "! [func-cpp1-O]" << endl;
+	output << "! [func-cpp1-O]" << std::endl;
 	}
 
 	{
@@ -100,7 +99,7 @@ int main() {
 	}
 
 	{
-	output << "! [func-cpp3-O]" << endl;
+	output << "! [func-cpp3-O]" << std::endl;
 	//! [func-cpp3-C]
 	Variable x[7]; // not to be confused with x(7)
 	Array<const ExprSymbol> vars(7);
@@ -109,19 +108,19 @@ int main() {
 	vars.set_ref(i,x[i]);
 
 	Function f(vars, x[0]+x[1]+x[2]+x[3]+x[4]+x[5]+x[6]);
-	output << f << endl;
+	output << f << std::endl;
 	//! [func-cpp3-C]
-	output << "! [func-cpp3-O]" << endl;
+	output << "! [func-cpp3-O]" << std::endl;
 	}
 
 	{
-	output << "! [func-cpp4-O]" << endl;
+	output << "! [func-cpp4-O]" << std::endl;
 	//! [func-cpp4-C]
 	Variable x,y;
 	Function f(x,y,ibex::min(x,y));
-	output << f << endl;
+	output << f << std::endl;
 	//! [func-cpp4-C]
-	output << "! [func-cpp4-O]" << endl;
+	output << "! [func-cpp4-O]" << std::endl;
 	}
 
 	{
@@ -155,7 +154,7 @@ int main() {
 	}
 
 	{
-	output << "![func-iterated-sum-O]" << endl;
+	output << "![func-iterated-sum-O]" << std::endl;
 	// ![func-iterated-sum-C]
 	int N=10;
 	Variable x(N,"x");
@@ -166,13 +165,13 @@ int main() {
 
 	Function f(x,*e,"f");
 
-	output << f << endl;
+	output << f << std::endl;
 	// ![func-iterated-sum-C]
-	output << "![func-iterated-sum-O]" << endl;
+	output << "![func-iterated-sum-O]" << std::endl;
 	}
 
 	{
-	output << "![func-apply-array-O]" << endl;
+	output << "![func-apply-array-O]" << std::endl;
 	// ![func-apply-array-C]
 	Variable x,y;
 
@@ -203,9 +202,9 @@ int main() {
 
 	Function g(z,f(args),"g");
 
-	output << g << endl;
+	output << g << std::endl;
 	// ![func-apply-array-C]
-	output << "![func-apply-array-O]" << endl;
+	output << "![func-apply-array-O]" << std::endl;
 	}
 
 {
@@ -229,13 +228,13 @@ int main() {
 
 
 	{
-	output << "![func-diff-O]" << endl;
+	output << "![func-diff-O]" << std::endl;
 	// ![func-diff-C]
 	Function f("x","y","z","x*y*z");
 	Function df(f,Function::DIFF);
-	output << "df=" << df << endl;
+	output << "df=" << df << std::endl;
 	// ![func-diff-C]
-	output << "![func-diff-O]" << endl;
+	output << "![func-diff-O]" << std::endl;
 	}
 
 	{
@@ -249,40 +248,40 @@ int main() {
 	fac.add_ctr(y+x=1);
 
 	System sys(fac);
-	output << "![sys-copy-O]" << endl;
+	output << "![sys-copy-O]" << std::endl;
 	// ![sys-copy-C]
-	output << "original system:"         << endl;
-	output << "-------------------------"<< endl;
+	output << "original system:"         << std::endl;
+	output << "-------------------------"<< std::endl;
 	output << sys;
-	output << "-------------------------"<< endl << endl;
+	output << "-------------------------"<< std::endl << std::endl;
 
 	System sys2(sys,System::INEQ_ONLY);
 
-	output << "system with only inequalities" << endl;
-	output << "-------------------------"<< endl;
+	output << "system with only inequalities" << std::endl;
+	output << "-------------------------"<< std::endl;
 	output << sys2;
-	output << "-------------------------"<< endl << endl;
+	output << "-------------------------"<< std::endl << std::endl;
 	// ![sys-copy-C]
-	output << "![sys-copy-O]" << endl;
+	output << "![sys-copy-O]" << std::endl;
 
 
-	output << "![sys-normalize-O]" << endl;
+	output << "![sys-normalize-O]" << std::endl;
 	// ![sys-normalize-C]
-	output << "original system:"         << endl;
-	output << "-------------------------"<< endl;
+	output << "original system:"         << std::endl;
+	output << "-------------------------"<< std::endl;
 	output << sys;
-	output << "-------------------------"<< endl << endl;
+	output << "-------------------------"<< std::endl << std::endl;
 
 	// normalize the system with a "thickness"
 	// set to 0.1
 	NormalizedSystem norm_sys(sys,0.1);
 
-	output << "normalized system:"       << endl;
-	output << "-------------------------"<< endl;
+	output << "normalized system:"       << std::endl;
+	output << "-------------------------"<< std::endl;
 	output << norm_sys;
-	output << "-------------------------"<< endl;
+	output << "-------------------------"<< std::endl;
 	// ![sys-normalize-C]
-	output << "![sys-normalize-O]" << endl;
+	output << "![sys-normalize-O]" << std::endl;
 
 	}
 
@@ -298,28 +297,28 @@ int main() {
 
 	System sys(fac);
 
-	output << "![sys-extended-O]" << endl;
+	output << "![sys-extended-O]" << std::endl;
 	// ![sys-extended-C]
-	output << "original system:"         << endl;
-	output << "-------------------------"<< endl;
+	output << "original system:"         << std::endl;
+	output << "-------------------------"<< std::endl;
 	output << sys;
-	output << "-------------------------"<< endl;
-	output << "  number of variables:"   << sys.nb_var  << endl;
-	output << "  number of constraints:" << sys.nb_ctr  << endl << endl;
+	output << "-------------------------"<< std::endl;
+	output << "  number of variables:"   << sys.nb_var  << std::endl;
+	output << "  number of constraints:" << sys.nb_ctr  << std::endl << std::endl;
 
 	ExtendedSystem ext_sys(sys);
 
-	output << "extended system:"         << endl;
-	output << "-------------------------"<< endl;
+	output << "extended system:"         << std::endl;
+	output << "-------------------------"<< std::endl;
 	output << ext_sys;
-	output << "-------------------------"<< endl;
-	output << "  number of variables:"   << ext_sys.nb_var << endl;
-	output << "  number of constraints:" << ext_sys.nb_ctr << endl;
-	output << "  goal name:"             << ext_sys.goal_name() << endl;
-	output << "  goal variable:"         << ext_sys.goal_var() << endl;
-	output << "  goal constraint:"       << ext_sys.goal_ctr() << endl;
+	output << "-------------------------"<< std::endl;
+	output << "  number of variables:"   << ext_sys.nb_var << std::endl;
+	output << "  number of constraints:" << ext_sys.nb_ctr << std::endl;
+	output << "  goal name:"             << ext_sys.goal_name() << std::endl;
+	output << "  goal variable:"         << ext_sys.goal_var() << std::endl;
+	output << "  goal constraint:"       << ext_sys.goal_ctr() << std::endl;
 	// ![sys-extended-C]
-	output << "![sys-extended-O]" << endl;
+	output << "![sys-extended-O]" << std::endl;
 
 	}
 	{
@@ -334,22 +333,22 @@ int main() {
 
 	System sys(fac);
 
-	output << "![sys-kkt-O]" << endl;
+	output << "![sys-kkt-O]" << std::endl;
 	// ![sys-kkt-C]
-	output << "original system:"         << endl;
-	output << "-------------------------"<< endl;
+	output << "original system:"         << std::endl;
+	output << "-------------------------"<< std::endl;
 	output << sys;
-	output << "-------------------------"<< endl;
+	output << "-------------------------"<< std::endl;
 
 	KuhnTuckerSystem kkt(sys,true);
 
-	output << "kkt system:"       << endl;
-	output << "-------------------------"<< endl;
-	output << kkt << endl;
-	output << "-------------------------"<< endl;
-	output << "  number of variables:" << kkt.nb_var << endl;
+	output << "kkt system:"       << std::endl;
+	output << "-------------------------"<< std::endl;
+	output << kkt << std::endl;
+	output << "-------------------------"<< std::endl;
+	output << "  number of variables:" << kkt.nb_var << std::endl;
 	// ![sys-kkt-C]
-	output << "![sys-kkt-O]" << endl;
+	output << "![sys-kkt-O]" << std::endl;
 	}
 	output.close();
 

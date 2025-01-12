@@ -12,7 +12,6 @@
 
 #include <algorithm>
 
-using namespace std;
 
 namespace ibex {
 
@@ -98,7 +97,7 @@ void BoxProperties::update(const BoxEvent& e) {
 	// We could also create each time a new property map with
 	// the required properties only. But we have shared
 	// memory to avoid copies -> not very safe
-	for (vector<Bxp*>::iterator it=dep.begin(); it!=dep.end(); ++it) {
+	for (std::vector<Bxp*>::iterator it=dep.begin(); it!=dep.end(); ++it) {
 		(*it)->update(e,*this);
 	}
 }
@@ -120,7 +119,7 @@ void BoxProperties::update_bisect(const Bisection& b, BoxProperties& lprop, BoxP
 	if (!_dep_up2date) topo_sort();
 
 	// Duplicate properties respecting dependencies
-	for (vector<Bxp*>::iterator it=dep.begin(); it!=dep.end(); it++) {
+	for (std::vector<Bxp*>::iterator it=dep.begin(); it!=dep.end(); it++) {
 		Bxp* p1 = (*it)->copy(b.left, lprop);
 		p1->update(BoxEvent(b.left,BoxEvent::CONTRACT,BitSet::singleton(b.box.size(), b.pt.var)), lprop);
 
@@ -150,7 +149,7 @@ BoxProperties::BoxProperties(const IntervalVector& box, const BoxProperties& p) 
 	if (!p._dep_up2date) p.topo_sort();
 
 	// Duplicate properties respecting dependencies
-	for (vector<Bxp*>::iterator it=p.dep.begin(); it!=p.dep.end(); it++) {
+	for (std::vector<Bxp*>::iterator it=p.dep.begin(); it!=p.dep.end(); it++) {
 		Bxp* bxp=(*it)->copy(box, *this);
 		add(bxp);
 		dep.push_back(bxp);
@@ -164,10 +163,10 @@ BoxProperties::~BoxProperties() {
 		delete it->second;
 }
 
-ostream& operator<<(ostream& os, const BoxProperties& p) {
+std::ostream& operator<<(std::ostream& os, const BoxProperties& p) {
 	os << "{\n";
 	for (Map<long,Bxp>::const_iterator it=p.map.begin(); it!=p.map.end(); it++) {
-		os << "  " << it->second->to_string() << endl;
+		os << "  " << it->second->to_string() << std::endl;
 	}
 	os << "}";
 	return os;

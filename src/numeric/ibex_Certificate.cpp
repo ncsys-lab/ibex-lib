@@ -10,7 +10,6 @@
 
 #include "ibex_Certificate.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -21,7 +20,7 @@ Certificate::Certificate(const IntervalVector& box, const IntervalVector* unicit
 
 }
 
-ostream& operator<<(ostream& os, const Certificate& c) {
+std::ostream& operator<<(std::ostream& os, const Certificate& c) {
 	os.precision(12);
 	os << c.existence() << " ";
 

@@ -19,7 +19,6 @@
 
 #include <sstream>
 
-using namespace std;
 
 namespace ibex {
 

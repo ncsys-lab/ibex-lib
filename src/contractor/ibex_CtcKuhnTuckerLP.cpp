@@ -10,7 +10,6 @@
 #include "ibex_CtcKuhnTuckerLP.h"
 #include "ibex_LinearizerXTaylor.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -24,7 +23,7 @@ CtcKuhnTuckerLP::CtcKuhnTuckerLP(const NormalizedSystem& _sys, bool reject_unbou
 	} catch(Exception&) {
 		//TODO: replace with ExprDiffException.
 		// Currently, DimException is also sometimes raised.
-		cerr << "Warning: symbolic differentiation has failed ==> KKT contractor disabled" << endl;
+		std::cerr << "Warning: symbolic differentiation has failed ==> KKT contractor disabled" << std::endl;
 		kkt = NULL;
 	}
 

@@ -12,31 +12,30 @@
 #include "ibex_Cell.h"
 #include "ibex_NoBisectableVariableException.h"
 
-using namespace std;
 
 namespace ibex {
 
 void TestRoundRobin::test01() {
 	RoundRobin rr(1e-01);
 	IntervalVector box(3,Interval(0,1));
-	pair<IntervalVector,IntervalVector> boxes=box.bisect(0,rr.ratio);
-	pair<IntervalVector,IntervalVector> boxes1=boxes.first.bisect(1,rr.ratio);
-	pair<IntervalVector,IntervalVector> boxes2=boxes.second.bisect(1,rr.ratio);
+	std::pair<IntervalVector,IntervalVector> boxes=box.bisect(0,rr.ratio);
+	std::pair<IntervalVector,IntervalVector> boxes1=boxes.first.bisect(1,rr.ratio);
+	std::pair<IntervalVector,IntervalVector> boxes2=boxes.second.bisect(1,rr.ratio);
 
 	Cell c(box);
-	pair<Cell*,Cell*> p=rr.bisect(c);
+	std::pair<Cell*,Cell*> p=rr.bisect(c);
 	CPPUNIT_ASSERT(p.first->bisected_var==0);
 	CPPUNIT_ASSERT(p.second->bisected_var==0);
 	CPPUNIT_ASSERT(almost_eq(p.first->box,boxes.first,0));
 	CPPUNIT_ASSERT(almost_eq(p.second->box,boxes.second,0));
 
-	pair<Cell*,Cell*> p1=rr.bisect(*p.first);
+	std::pair<Cell*,Cell*> p1=rr.bisect(*p.first);
 	CPPUNIT_ASSERT(p1.first->bisected_var==1);
 	CPPUNIT_ASSERT(p1.second->bisected_var==1);
 	CPPUNIT_ASSERT(almost_eq(p1.first->box,boxes1.first,0));
 	CPPUNIT_ASSERT(almost_eq(p1.second->box,boxes1.second,0));
 
-	pair<Cell*,Cell*> p2=rr.bisect(*p.second);
+	std::pair<Cell*,Cell*> p2=rr.bisect(*p.second);
 	CPPUNIT_ASSERT(p2.first->bisected_var==1);
 	CPPUNIT_ASSERT(p2.second->bisected_var==1);
 	CPPUNIT_ASSERT(almost_eq(p2.first->box,boxes2.first,0));
@@ -50,7 +49,7 @@ void TestRoundRobin::test02() {
 
 	Cell c(box);
 
-	pair<Cell*,Cell*> p=rr.bisect(c);
+	std::pair<Cell*,Cell*> p=rr.bisect(c);
 	CPPUNIT_ASSERT(p.first->bisected_var==0);
 	CPPUNIT_ASSERT(almost_eq(p.first->box[0],Interval(0,0.5),0));
 

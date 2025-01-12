@@ -14,7 +14,6 @@
 #include "ibex_Expr.h"
 #include "ibex_ExprSimplify2.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -239,7 +238,7 @@ void ExprDiff::visit(const ExprIndex& i) {
 		return;
 	}
 
-	vector<const ExprNode*> row_vec;
+	std::vector<const ExprNode*> row_vec;
 
 	int n=i.expr.dim.nb_rows();
 	int m=i.index.first_col();
@@ -252,7 +251,7 @@ void ExprDiff::visit(const ExprIndex& i) {
 	n=i.index.first_row();
 	m=i.index.nb_cols();
 
-	vector<const ExprNode*> col_vec;
+	std::vector<const ExprNode*> col_vec;
 	if (n>0) { // fill with zeros on the top
 		// will be automatically transformed to a vector (if n=1) or a scalar (n=m=1)
 		col_vec.push_back(&ExprConstant::new_matrix(Matrix::zeros(n,m)));

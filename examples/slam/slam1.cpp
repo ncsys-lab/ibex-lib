@@ -11,7 +11,6 @@
 
 #include "ibex.h"
 #include "data.h"
-using namespace std;
 
 using namespace ibex;
 
@@ -28,9 +27,9 @@ int main() {
   Variable x(T,2);  // create a Tx2 variable
 
   // ![ctc-vec]
-  vector<Ctc*> ctc;
+  std::vector<Ctc*> ctc;
   for (int t=0; t<T; t++) {
-    vector<Ctc*> cdist;
+    std::vector<Ctc*> cdist;
     for (int b=0; b<N; b++) {
       // Push the contractor corresponding to 
       // the detection of beacon n°b at time t
@@ -60,9 +59,9 @@ int main() {
   // the initial box [0,L]x[0,L]x[0,L]x[0,L]
   IntervalVector box(T*2,Interval(0,L));
 
-  cout << endl << "  initial box =" << box << endl;
+  std::cout << std::endl << "  initial box =" << box << std::endl;
   fix.contract(box);
-  cout << endl << "  final box =" << box << endl << endl << endl;
+  std::cout << std::endl << "  final box =" << box << std::endl << std::endl << std::endl;
   // ![ctc-contract]
 
   return 0;

@@ -14,7 +14,6 @@
 #include <cassert>
 #include <string.h>
 
-using namespace std;
 
 namespace ibex {
 
@@ -26,25 +25,25 @@ const unsigned int Cov::subformat_number = 0;
 
 const size_t Cov::SIGNATURE_LENGTH = 20;
 const char* Cov::SIGNATURE = "IBEX COVERING FILE ";
-const string Cov::separator = "+-------------------+-----------------------------------------------------------\n";
-const string Cov::space     = "|                   |";
+const std::string Cov::separator = "+-------------------+-----------------------------------------------------------\n";
+const std::string Cov::space     = "|                   |";
 
 Cov::Cov(size_t n) : n(n) {
 
 }
 
 Cov::Cov(const char* filename) : n(0 /* tmp */) {
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
-	ifstream* f = Cov::read(filename, *this, format_id, format_version);
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
+	std::ifstream* f = Cov::read(filename, *this, format_id, format_version);
 	f->close();
 	delete f;
 }
 
 void Cov::save(const char* filename) const {
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
-	ofstream* of=Cov::write(filename, *this, format_id, format_version);
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
+	std::ofstream* of=Cov::write(filename, *this, format_id, format_version);
 	of->close();
 	delete of;
 }
@@ -53,11 +52,11 @@ Cov::~Cov() {
 
 }
 
-ifstream* Cov::read(const char* filename, Cov& cov, stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+std::ifstream* Cov::read(const char* filename, Cov& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 
-	ifstream* f = new ifstream();
+	std::ifstream* f = new std::ifstream();
 
-	f->open(filename, ios::in | ios::binary);
+	f->open(filename, std::ios::in | std::ios::binary);
 
 	if (f->fail()) ibex_error("[Cov]: cannot open input file.\n");
 
@@ -83,11 +82,11 @@ ifstream* Cov::read(const char* filename, Cov& cov, stack<unsigned int>& format_
 	return f;
 }
 
-ofstream* Cov::write(const char* filename, const Cov& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+std::ofstream* Cov::write(const char* filename, const Cov& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 
-	ofstream* f = new ofstream();
+	std::ofstream* f = new std::ofstream();
 
-	f->open(filename, ios::out | ios::binary);
+	f->open(filename, std::ios::out | std::ios::binary);
 
 	if (f->fail())
 		ibex_error("[Cov]: cannot create output file.\n");
@@ -104,7 +103,7 @@ ofstream* Cov::write(const char* filename, const Cov& cov, std::stack<unsigned i
 	return f;
 }
 
-void Cov::read_signature(ifstream& f) {
+void Cov::read_signature(std::ifstream& f) {
 	char* sig=new char[SIGNATURE_LENGTH];
 	f.read(sig, SIGNATURE_LENGTH*sizeof(char));
 	if (f.eof()) ibex_error("[manifold]: unexpected end of file.");
@@ -113,42 +112,42 @@ void Cov::read_signature(ifstream& f) {
 	delete[] sig;
 }
 
-void Cov::read_format_seq(std::ifstream& f, stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+void Cov::read_format_seq(std::ifstream& f, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 	size_t format_level = read_pos_int(f);
 
 	assert(format_id.empty());
 	assert(format_version.empty());
 
-	list<unsigned int> tmp;
+	std::list<unsigned int> tmp;
 	for (size_t i=0; i<=format_level; i++)
 		tmp.push_front(read_pos_int(f));
 
-	for (list<unsigned int>::const_iterator it=tmp.begin(); it!=tmp.end(); ++it)
+	for (std::list<unsigned int>::const_iterator it=tmp.begin(); it!=tmp.end(); ++it)
 		format_id.push(*it);
 
 	tmp.clear();
 	for (size_t i=0; i<=format_level; i++)
 		tmp.push_front(read_pos_int(f));
 
-	for (list<unsigned int>::const_iterator it=tmp.begin(); it!=tmp.end(); ++it)
+	for (std::list<unsigned int>::const_iterator it=tmp.begin(); it!=tmp.end(); ++it)
 		format_version.push(*it);
 }
 
-unsigned int Cov::read_pos_int(ifstream& f) {
+unsigned int Cov::read_pos_int(std::ifstream& f) {
 	uint32_t x;
 	f.read((char*) &x, sizeof(x)); //f >> x;
 	if (f.eof()) ibex_error("[Cov]: unexpected end of file.");
 	return x;
 }
 
-double Cov::read_double(ifstream& f) {
+double Cov::read_double(std::ifstream& f) {
 	double x;
 	f.read((char*) &x, sizeof(x)); //f >> x;
 	if (f.eof()) ibex_error("[Cov]: unexpected end of file.");
 	return x;
 }
 
-void Cov::write_signature(ofstream& f) {
+void Cov::write_signature(std::ofstream& f) {
 	f.write(SIGNATURE, SIGNATURE_LENGTH*sizeof(char));
 }
 
@@ -168,15 +167,15 @@ void Cov::write_format_seq(std::ofstream& f, std::stack<unsigned int>& format_id
 	}
 }
 
-void Cov::write_pos_int(ofstream& f, uint32_t x) {
+void Cov::write_pos_int(std::ofstream& f, uint32_t x) {
 	f.write((char*) &x, sizeof(uint32_t));
 }
 
-void Cov::write_double(ofstream& f, double x) {
+void Cov::write_double(std::ofstream& f, double x) {
 	f.write((char*) &x, sizeof(x));
 }
 
-void Cov::format(stringstream& ss, const string& title, stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+void Cov::format(std::stringstream& ss, const std::string& title, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 
 	format_id.push(subformat_number);
 	format_version.push(FORMAT_VERSION);
@@ -225,10 +224,10 @@ void Cov::format(stringstream& ss, const string& title, stack<unsigned int>& for
 	<< separator;
 }
 
-string Cov::format() {
-	stringstream ss;
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
+std::string Cov::format() {
+	std::stringstream ss;
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
 	format(ss, "COV", format_id, format_version);
 	return ss.str();
 }

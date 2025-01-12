@@ -21,7 +21,6 @@
 #include <fstream>
 #include <list>
 
-using namespace std;
 
 namespace ibex {
 
@@ -46,14 +45,14 @@ Set::Set(const IntervalVector& box, BoolInterval status) : root(NULL), Rn(box.si
 		IntervalVector inflated=inflate_one_float(box);
 
 		// create the complementary of the box
-		pair<SetNode*,SetLeaf*> p=diff(Rn, inflated, NO, MAYBE, 0);
+		std::pair<SetNode*,SetLeaf*> p=diff(Rn, inflated, NO, MAYBE, 0);
 
 		// create the boundary around the box
 		p.second->replace_with(diff(inflated, box, MAYBE, YES, 0).first);
 
 		root = p.first;
 	} else {
-		pair<SetNode*,SetLeaf*> p=diff(Rn, box, NO, MAYBE, 0);
+		std::pair<SetNode*,SetLeaf*> p=diff(Rn, box, NO, MAYBE, 0);
 
 		root = p.first;
 	}
@@ -103,8 +102,8 @@ void Set::save(const char* filename) {
 
 	s.push(root);
 
-	fstream os;
-	os.open(filename, ios::out | ios::trunc | ios::binary);
+	std::fstream os;
+	os.open(filename, std::ios::out | std::ios::trunc | std::ios::binary);
 
 //	os.write((char*) &eps, sizeof(double));
 
@@ -141,7 +140,7 @@ void Set::save(const char* filename) {
 void Set::load(const char* filename) {
 
 	std::ifstream is;
-	is.open(filename, ios::in | ios::binary);
+	is.open(filename, std::ios::in | std::ios::binary);
 
 //	is.read((char*) &eps, sizeof(double));
 	//cout << "eps=" << eps << endl;
@@ -347,15 +346,15 @@ IntervalVector Set::node_box(const SetNode* node) const {
 
 	// the first field is an ancestor
 	// the second field is whether we are in the left or right branch of this ancestor
-	list<pair<const SetBisect*,bool> > ancestors;
+	std::list<std::pair<const SetBisect*,bool> > ancestors;
 
 	// we go upward in the tree and record the side of each bisection
 	for (const SetNode* ancestor=node; ancestor->father!=NULL; ancestor=ancestor->father) {
-		ancestors.push_front(pair<const SetBisect*,bool>(ancestor->father, ancestor==ancestor->father->left));  // "true" means "left"
+		ancestors.push_front(std::pair<const SetBisect*,bool>(ancestor->father, ancestor==ancestor->father->left));  // "true" means "left"
 	}
 	IntervalVector box=Rn;
 	// we go backward and apply the bisections recursively from the initial bounding box
-	for (list<pair<const SetBisect*,bool> >::const_iterator it=ancestors.begin(); it!=ancestors.end(); it++) {
+	for (std::list<std::pair<const SetBisect*,bool> >::const_iterator it=ancestors.begin(); it!=ancestors.end(); it++) {
 		box = it->second ? it->first->left_box(box) : it->first->right_box(box);
 	}
 	return box;

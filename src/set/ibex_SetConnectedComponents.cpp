@@ -16,7 +16,6 @@
 #include "ibex_SetLeaf.h"
 #include "ibex_Set.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -29,7 +28,7 @@ public:
 	SetNode* node;      // corresponding node.
 	int component;
 	IntervalVector box;
-	list<ExtSetNode*> adj; // adjacency
+	std::list<ExtSetNode*> adj; // adjacency
 	ExtSetNode* left;
 	ExtSetNode* right;
 };
@@ -59,9 +58,9 @@ void init(ExtSetNode* n) {
 		n->left  = new ExtSetNode(b->left, lbox);
 		n->right = new ExtSetNode(b->right, rbox);
 
-		for (list<ExtSetNode*>::iterator it=n->adj.begin(); it!=n->adj.end(); it++) {
+		for (std::list<ExtSetNode*>::iterator it=n->adj.begin(); it!=n->adj.end(); it++) {
 			ExtSetNode* n2=*it;
-			list<ExtSetNode*>::iterator it2=n2->adj.begin();
+			std::list<ExtSetNode*>::iterator it2=n2->adj.begin();
 			while ((*it2)!=n && it2!=n2->adj.end()) it2++;
 			assert(it2!=n2->adj.end());
 			n2->adj.erase(it2);
@@ -82,7 +81,7 @@ void init(ExtSetNode* n) {
 /**
  * Fill the stack "s" with all the leaves in the extended set rooted at "n".
  */
-void fill_with_leaves(stack<ExtSetNode*>& s, ExtSetNode* n) {
+void fill_with_leaves(std::stack<ExtSetNode*>& s, ExtSetNode* n) {
 	if (n->left) {
 		fill_with_leaves(s,n->left);
 		fill_with_leaves(s,n->right);
@@ -95,7 +94,7 @@ void fill_with_leaves(stack<ExtSetNode*>& s, ExtSetNode* n) {
  * Add into "comp" all the nodes connected to "n".
  * "num" is the component number associated to "comp".
  */
-void fill_connected_component(vector<SetLeaf*>& comp, ExtSetNode* n, int num) {
+void fill_connected_component(std::vector<SetLeaf*>& comp, ExtSetNode* n, int num) {
 	n->component = num;
 
 	SetLeaf* leaf=dynamic_cast<SetLeaf*>(n->node);
@@ -103,7 +102,7 @@ void fill_connected_component(vector<SetLeaf*>& comp, ExtSetNode* n, int num) {
 
 	comp.push_back(leaf);
 
-	for (list<ExtSetNode*>::iterator it=n->adj.begin(); it!=n->adj.end(); it++) {
+	for (std::list<ExtSetNode*>::iterator it=n->adj.begin(); it!=n->adj.end(); it++) {
 		ExtSetNode* n2=*it;
 
 		SetLeaf* leaf2=dynamic_cast<SetLeaf*>(n2->node);
@@ -123,13 +122,13 @@ void fill_connected_component(vector<SetLeaf*>& comp, ExtSetNode* n, int num) {
 
 // =================================================================================================================================================
 
-vector<vector<SetLeaf*> > Set::connected_components() {
-	vector<vector<SetLeaf*> > result;
+std::vector<std::vector<SetLeaf*> > Set::connected_components() {
+	std::vector<std::vector<SetLeaf*> > result;
 
 	ExtSetNode* ext_root = new ExtSetNode(root,Rn);
 	init(ext_root);
 
-	stack<ExtSetNode*> s;
+	std::stack<ExtSetNode*> s;
 
 	fill_with_leaves(s,ext_root);
 
@@ -138,7 +137,7 @@ vector<vector<SetLeaf*> > Set::connected_components() {
 		s.pop();
 		if (n->component!=-1) continue;
 
-		result.push_back(vector<SetLeaf*>());
+		result.push_back(std::vector<SetLeaf*>());
 		fill_connected_component(result.back(), n, result.size()-1);
 	}
 

@@ -18,7 +18,6 @@ namespace ibex {
 #define LB 0
 #define UB 1
 
-using namespace std;
 
 namespace {
 

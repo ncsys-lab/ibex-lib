@@ -11,7 +11,6 @@
 
 #include "ibex_FncProj.h"
 
-using namespace std;
 
 namespace ibex {
 

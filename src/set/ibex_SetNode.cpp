@@ -11,7 +11,6 @@
 #include "ibex_SetLeaf.h"
 #include "ibex_SetBisect.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -28,31 +27,31 @@ namespace {
 
 // determine if box1 has a larger diameter than box2
 // return the index of the box largest dimension (either an index for box1 or box2)
-pair<bool,int> largest_diameter(const IntervalVector& box1, const IntervalVector& box2) {
+std::pair<bool,int> largest_diameter(const IntervalVector& box1, const IntervalVector& box2) {
 
 	int i1=box1.extr_diam_index(false);
 	int i2=box2.extr_diam_index(false);
 
 	if (box1[i1].is_unbounded()) {
 		if (!box2[i2].is_unbounded())
-			return pair<bool,int>(true,i1);
+			return std::pair<bool,int>(true,i1);
 		else {
 			double pt1=box1[i1].lb()==POS_INFINITY ? box1[i1].lb() : -box1[i1].ub();
 			double pt2=box2[i2].lb()==POS_INFINITY ? box2[i2].lb() : -box2[i2].ub();
 
 			if (pt1<pt2)
-				return pair<bool,int>(true,i1);
+				return std::pair<bool,int>(true,i1);
 			else
-				return pair<bool,int>(false,i2);
+				return std::pair<bool,int>(false,i2);
 		}
 	} else {
 		if (box2[i2].is_unbounded())
-			return pair<bool,int>(false,i2);
+			return std::pair<bool,int>(false,i2);
 		else {
 			if (box1[i1].diam()>box2[i2].diam())
-				return pair<bool,int>(true,i1);
+				return std::pair<bool,int>(true,i1);
 			else
-				return pair<bool,int>(false,i2);
+				return std::pair<bool,int>(false,i2);
 		}
 	}
 }
@@ -73,7 +72,7 @@ SetNode* SetNode::inter(bool iset, const IntervalVector& nodebox, const SetNode*
 	} else {
 		// ******************************** balancing **************************************************
 
-		pair<bool,int> ld=largest_diameter(nodebox,otherbox);
+		std::pair<bool,int> ld=largest_diameter(nodebox,otherbox);
 
 		if (ld.first) {
 
@@ -81,7 +80,7 @@ SetNode* SetNode::inter(bool iset, const IntervalVector& nodebox, const SetNode*
 
 			if (is_leaf()) {
 				int var = ld.second;
-				pair<IntervalVector,IntervalVector> p=nodebox.bisect(var);
+				std::pair<IntervalVector,IntervalVector> p=nodebox.bisect(var);
 				double pt=p.first[var].ub();
 				assert(nodebox[var].interior_contains(pt));
 
@@ -124,7 +123,7 @@ SetNode* SetNode::union_(const IntervalVector& nodebox, const SetNode* other, co
 
 		// ******************************** balancing **************************************************
 
-		pair<bool,int> ld=largest_diameter(nodebox,otherbox);
+		std::pair<bool,int> ld=largest_diameter(nodebox,otherbox);
 
 		if (ld.first) {
 
@@ -132,7 +131,7 @@ SetNode* SetNode::union_(const IntervalVector& nodebox, const SetNode* other, co
 
 			if (is_leaf()) {
 				int var=ld.second;
-				pair<IntervalVector,IntervalVector> p=nodebox.bisect(var);
+				std::pair<IntervalVector,IntervalVector> p=nodebox.bisect(var);
 				double pt=p.first[var].ub();
 				assert(nodebox[var].interior_contains(pt));
 

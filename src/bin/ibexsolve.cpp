@@ -16,12 +16,11 @@
 
 #include <sstream>
 
-using namespace std;
 using namespace ibex;
 
 int main(int argc, char** argv) {
 
-	stringstream _random_seed, _eps_x_min, _eps_x_max;
+	std::stringstream _random_seed, _eps_x_min, _eps_x_max;
 	_random_seed << "Random seed (useful for reproducibility). Default value is " << DefaultSolver::default_random_seed << ".";
 	_eps_x_min << "Minimal width of output boxes. This is a criterion to _stop_ bisection: a "
 			"non-validated box will not be larger than 'eps-min'. Default value is 1e" << round(::log10(DefaultSolver::default_eps_x_min)) << ".";
@@ -41,15 +40,15 @@ int main(int argc, char** argv) {
 			"\t\t* 2:\tmore advanced simplifications without developing (can be slow). E.g. x*x + x^2 --> 2x^2\n"
 			"\t\t* 3:\tsimplifications with full polynomial developing (can blow up!). E.g. x*(x-1) + x --> x^2\n"
 			"Default value is : 1.", {"simpl"});
-	args::ValueFlag<string> input_file(parser, "filename", "COV input file. The file contains a "
+	args::ValueFlag<std::string> input_file(parser, "filename", "COV input file. The file contains a "
 			"(intermediate) description of the manifold with boxes in the COV (binary) format.", {'i',"input"});
-	args::ValueFlag<string> output_file(parser, "filename", "COV output file. The file will contain the "
+	args::ValueFlag<std::string> output_file(parser, "filename", "COV output file. The file will contain the "
 			"description of the manifold with boxes in the COV (binary) format. See --format", {'o',"output"});
 	args::Flag format(parser, "format", "Give a description of the COV format used by IbexSolve", {"format"});
 	args::Flag bfs(parser, "bfs", "Perform breadth-first search (instead of depth-first search, by default)", {"bfs"});
 	args::Flag trace(parser, "trace", "Activate trace. \"Solutions\" (output boxes) are displayed as and when they are found.", {"trace"});
 	args::Flag stop_at_first(parser, "stop-a-first", "Stop at first solution/boundary/unknown box found.", {"stop-at-first"});
-	args::ValueFlag<string> boundary_test_arg(parser, "true|full-rank|half-ball|false", "Boundary test strength. Possible values are:\n"
+	args::ValueFlag<std::string> boundary_test_arg(parser, "true|full-rank|half-ball|false", "Boundary test strength. Possible values are:\n"
 			"\t\t* true:\talways satisfied. Set by default for under constrained problems (0<m<n).\n"
 			"\t\t* full-rank:\tthe gradients of all constraints (equalities and potentially activated inequalities) must be linearly independent.\n"
 			"\t\t* half-ball:\t(**not implemented yet**) the intersection of the box and the solution set is homeomorphic to a half-ball of R^n\n"
@@ -58,7 +57,7 @@ int main(int argc, char** argv) {
 	args::Flag sols(parser, "sols", "Display the \"solutions\" (output boxes) on the standard output.", {'s',"sols"});
 	args::ValueFlag<double> random_seed(parser, "float", _random_seed.str(), {"random-seed"});
 	args::Flag quiet(parser, "quiet", "Print no report on the standard output.",{'q',"quiet"});
-	args::ValueFlag<string> forced_params(parser, "vars","Force some variables to be parameters in the parametric proofs, separated by '+'. Example: --forced-params=x+y",{"forced-params"});
+	args::ValueFlag<std::string> forced_params(parser, "vars","Force some variables to be parameters in the parametric proofs, separated by '+'. Example: --forced-params=x+y",{"forced-params"});
 	args::Positional<std::string> filename(parser, "filename", "The name of the MINIBEX file.");
 
 	try
@@ -84,12 +83,12 @@ int main(int argc, char** argv) {
 	}
 
 	if (version) {
-		cout << "IbexSolve Release " << _IBEX_RELEASE_ << endl;
+		std::cout << "IbexSolve Release " << _IBEX_RELEASE_ << std::endl;
 		exit(0);
 	}
 
 	if (format) {
-		cout << CovSolverData::format() << endl;
+		std::cout << CovSolverData::format() << std::endl;
 		exit(0);
 	}
 
@@ -101,65 +100,65 @@ int main(int argc, char** argv) {
 	try {
 
 		if (!quiet) {
-			cout << endl << "***************************** setup *****************************" << endl;
-			cout << "  file loaded:\t\t" << filename.Get() << endl;
+			std::cout << std::endl << "***************************** setup *****************************" << std::endl;
+			std::cout << "  file loaded:\t\t" << filename.Get() << std::endl;
 
 			if (eps_x_min)
-				cout << "  eps-x:\t\t" << eps_x_min.Get() << "\t(precision on variables domain)" << endl;
+				std::cout << "  eps-x:\t\t" << eps_x_min.Get() << "\t(precision on variables domain)" << std::endl;
 
 			if (simpl_level)
-				cout << "  symbolic simpl level:\t" << simpl_level.Get() << "\t" << endl;
+				std::cout << "  symbolic simpl level:\t" << simpl_level.Get() << "\t" << std::endl;
 
 			// Fix the random seed for reproducibility.
 			if (random_seed)
-				cout << "  random-seed:\t\t" << random_seed.Get() << endl;
+				std::cout << "  random-seed:\t\t" << random_seed.Get() << std::endl;
 
 			if (bfs)
-				cout << "  bfs:\t\t\tON" << endl;
+				std::cout << "  bfs:\t\t\tON" << std::endl;
 
 			if (stop_at_first)
-				cout << "  stop at first box found" << endl;
+				std::cout << "  stop at first box found" << std::endl;
 		}
 
 		// Load a system of equations
 		System sys(filename.Get().c_str(), simpl_level? simpl_level.Get() : ExprNode::default_simpl_level);
 
-		string output_manifold_file; // manifold output file
+		std::string output_manifold_file; // manifold output file
 		bool overwitten=false;       // is it overwritten?
-		string manifold_copy;
+		std::string manifold_copy;
 
 		if (output_file) {
 			output_manifold_file = output_file.Get();
 		} else {
 			// got from stackoverflow.com:
-			string::size_type const p(filename.Get().find_last_of('.'));
+			std::string::size_type const p(filename.Get().find_last_of('.'));
 			// filename without extension
-			string filename_no_ext=filename.Get().substr(0, p);
-			stringstream ss;
+			std::string filename_no_ext=filename.Get().substr(0, p);
+			std::stringstream ss;
 			ss << filename_no_ext << ".cov";
 			output_manifold_file=ss.str();
 
-			ifstream file;
-			file.open(output_manifold_file.c_str(), ios::in); // to check if it exists
+			std::ifstream file;
+			file.open(output_manifold_file.c_str(), std::ios::in); // to check if it exists
 
 			if (file.is_open()) {
 				overwitten = true;
-				stringstream ss;
+				std::stringstream ss;
 				ss << output_manifold_file << "~";
 				manifold_copy=ss.str();
 				// got from stackoverflow.com:
-				ofstream dest(manifold_copy, ios::binary);
+				std::ofstream dest(manifold_copy, std::ios::binary);
 
-			    istreambuf_iterator<char> begin_source(file);
-			    istreambuf_iterator<char> end_source;
-			    ostreambuf_iterator<char> begin_dest(dest);
+			    std::istreambuf_iterator<char> begin_source(file);
+			    std::istreambuf_iterator<char> end_source;
+			    std::ostreambuf_iterator<char> begin_dest(dest);
 			    copy(begin_source, end_source, begin_dest);
 			}
 			file.close();
 		}
 
 		if (!quiet) {
-			cout << "  output file:\t\t" << output_manifold_file << "\n";
+			std::cout << "  output file:\t\t" << output_manifold_file << "\n";
 		}
 
 		// Build the default solver
@@ -180,24 +179,24 @@ int main(int argc, char** argv) {
 			else if (boundary_test_arg.Get()=="false")
 				s.boundary_test = Solver::ALL_FALSE;
 			else {
-				cerr << "\nError: \"" << boundary_test_arg.Get() << "\" is not a valid option (try --help)\n";
+				std::cerr << "\nError: \"" << boundary_test_arg.Get() << "\" is not a valid option (try --help)\n";
 				exit(0);
 			}
 
 			if (!quiet)
-				cout << "  boundary test:\t" << boundary_test_arg.Get() << endl;
+				std::cout << "  boundary test:\t" << boundary_test_arg.Get() << std::endl;
 		}
 
 		if (forced_params) {
 			if (!quiet)
-				cout << "  forced params:\t";
+				std::cout << "  forced params:\t";
 			SymbolMap<const ExprSymbol*> symbols;
 			for (int i=0; i<sys.args.size(); i++)
 				symbols.insert_new(sys.args[i].name, &sys.args[i]);
 
-			string vars=args::get(forced_params);
+			std::string vars=args::get(forced_params);
 
-			vector<const ExprNode*> params;
+			std::vector<const ExprNode*> params;
 			int j;
 			do {
 				j=vars.find("+");
@@ -207,14 +206,14 @@ int main(int argc, char** argv) {
  				} else {
  					params.push_back(&parse_indexed_symbol(symbols,vars));
  				}
-				if (!quiet) cout << *params.back() << ' ';
+				if (!quiet) std::cout << *params.back() << ' ';
 			} while (j!=-1);
 
-			if (!quiet) cout << endl;
+			if (!quiet) std::cout << std::endl;
 
 			if (!params.empty()) {
 				s.set_params(VarSet(sys.f_ctrs,params,false)); //Array<const ExprNode>(params)));
-				for (vector<const ExprNode*>::iterator it=params.begin(); it!=params.end(); it++) {
+				for (std::vector<const ExprNode*>::iterator it=params.begin(); it!=params.end(); it++) {
 					cleanup(**it,false);
 				}
 			}
@@ -223,28 +222,28 @@ int main(int argc, char** argv) {
 		// This option limits the search time
 		if (timeout) {
 			if (!quiet)
-				cout << "  timeout:\t\t" << timeout.Get() << "s" << endl;
+				std::cout << "  timeout:\t\t" << timeout.Get() << "s" << std::endl;
 			s.time_limit=timeout.Get();
 		}
 
 		// This option prints each better feasible point when it is found
 		if (trace) {
 			if (!quiet)
-				cout << "  trace:\t\tON" << endl;
+				std::cout << "  trace:\t\tON" << std::endl;
 			s.trace=trace.Get();
 		}
 
 		if (!quiet) {
-			cout << "*****************************************************************" << endl << endl;
+			std::cout << "*****************************************************************" << std::endl << std::endl;
 		}
 
 		if (strcmp(_IBEX_LP_LIB_,"NONE")==0) {
 			ibex_warning("No LP solver available, which may impact performances \n\t\t(try cmake with -DLP_LIB=...)");
-			cout << endl;
+			std::cout << std::endl;
 		}
 
 		if (!quiet)
-			cout << "running............" << endl << endl;
+			std::cout << "running............" << std::endl << std::endl;
 
 		// Get the solutions
 		if (input_file)
@@ -252,18 +251,18 @@ int main(int argc, char** argv) {
 		else
 			s.solve(sys.box, stop_at_first.Get());
 
-		if (trace) cout << endl;
+		if (trace) std::cout << std::endl;
 
 		if (!quiet) s.report();
 
-		if (sols) cout << s.get_data() << endl;
+		if (sols) std::cout << s.get_data() << std::endl;
 
 		s.get_data().save(output_manifold_file.c_str());
 
 		if (!quiet) {
-			cout << " results written in " << output_manifold_file << "\n";
+			std::cout << " results written in " << output_manifold_file << "\n";
 			if (overwitten)
-				cout << " (old file saved in " << manifold_copy << ")\n";
+				std::cout << " (old file saved in " << manifold_copy << ")\n";
 		}
 		//		if (!quiet && !sols) {
 //			cout << " (note: use --sols to display solutions)" << endl;
@@ -271,12 +270,12 @@ int main(int argc, char** argv) {
 
 	}
 	catch(ibex::UnknownFileException& e) {
-		cerr << "Error: cannot read file '" << filename.Get() << "'" << endl;
+		std::cerr << "Error: cannot read file '" << filename.Get() << "'" << std::endl;
 	}
 	catch(ibex::SyntaxError& e) {
-		cout << e << endl;
+		std::cout << e << std::endl;
 	}
 	catch(ibex::DimException& e) {
-		cout << e << endl;
+		std::cout << e << std::endl;
 	}
 }

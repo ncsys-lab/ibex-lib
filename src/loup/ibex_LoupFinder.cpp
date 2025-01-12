@@ -9,7 +9,6 @@
 
 #include "ibex_LoupFinder.h"
 
-using namespace std;
 
 namespace ibex {
 

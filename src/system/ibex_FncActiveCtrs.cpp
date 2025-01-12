@@ -13,7 +13,6 @@
 #include "ibex_FncActiveCtrs.h"
 #include "ibex_Linear.h"
 
-using namespace std;
 
 namespace ibex {
 

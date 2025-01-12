@@ -13,7 +13,6 @@
 
 #include "ibex_FncKuhnTucker.h"
 
-using namespace std;
 
 namespace ibex {
 

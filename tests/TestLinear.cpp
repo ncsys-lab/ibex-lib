@@ -11,7 +11,6 @@
 #include "TestLinear.h"
 #include "ibex_Linear.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -220,7 +219,7 @@ void TestLinear::det02() {
 namespace {
 
 // Return an orthogonal matrix and its inverse
-pair<IntervalMatrix,IntervalMatrix> orthogonal_matrix() {
+std::pair<IntervalMatrix,IntervalMatrix> orthogonal_matrix() {
 
 	// Create an orthogonal 3x3 matrix
 	// with 3 rotations
@@ -247,14 +246,14 @@ pair<IntervalMatrix,IntervalMatrix> orthogonal_matrix() {
 
 	IntervalMatrix R=R1*R2*R3;
 	IntervalMatrix Rinv=R3.transpose()*R2.transpose()*R1.transpose();
-	return make_pair(R,Rinv);
+	return std::make_pair(R,Rinv);
 }
 
 }
 
 void TestLinear::is_posdef_sylvester01() {
 
-	pair<IntervalMatrix,IntervalMatrix> R=orthogonal_matrix();
+	std::pair<IntervalMatrix,IntervalMatrix> R=orthogonal_matrix();
 
 	double d[9]={2, 0, 0, 0, 1, 0, 0, 0, 3};
 	Matrix D(3,3,d);
@@ -271,7 +270,7 @@ void TestLinear::is_posdef_sylvester01() {
 
 void TestLinear::is_posdef_rohn01() {
 
-	pair<IntervalMatrix,IntervalMatrix> R=orthogonal_matrix();
+	std::pair<IntervalMatrix,IntervalMatrix> R=orthogonal_matrix();
 
 	double d[9]={2, 0, 0, 0, 1, 0, 0, 0, 3};
 	Matrix D(3,3,d);

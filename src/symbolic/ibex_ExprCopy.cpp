@@ -18,7 +18,6 @@
 #include "ibex_Function.h"
 #include "ibex_Domain.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -79,7 +78,7 @@ const ExprNode* ExprCopy::visit(const ExprIndex& i) {
 }
 
 const ExprNode* ExprCopy::visit(const ExprSymbol& x) {
-	stringstream s;
+	std::stringstream s;
 	s << "[ExprCopy] no destination node for symbol" << x;
 	ibex_error(s.str().c_str());
 	return NULL;

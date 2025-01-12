@@ -20,7 +20,7 @@ namespace {
 
 class ExprNodes : public virtual ExprVisitor<void> {
 public:
-	vector<const ExprNode*> nodes;
+	std::vector<const ExprNode*> nodes;
 	NodeMap<bool> visited;
 
 	ExprNodes(const Array<const ExprSymbol>* args) {
@@ -107,7 +107,7 @@ void ExprSubNodes::init(const Array<const ExprSymbol>* args, const Array<const E
 //	}
 
 	// ============ 2nd method ============
-	for (vector<const ExprNode*>::iterator it=en.nodes.begin(); it!=en.nodes.end(); it++) {
+	for (std::vector<const ExprNode*>::iterator it=en.nodes.begin(); it!=en.nodes.end(); it++) {
 		tab[i++]=*it;
 	}
 

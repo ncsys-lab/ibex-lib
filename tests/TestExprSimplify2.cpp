@@ -13,7 +13,6 @@
 #include "ibex_ExprSimplify2.h"
 #include <sstream>
 
-using namespace std;
 
 namespace ibex {
 
@@ -221,7 +220,7 @@ void TestExprSimplify2::poly_09() {
 void TestExprSimplify2::poly_10() {
 	const ExprSymbol& x=ExprSymbol::new_("x");
 	const ExprVector& e=Return(x,cos(x)+2*cos(x),-x+2*x,ExprVector::COL);
-	cout << e << endl;
+	std::cout << e << std::endl;
 	const ExprNode& e2=ExprSimplify2().simplify(e);
 	CPPUNIT_ASSERT(sameExpr(e2,"(x;(3*cos(x));x)"));
 	cleanup(e2,true);

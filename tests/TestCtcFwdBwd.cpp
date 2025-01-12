@@ -10,7 +10,6 @@
 #include "TestCtcFwdBwd.h"
 #include "ibex_CtcFwdBwd.h"
 
-using namespace std;
 
 namespace ibex {
 

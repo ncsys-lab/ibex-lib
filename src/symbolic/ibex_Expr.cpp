@@ -28,7 +28,6 @@
 #include <set>
 
 
-using namespace std;
 
 namespace ibex {
 
@@ -194,7 +193,7 @@ bool** ExprSymbol::mask() const {
 	return mask;
 }
 
-pair<const ExprSymbol*, bool**> ExprIndex::symbol_mask() const {
+std::pair<const ExprSymbol*, bool**> ExprIndex::symbol_mask() const {
 	bool** mask;
 
 	const ExprSymbol* symbol=dynamic_cast<const ExprSymbol*>(&expr);
@@ -206,9 +205,9 @@ pair<const ExprSymbol*, bool**> ExprIndex::symbol_mask() const {
 		mask=symbol->mask();
 	} else {
 		const ExprIndex* expr_index=dynamic_cast<const ExprIndex*>(&expr);
-		if (!expr_index) return pair<const ExprSymbol*, bool**>(NULL,NULL);
+		if (!expr_index) return std::pair<const ExprSymbol*, bool**>(NULL,NULL);
 		else {
-			pair<const ExprSymbol*, bool**> p = expr_index->symbol_mask();
+			std::pair<const ExprSymbol*, bool**> p = expr_index->symbol_mask();
 			symbol=p.first;
 			mask=p.second;
 		}
@@ -238,7 +237,7 @@ pair<const ExprSymbol*, bool**> ExprIndex::symbol_mask() const {
 	for (; i<n; i++)
 		for (int j=0; j<m; j++) mask[r+i][c+j]=false;
 
-	return pair<const ExprSymbol*, bool**>(symbol, mask);
+	return std::pair<const ExprSymbol*, bool**>(symbol, mask);
 }
 
 ExprNAryOp::ExprNAryOp(const Array<const ExprNode>& _args, const Dim& dim) :
@@ -283,7 +282,7 @@ ExprApply::ExprApply(const Function& f, const Array<const ExprNode>& args) :
 			if (args[i].dim == f.arg(i).dim) continue;
 		}
 
-		stringstream s;
+		std::stringstream s;
 		s << "dimension of the " << (i+1) << "th argument passed to \"" << f.name << "\" ";
 		s << "do not match that of the formal argument \"" << f.arg_name(i) << "\"";
 		throw DimException(s.str());

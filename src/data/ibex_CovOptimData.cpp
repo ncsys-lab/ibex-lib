@@ -13,7 +13,6 @@
 
 #include <algorithm>
 
-using namespace std;
 
 namespace ibex {
 
@@ -35,9 +34,9 @@ CovOptimData::CovOptimData(size_t n, bool is_extended_space) : CovList(n), data(
 }
 
 CovOptimData::CovOptimData(const char* filename) : CovOptimData((size_t) 0 /* tmp */) {
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
-	ifstream* f = CovOptimData::read(filename, *this, format_id, format_version);
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
+	std::ifstream* f = CovOptimData::read(filename, *this, format_id, format_version);
 	f->close();
 	delete f;
 }
@@ -75,39 +74,39 @@ CovOptimData::~CovOptimData() {
 }
 
 void CovOptimData::save(const char* filename) const {
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
-	ofstream* of=CovOptimData::write(filename, *this, format_id, format_version);
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
+	std::ofstream* of=CovOptimData::write(filename, *this, format_id, format_version);
 	of->close();
 	delete of;
 }
 
-ostream& operator<<(ostream& os, const CovOptimData& optim) {
+std::ostream& operator<<(std::ostream& os, const CovOptimData& optim) {
 
-	os << " f* in [" << optim.uplo() << "," << optim.loup() << "]" << endl;
+	os << " f* in [" << optim.uplo() << "," << optim.loup() << "]" << std::endl;
 
 	size_t i;
 
 	if (optim.loup_point().is_empty()) {
-		os << " no feasible point found." << endl;
+		os << " no feasible point found." << std::endl;
 		i = 0;
 	} else {
-		os << " x* ~  " << optim.loup_point() << endl;
+		os << " x* ~  " << optim.loup_point() << std::endl;
 		i = 1;
 	}
 
 	for (size_t j=0; j<optim.size()-i; j++) {
-		os << " pending n°" << (j+1) << " = " << optim[i] << endl;
+		os << " pending n°" << (j+1) << " = " << optim[i] << std::endl;
 	}
 
 	return os;
 
 }
 
-void CovOptimData::read_vars(ifstream& f, size_t n, vector<string>& var_names) {
+void CovOptimData::read_vars(std::ifstream& f, size_t n, std::vector<std::string>& var_names) {
 	char x;
 	for (size_t i=0; i<n; i++) {
-		stringstream s;
+		std::stringstream s;
 		do {
 			f.read(&x, sizeof(char));
 			if (f.eof()) ibex_error("[CovManifold]: unexpected end of file.");
@@ -117,16 +116,16 @@ void CovOptimData::read_vars(ifstream& f, size_t n, vector<string>& var_names) {
 	}
 }
 
-void CovOptimData::write_vars(ofstream& f, const vector<string>& var_names) {
-	for (vector<string>::const_iterator it=var_names.begin(); it!=var_names.end(); it++) {
+void CovOptimData::write_vars(std::ofstream& f, const std::vector<std::string>& var_names) {
+	for (std::vector<std::string>::const_iterator it=var_names.begin(); it!=var_names.end(); it++) {
 		f.write(it->c_str(),it->size()*sizeof(char));
 		f.put('\0');
 	}
 }
 
-ifstream* CovOptimData::read(const char* filename, CovOptimData& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+std::ifstream* CovOptimData::read(const char* filename, CovOptimData& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 
-	ifstream* f = CovList::read(filename, cov, format_id, format_version);
+	std::ifstream* f = CovList::read(filename, cov, format_id, format_version);
 
 	if (format_id.empty() || format_id.top()!=subformat_number || format_version.top()!=FORMAT_VERSION) {
 		cov.data->_optim_optimizer_status = (unsigned int) Optimizer::SUCCESS;
@@ -174,12 +173,12 @@ ifstream* CovOptimData::read(const char* filename, CovOptimData& cov, std::stack
 	return f;
 }
 
-ofstream* CovOptimData::write(const char* filename, const CovOptimData& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+std::ofstream* CovOptimData::write(const char* filename, const CovOptimData& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 
 	format_id.push(subformat_number);
 	format_version.push(FORMAT_VERSION);
 
-	ofstream* f = CovList::write(filename, cov, format_id, format_version);
+	std::ofstream* f = CovList::write(filename, cov, format_id, format_version);
 
 	write_vars   (*f, cov.var_names());
 	write_pos_int(*f, cov.optimizer_status());
@@ -205,7 +204,7 @@ ofstream* CovOptimData::write(const char* filename, const CovOptimData& cov, std
 	return f;
 }
 
-void CovOptimData::format(stringstream& ss, const string& title, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+void CovOptimData::format(std::stringstream& ss, const std::string& title, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 	format_id.push(subformat_number);
 	format_version.push(FORMAT_VERSION);
 
@@ -239,10 +238,10 @@ void CovOptimData::format(stringstream& ss, const string& title, std::stack<unsi
 	<< separator;
 }
 
-string CovOptimData::format() {
-	stringstream ss;
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
+std::string CovOptimData::format() {
+	std::stringstream ss;
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
 	format(ss, "CovOptimData", format_id, format_version);
 	return ss.str();
 }

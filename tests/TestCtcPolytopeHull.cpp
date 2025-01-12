@@ -18,7 +18,6 @@
 #include "ibex_LinearizerXTaylor.h"
 #include "ibex_Array.h"
 
-using namespace std;
 
 namespace ibex {
 

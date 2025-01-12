@@ -10,7 +10,6 @@
 #include "ibex_CellCostFunc.h"
 #include "ibex_BxpOptimData.h"
 
-using namespace std;
 
 namespace ibex {
 

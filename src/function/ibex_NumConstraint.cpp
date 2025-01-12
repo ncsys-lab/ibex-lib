@@ -30,7 +30,6 @@ std::mutex mtx;
 #define UNLOCK
 #endif
 
-using namespace std;
 
 extern void ibexparse_string(const char* syntax);
 
@@ -74,7 +73,7 @@ NumConstraint::NumConstraint(const char* x1, const char* x2, const char* x3, con
 
 void NumConstraint::build_from_string(const Array<const char*>& _x, const char* c) {
 
-	stringstream s;
+	std::stringstream s;
 
 	s << "variables\n  ";
 	for (int i=0; i<_x.size(); i++) {
@@ -127,7 +126,7 @@ void NumConstraint::build_from_system(const System& sys) {
 	(CmpOp&) op = c0.op;
 }
 
-#define RETURN(a,b) return pair<const ExprNode*, const Interval*>(a,b)
+#define RETURN(a,b) return std::pair<const ExprNode*, const Interval*>(a,b)
 
 //pair<const ExprNode*, const Interval*> NumConstraint::is_thick_equality() const {
 //

@@ -13,7 +13,6 @@
 #include <sstream>
 #include <algorithm>
 
-using namespace std;
 
 namespace ibex {
 
@@ -28,9 +27,9 @@ CovIBUList::CovIBUList(size_t n, BoundaryType boundary_type) : CovIUList(n), dat
 }
 
 CovIBUList::CovIBUList(const char* filename) : CovIBUList((size_t) 0, INNER_PT /* tmp */) {
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
-	ifstream* f = CovIBUList::read(filename, *this, format_id, format_version);
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
+	std::ifstream* f = CovIBUList::read(filename, *this, format_id, format_version);
 	f->close();
 	delete f;
 }
@@ -68,9 +67,9 @@ CovIBUList::CovIBUList(const Cov& cov, bool copy) : CovIUList(cov, copy) {
 }
 
 void CovIBUList::save(const char* filename) const	 {
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
-	ofstream* of=CovIBUList::write(filename, *this, format_id, format_version);
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
+	std::ofstream* of=CovIBUList::write(filename, *this, format_id, format_version);
 	of->close();
 	delete of;
 }
@@ -102,26 +101,26 @@ void CovIBUList::add_unknown(const IntervalVector& x) {
 	data->_IBU_unknown.push_back(size()-1);
 }
 
-ostream& operator<<(ostream& os, const CovIBUList& cov) {
+std::ostream& operator<<(std::ostream& os, const CovIBUList& cov) {
 
 	for (size_t i=0; i<cov.nb_inner(); i++) {
-		os << " inner n°" << (i+1) << " = " << cov.inner(i) << endl;
+		os << " inner n°" << (i+1) << " = " << cov.inner(i) << std::endl;
 	}
 
 	for (size_t i=0; i<cov.nb_boundary(); i++) {
-		os << " boundary n°" << (i+1) << " = " << cov.boundary(i) << endl;
+		os << " boundary n°" << (i+1) << " = " << cov.boundary(i) << std::endl;
 	}
 
 	for (size_t i=0; i<cov.nb_unknown(); i++) {
-		os << " unknown n°" << (i+1) << " = " << cov.unknown(i) << endl;
+		os << " unknown n°" << (i+1) << " = " << cov.unknown(i) << std::endl;
 	}
 
 	return os;
 }
 
-ifstream* CovIBUList::read(const char* filename, CovIBUList& cov, stack<unsigned int>& format_id, stack<unsigned int>& format_version) {
+std::ifstream* CovIBUList::read(const char* filename, CovIBUList& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 
-	ifstream* f = CovIUList::read(filename, cov, format_id, format_version);
+	std::ifstream* f = CovIUList::read(filename, cov, format_id, format_version);
 
 	size_t nb_boundary;
 
@@ -157,7 +156,7 @@ ifstream* CovIBUList::read(const char* filename, CovIBUList& cov, stack<unsigned
 		}
 	}
 
-	vector<size_t>::const_iterator it=cov.data->_IBU_boundary.begin(); // iterator of boundary boxes
+	std::vector<size_t>::const_iterator it=cov.data->_IBU_boundary.begin(); // iterator of boundary boxes
 
 	for (size_t i=0; i<cov.size(); i++) {
 
@@ -183,18 +182,18 @@ ifstream* CovIBUList::read(const char* filename, CovIBUList& cov, stack<unsigned
 	return f;
 }
 
-ofstream* CovIBUList::write(const char* filename, const CovIBUList& cov, stack<unsigned int>& format_id, stack<unsigned int>& format_version) {
+std::ofstream* CovIBUList::write(const char* filename, const CovIBUList& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 
 	format_id.push(subformat_number);
 	format_version.push(FORMAT_VERSION);
 
-	ofstream* f = CovIUList::write(filename, cov, format_id, format_version);
+	std::ofstream* f = CovIUList::write(filename, cov, format_id, format_version);
 
 	write_pos_int(*f, cov.boundary_type()==INNER_PT? 0 : 1);
 
 	write_pos_int(*f, cov.nb_boundary());
 
-	for (vector<size_t>::const_iterator it=cov.data->_IBU_boundary.begin(); it!=cov.data->_IBU_boundary.end(); ++it) {
+	for (std::vector<size_t>::const_iterator it=cov.data->_IBU_boundary.begin(); it!=cov.data->_IBU_boundary.end(); ++it) {
 		assert(*it<numeric_limits<uint32_t>::max());
 		write_pos_int(*f, (uint32_t) *it);
 	}
@@ -202,7 +201,7 @@ ofstream* CovIBUList::write(const char* filename, const CovIBUList& cov, stack<u
 	return f;
 }
 
-void CovIBUList::format(stringstream& ss, const string& title, stack<unsigned int>& format_id, stack<unsigned int>& format_version) {
+void CovIBUList::format(std::stringstream& ss, const std::string& title, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 	format_id.push(subformat_number);
 	format_version.push(FORMAT_VERSION);
 
@@ -221,10 +220,10 @@ void CovIBUList::format(stringstream& ss, const string& title, stack<unsigned in
 	<< separator;
 }
 
-string CovIBUList::format() {
-	stringstream ss;
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
+std::string CovIBUList::format() {
+	std::stringstream ss;
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
 	format(ss, "CovIBUList", format_id, format_version);
 	return ss.str();
 }

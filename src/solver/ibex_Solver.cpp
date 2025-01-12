@@ -16,7 +16,6 @@
 
 #include <cassert>
 
-using namespace std;
 
 namespace ibex {
 
@@ -179,7 +178,7 @@ bool Solver::next(CovSolverData::BoxStatus& status, const IntervalVector** sol) 
 			}
 		}
 
-		if (trace==2) cout << buffer << endl;
+		if (trace==2) std::cout << buffer << std::endl;
 
 		Cell* c=buffer.top();
 
@@ -213,7 +212,7 @@ bool Solver::next(CovSolverData::BoxStatus& status, const IntervalVector** sol) 
 					throw NoBisectableVariableException();
 
 				// next line may also throw NoBisectableVariableException
-				pair<Cell*,Cell*> new_cells=bsc.bisect(*c);
+				std::pair<Cell*,Cell*> new_cells=bsc.bisect(*c);
 
 				delete buffer.pop();
 				// note: more natural to push first the second, so that
@@ -231,7 +230,7 @@ bool Solver::next(CovSolverData::BoxStatus& status, const IntervalVector** sol) 
 			catch (NoBisectableVariableException&) {
 				status=check_sol(c->box);
 				if (status==CovSolverData::UNKNOWN) {
-					if (trace >=1) cout << " [unknown] " << c->box << endl;
+					if (trace >=1) std::cout << " [unknown] " << c->box << std::endl;
 					manif->add_unknown(c->box);
 				}
 				delete buffer.pop();
@@ -341,7 +340,7 @@ CovSolverData::BoxStatus Solver::check_sol(const IntervalVector& box) {
 
 	if (!eqs) {
 		if (check_ineq(box)) {
-			if (trace >=1) cout << " [solution] " << box << endl;
+			if (trace >=1) std::cout << " [solution] " << box << std::endl;
 			manif->add_inner(box);
 			return CovSolverData::SOLUTION;
 		} else if (is_boundary(box)) {
@@ -408,12 +407,12 @@ CovSolverData::BoxStatus Solver::check_sol(const IntervalVector& box) {
 		}
 
 		if (solution) {
-			if (trace >=1) cout << " [solution] " << existence << endl;
+			if (trace >=1) std::cout << " [solution] " << existence << std::endl;
 			manif->add_solution(existence, unicity, varset);
 			return CovSolverData::SOLUTION;
 		} else {
 			if (is_boundary(existence)) {
-				if (trace >=1) cout << " [boundary] " << existence << endl;
+				if (trace >=1) std::cout << " [boundary] " << existence << std::endl;
 				manif->add_boundary(existence, varset);
 				return CovSolverData::BOUNDARY;
 			} else
@@ -482,7 +481,7 @@ bool Solver::is_too_large(const IntervalVector& box) {
 void Solver::flush() {
 	while (!buffer.empty()) {
 		Cell* cell=buffer.top();
-		if (trace >=1) cout << " [pending] " << cell->box << endl;
+		if (trace >=1) std::cout << " [pending] " << cell->box << std::endl;
 		manif->add_pending(cell->box);
 		delete buffer.pop();
 	}
@@ -518,46 +517,46 @@ void Solver::report() {
 
 	switch ((Status) manif->solver_status()) {
 	case SUCCESS: 
-		cout << green() << " solving successful!" << endl;
+		std::cout << green() << " solving successful!" << std::endl;
 		break;
 	case INFEASIBLE: 
-		cout << red() << " infeasible problem" << endl;
+		std::cout << red() << " infeasible problem" << std::endl;
 		break;
 	case NOT_ALL_VALIDATED: 
-		cout << red() << " done! but some boxes have 'unknown' status." << endl;
+		std::cout << red() << " done! but some boxes have 'unknown' status." << std::endl;
 		break;
 	case TIME_OUT: 
-		cout << red() << " time limit " << time_limit << "s. reached " << endl;
+		std::cout << red() << " time limit " << time_limit << "s. reached " << std::endl;
 		break;
 	case CELL_OVERFLOW: 
-		cout << red() << " cell overflow" << endl;
+		std::cout << red() << " cell overflow" << std::endl;
 		break;
 	case USER_BREAK:
-		cout << red() << " user break" << endl;
+		std::cout << red() << " user break" << std::endl;
 	}
 
-	cout << white() << endl;
+	std::cout << white() << std::endl;
 
-	cout << " number of solution boxes:\t";
-	if (manif->nb_solution()==0) cout << "--"; else cout << manif->nb_solution();
-	cout << endl;
-	cout << " number of boundary boxes:\t";
-	if (manif->nb_boundary()==0) cout << "--"; else cout << manif->nb_boundary();
-	cout << endl;
-	cout << " number of unknown boxes:\t";
-	if (manif->nb_unknown()==0) cout << "--"; else cout << manif->nb_unknown();
-	cout << endl;
-	cout << " number of pending boxes:\t";
-	if (manif->nb_pending()==0) cout << "--"; else cout << manif->nb_pending();
-	cout << endl;
-	cout << " cpu time used:\t\t\t" << time << "s";
+	std::cout << " number of solution boxes:\t";
+	if (manif->nb_solution()==0) std::cout << "--"; else std::cout << manif->nb_solution();
+	std::cout << std::endl;
+	std::cout << " number of boundary boxes:\t";
+	if (manif->nb_boundary()==0) std::cout << "--"; else std::cout << manif->nb_boundary();
+	std::cout << std::endl;
+	std::cout << " number of unknown boxes:\t";
+	if (manif->nb_unknown()==0) std::cout << "--"; else std::cout << manif->nb_unknown();
+	std::cout << std::endl;
+	std::cout << " number of pending boxes:\t";
+	if (manif->nb_pending()==0) std::cout << "--"; else std::cout << manif->nb_pending();
+	std::cout << std::endl;
+	std::cout << " cpu time used:\t\t\t" << time << "s";
 	if (manif->time()!=time)
-		cout << " [total=" << manif->time() << "]";
-	cout << endl;
-	cout << " number of cells:\t\t" << nb_cells;
+		std::cout << " [total=" << manif->time() << "]";
+	std::cout << std::endl;
+	std::cout << " number of cells:\t\t" << nb_cells;
 	if (manif->nb_cells()!=nb_cells)
-		cout << " [total=" << manif->nb_cells() << "]";
-	cout << endl << endl;
+		std::cout << " [total=" << manif->nb_cells() << "]";
+	std::cout << std::endl << std::endl;
 }
 
 } // end namespace ibex

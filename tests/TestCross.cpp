@@ -12,7 +12,6 @@
 #include "TestCross.h"
 #include "ibex_ExprOperators.h"
 
-using namespace std;
 
 namespace ibex {
 

@@ -37,7 +37,6 @@ std::mutex mtx;
 #define UNLOCK
 #endif
 
-using namespace std;
 
 
 extern void ibexparse_string(const char* syntax);
@@ -77,7 +76,7 @@ public:
 	bool add_index(const ExprNode& e) {
 		const ExprIndex* idx=dynamic_cast<const ExprIndex*>(&e);
 		if (idx && idx->indexed_symbol())  {
-			pair<const ExprSymbol*, bool**> p = idx->symbol_mask();
+			std::pair<const ExprSymbol*, bool**> p = idx->symbol_mask();
 			if (p.first==NULL) return false;
 			const ExprSymbol& s= *p.first;
 			bool** mask=p.second;
@@ -324,7 +323,7 @@ Function::Function(int n, const char** x, const char* y) {
 
 void Function::build_from_string(const Array<const char*>& x, const char* y, const char* name) {
 
-	stringstream s;
+	std::stringstream s;
 
 	const char* name_copy=duplicate_or_generate(name);
 
@@ -545,7 +544,7 @@ void Function::init(const Array<const ExprSymbol>& x, const ExprNode& y, const c
 
 	FindInputsUsed fsu(x, y, __symbol_index, is_used);
 	for (BitSet::const_iterator it=is_used.begin(); it!=is_used.end(); ++it) {
-		((vector<int>&) used_vars).push_back((int) it);
+		((std::vector<int>&) used_vars).push_back((int) it);
 	}
 
 	_image_dim = y.dim;
@@ -604,7 +603,7 @@ void Function::decorate(const Array<const ExprSymbol>& x, const ExprNode& y) {
 }
 
 std::string Function::minibex(bool human) const {
-	stringstream s;
+	std::stringstream s;
 	s << "function " << name << "(";
 	for (int i=0; i<nb_arg(); i++) {
 		const ExprSymbol& x=arg(i);
@@ -613,10 +612,10 @@ std::string Function::minibex(bool human) const {
 		if (x.dim.nb_cols()>1) s << '[' << x.dim.nb_cols() << ']';
 		if (i<nb_arg()-1) s << ",";
 	}
-	s << ")" << endl;
+	s << ")" << std::endl;
 
 	Expr2Minibex().print(s,expr(),human);
-	s << endl << "end";
+	s << std::endl << "end";
 	s.flush();
 	return s.str();
 }

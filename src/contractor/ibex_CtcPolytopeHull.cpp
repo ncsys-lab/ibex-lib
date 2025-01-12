@@ -12,7 +12,6 @@
 
 #include "ibex_LinearizerFixed.h"
 
-using namespace std;
 
 namespace ibex {
 

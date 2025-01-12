@@ -14,7 +14,6 @@
 
 #include <sstream>
 
-using namespace std;
 
 namespace ibex {
 
@@ -50,7 +49,7 @@ public:
 
 	virtual Term* mult(const Term& t) const=0;
 
-	virtual string to_string() const=0;
+	virtual std::string to_string() const=0;
 
 	virtual const ExprNode& to_expr(std::vector<const ExprNode*>* record) const=0;
 
@@ -71,7 +70,7 @@ int ExprMonomial::Term::compare(const ExprMonomial::Term& t) const {
 	return compare_expr(t,ignore);
 }
 
-ostream& operator<<(ostream& os, const ExprMonomial::Term& t) {
+std::ostream& operator<<(std::ostream& os, const ExprMonomial::Term& t) {
 	return os << t.to_string();
 }
 
@@ -107,7 +106,7 @@ public:
 
 	virtual Matrix count_occ(const ExprOccCounter& c) const;
 
-	virtual string to_string() const;
+	virtual std::string to_string() const;
 
 	virtual const ExprNode& to_expr(std::vector<const ExprNode*>* record) const;
 
@@ -141,7 +140,7 @@ public:
 
 	virtual Matrix count_occ(const ExprOccCounter& c) const;
 
-	virtual string to_string() const;
+	virtual std::string to_string() const;
 
 	virtual const ExprNode& to_expr(std::vector<const ExprNode*>* record) const;
 
@@ -173,7 +172,7 @@ public:
 
 	virtual Term::TermType type() const;
 
-	virtual string to_string() const;
+	virtual std::string to_string() const;
 
 	virtual const ExprNode& to_expr(std::vector<const ExprNode*>* record) const;
 
@@ -206,7 +205,7 @@ public:
 
 	virtual Matrix count_occ(const ExprOccCounter& c) const;
 
-	virtual string to_string() const;
+	virtual std::string to_string() const;
 
 	virtual const ExprNode& to_expr(std::vector<const ExprNode*>* record) const;
 
@@ -238,7 +237,7 @@ public:
 
 	const IntervalMatrix m;
 
-	virtual string to_string() const;
+	virtual std::string to_string() const;
 
 	virtual const ExprNode& to_expr(std::vector<const ExprNode*>* record) const;
 
@@ -297,8 +296,8 @@ Matrix ExprMonomial::ScalarTerm::count_occ(const ExprOccCounter& c) const {
 	return c.count(e);
 }
 
-string ExprMonomial::ScalarTerm::to_string() const {
-	stringstream ss;
+std::string ExprMonomial::ScalarTerm::to_string() const {
+	std::stringstream ss;
 	ss << e;
 	if (power!=1) ss << '^' << power;
 	return ss.str();
@@ -365,8 +364,8 @@ Matrix ExprMonomial::HalfCstDotProduct::count_occ(const ExprOccCounter& c) const
 	return c.count(e2);
 }
 
-string ExprMonomial::HalfCstDotProduct::to_string() const {
-	stringstream ss;
+std::string ExprMonomial::HalfCstDotProduct::to_string() const {
+	std::stringstream ss;
 	ss << '(' << v1 << "." << e2 << ')';
 	if (power!=1) ss << "^" << power;
 	return ss.str();
@@ -440,8 +439,8 @@ Matrix ExprMonomial::DotProduct::count_occ(const ExprOccCounter& c) const {
 	return c.occ_product(c.count(e1), c.count(e2));
 }
 
-string ExprMonomial::DotProduct::to_string() const {
-	stringstream ss;
+std::string ExprMonomial::DotProduct::to_string() const {
+	std::stringstream ss;
 	ss << '(' << e1 << '.' <<  e2 << ')';
 	if (power!=1) ss << "^" << power;
 	return ss.str();
@@ -491,8 +490,8 @@ Matrix ExprMonomial::MatrixTerm::count_occ(const ExprOccCounter& c) const {
 	return c.count(e);
 }
 
-string ExprMonomial::MatrixTerm::to_string() const {
-	stringstream ss;
+std::string ExprMonomial::MatrixTerm::to_string() const {
+	std::stringstream ss;
 	ss << e;
 	return ss.str();
 }
@@ -552,8 +551,8 @@ Matrix ExprMonomial::CstMatrixTerm::count_occ(const ExprOccCounter& c) const {
 	return Matrix::zeros(m.nb_rows(), m.nb_cols());
 }
 
-string ExprMonomial::CstMatrixTerm::to_string() const {
-	stringstream ss;
+std::string ExprMonomial::CstMatrixTerm::to_string() const {
+	std::stringstream ss;
 	if (is_identity) ss << "I"; // for debug
 	else ss << m;
 	return ss.str();
@@ -612,7 +611,7 @@ ExprMonomial::ExprMonomial(const IntervalMatrix& x) : coeff(Interval::one()), _d
 }
 
 ExprMonomial::ExprMonomial(const ExprMonomial& m) : coeff(m.coeff), _dim(m.dim()) {
-	for (list<ExprMonomial::Term*>::const_iterator it=m.terms.begin(); it!=m.terms.end(); ++it) {
+	for (std::list<ExprMonomial::Term*>::const_iterator it=m.terms.begin(); it!=m.terms.end(); ++it) {
 		terms.push_back((*it)->copy());
 	}
 }
@@ -632,14 +631,14 @@ void ExprMonomial::add_term(ExprMonomial::Term* t) {
 }
 
 void ExprMonomial::clear_terms() {
-	for (list<ExprMonomial::Term*>::const_iterator it=terms.begin(); it!=terms.end(); ++it) {
+	for (std::list<ExprMonomial::Term*>::const_iterator it=terms.begin(); it!=terms.end(); ++it) {
 		delete *it;
 	}
 	terms.clear();
 }
 
 void ExprMonomial::insert(ExprMonomial::Term* t) {
-	list<ExprMonomial::Term*>::const_iterator it;
+	std::list<ExprMonomial::Term*>::const_iterator it;
 	int result = -1; // init
 	for (it=terms.begin(); it!=terms.end() && result==-1; ++it) {
 		result=(*it)->compare(*t);
@@ -660,15 +659,15 @@ void ExprMonomial::insert(ExprMonomial::Term* t) {
 ExprMonomial ExprMonomial::square() const {
 	ExprMonomial m;
 	m.coeff = pow(coeff,2);
-	list<Term*>::const_iterator it;
+	std::list<Term*>::const_iterator it;
 	for (it=terms.begin(); it!=terms.end() && (*it)->dim.is_scalar(); ++it) {
 		m.add_term((*it)->mult(**it));
 	}
 
 	if (it==terms.end()) return m;
 
-	list<Term*>::const_iterator first = it; // memorize first matrix term
-	list<Term*>::const_iterator last = terms.end();
+	std::list<Term*>::const_iterator first = it; // memorize first matrix term
+	std::list<Term*>::const_iterator last = terms.end();
 	--last;
 
 	for (; it!=last; ++it) {
@@ -699,7 +698,7 @@ ExprMonomial ExprMonomial::square() const {
 	return m;
 }
 
-pair<int,bool> ExprMonomial::cmp_and_add(const ExprMonomial& m2, ExprMonomial* m12, bool add) const {
+std::pair<int,bool> ExprMonomial::cmp_and_add(const ExprMonomial& m2, ExprMonomial* m12, bool add) const {
 
 	bool build=m12!=NULL;
 	const ExprMonomial& m1(*this);
@@ -709,7 +708,7 @@ pair<int,bool> ExprMonomial::cmp_and_add(const ExprMonomial& m2, ExprMonomial* m
 			if (add) {
 				// note: we don't have operator= to write *m12=2*m1 so we do it by hand
 				m12->coeff = 2*m1.coeff;
-				for (list<Term*>::const_iterator it=m1.terms.begin(); it!=m1.terms.end(); ++it)
+				for (std::list<Term*>::const_iterator it=m1.terms.begin(); it!=m1.terms.end(); ++it)
 					m12->add_term((*it)->copy());
 			}
 			// **WARNING* we make the assumption that the same ExprMonomial object
@@ -718,15 +717,15 @@ pair<int,bool> ExprMonomial::cmp_and_add(const ExprMonomial& m2, ExprMonomial* m
 			// but (*this)+(-m2).
 			else throw NullResult();
 		}
-		return make_pair(0,true);
+		return std::make_pair(0,true);
 	}
 
 	ExprCmp cmp;
 
 	//don't set the coefficient of m12 now !
 
-	list<Term*>::const_iterator it1=m1.terms.begin();
-	list<Term*>::const_iterator it2=m2.terms.begin();
+	std::list<Term*>::const_iterator it1=m1.terms.begin();
+	std::list<Term*>::const_iterator it2=m2.terms.begin();
 
 	// we allow one term with constant parts that differ,
 	// e.g.,
@@ -736,15 +735,15 @@ pair<int,bool> ExprMonomial::cmp_and_add(const ExprMonomial& m2, ExprMonomial* m
 	bool summable;
 
 	while (it1!=m1.terms.end() || it2!=m2.terms.end()) {
-		if (it1==m1.terms.end()) return make_pair(-1,false); // m1 is shorter so m1<m2 lexicographically
-		if (it2==m2.terms.end()) return make_pair(1,false);  // m1 is longer so m1>m2 lexicographically
+		if (it1==m1.terms.end()) return std::make_pair(-1,false); // m1 is shorter so m1<m2 lexicographically
+		if (it2==m2.terms.end()) return std::make_pair(1,false);  // m1 is longer so m1>m2 lexicographically
 
 		//cout << "comparing " << **it1 << "  and  " << **it2;
 		result = (*it1)->compare_expr(**it2, summable);
 		//cout << " : " << result << endl;
 		if (result!=0) {
-			if (final_result!=0) return make_pair(final_result,false); // we can sum different terms only once.
-			else if (!summable) return make_pair(result,false);
+			if (final_result!=0) return std::make_pair(final_result,false); // we can sum different terms only once.
+			else if (!summable) return std::make_pair(result,false);
 			else { // note: if factorizable==true: t1.power==t2.power==1
 				final_result = result; // will be the return value if another "summable" case happens.
 				if (build) {
@@ -773,12 +772,12 @@ pair<int,bool> ExprMonomial::cmp_and_add(const ExprMonomial& m2, ExprMonomial* m
 		} else {
 			if ((*it1)->power<(*it2)->power) {
 				++it1; // if there is no more terms in m1
-				if (it1==m1.terms.end()) return make_pair(-1,false); // ex: x < x^2
-				else return make_pair(1,false); // ex: xy < x^2
+				if (it1==m1.terms.end()) return std::make_pair(-1,false); // ex: x < x^2
+				else return std::make_pair(1,false); // ex: xy < x^2
 			} else if ((*it1)->power>(*it2)->power) {
 				++it2; // if there is no more terms in m2
-				if (it2==m2.terms.end()) return make_pair(1,false); // ex: x^2 > x
-				else return make_pair(-1,false); // ex: x^2 < xy
+				if (it2==m2.terms.end()) return std::make_pair(1,false); // ex: x^2 > x
+				else return std::make_pair(-1,false); // ex: x^2 < xy
 			} else {
 				if (build) m12->add_term((*it1)->copy());
 			}
@@ -800,7 +799,7 @@ pair<int,bool> ExprMonomial::cmp_and_add(const ExprMonomial& m2, ExprMonomial* m
 		if (build) m12->coeff = 1.0;
 	}
 
-	return make_pair(final_result,true);
+	return std::make_pair(final_result,true);
 }
 
 ExprMonomial operator*(const ExprMonomial& m1, const ExprMonomial& m2) {
@@ -814,8 +813,8 @@ ExprMonomial ExprMonomial::mul(const ExprMonomial& m2, ExprSimplify2* s) const {
 	ExprMonomial m;
 	ExprCmp cmp;
 
-	list<ExprMonomial::Term*>::const_iterator it1=m1.terms.begin();
-	list<ExprMonomial::Term*>::const_iterator it2=m2.terms.begin();
+	std::list<ExprMonomial::Term*>::const_iterator it1=m1.terms.begin();
+	std::list<ExprMonomial::Term*>::const_iterator it2=m2.terms.begin();
 
 	m.coeff = m1.coeff * m2.coeff;
 
@@ -854,7 +853,7 @@ ExprMonomial ExprMonomial::mul(const ExprMonomial& m2, ExprSimplify2* s) const {
 	}
 
 	// last matrix term of m1 (end() if none)
-	list<ExprMonomial::Term*>::const_iterator last1=m1.terms.end();
+	std::list<ExprMonomial::Term*>::const_iterator last1=m1.terms.end();
 	if (it1!=m1.terms.end()) {
 		--last1;
 		assert(!(*last1)->dim.is_scalar());
@@ -970,8 +969,8 @@ ExprMonomial operator-(const ExprMonomial& m1) {
 	return m;
 }
 
-ExprMonomial::operator string() const {
-	stringstream ss;
+ExprMonomial::operator std::string() const {
+	std::stringstream ss;
 	if (coeff.is_degenerated()) {
 		if (coeff.lb()!=1 || coeff.ub()!=1) {
 			if (coeff.lb()!=-1 || coeff.ub()!=-1)
@@ -987,7 +986,7 @@ ExprMonomial::operator string() const {
 	}
 	else ss << coeff;
 
-	for (list<ExprMonomial::Term*>::const_iterator it=terms.begin(); it!=terms.end(); ++it) {
+	for (std::list<ExprMonomial::Term*>::const_iterator it=terms.begin(); it!=terms.end(); ++it) {
 		ss << **it;
 	}
 	return ss.str();
@@ -995,7 +994,7 @@ ExprMonomial::operator string() const {
 
 const ExprNode& ExprMonomial::to_expr(std::vector<const ExprNode*>* record) const {
 	const ExprNode* e = NULL;
-	for (list<Term*>::const_iterator it=terms.begin();  it!=terms.end(); ++it) {
+	for (std::list<Term*>::const_iterator it=terms.begin();  it!=terms.end(); ++it) {
 		if ((*it)->type()==Term::CST_MATRIX && ((CstMatrixTerm*) *it)->is_identity) continue;
 		if (e) {
 			e = & (*e * (*it)->to_expr(record));
@@ -1024,7 +1023,7 @@ const ExprNode& ExprMonomial::to_expr(std::vector<const ExprNode*>* record) cons
 
 Matrix ExprMonomial::count_occ(const ExprOccCounter& c) const {
 	Matrix m=Matrix::zeros(1,1);
-	for (list<Term*>::const_iterator it=terms.begin(); it!=terms.end(); ++it) {
+	for (std::list<Term*>::const_iterator it=terms.begin(); it!=terms.end(); ++it) {
 		m=c.occ_product(m, (*it)->count_occ(c));
 	}
 	return m;
@@ -1034,8 +1033,8 @@ Dim ExprMonomial::dim() const {
 	return _dim;
 }
 
-ostream& operator<<(ostream& os, const ExprMonomial& m) {
-	return os << ((string) m);
+std::ostream& operator<<(std::ostream& os, const ExprMonomial& m) {
+	return os << ((std::string) m);
 }
 
 } // end namespace ibex;

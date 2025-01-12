@@ -13,7 +13,6 @@
 
 #include <cassert>
 
-using namespace std;
 
 namespace ibex {
 
@@ -65,7 +64,7 @@ long BxpSystemCache::get_id(const System& sys) {
 }
 
 std::string BxpSystemCache::to_string() const {
-	stringstream ss;
+	std::stringstream ss;
 	ss << '[' << id << "] BxpSystemCache System n°" << sys.id;
 	return ss.str();
 }

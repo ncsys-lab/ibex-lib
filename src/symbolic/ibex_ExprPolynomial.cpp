@@ -14,7 +14,6 @@
 #include <sstream>
 #include <numeric>
 
-using namespace std;
 
 namespace ibex {
 
@@ -68,7 +67,7 @@ ExprPolynomial& ExprPolynomial::operator*=(const Interval& c) {
 	if (is_zero(c))  {
 		clear();
 	} else {
-		for (list<ExprMonomial>::iterator it=mono.begin(); it!=mono.end(); ++it) {
+		for (std::list<ExprMonomial>::iterator it=mono.begin(); it!=mono.end(); ++it) {
 			it->coeff *= c;
 		}
 	}
@@ -87,15 +86,15 @@ void ExprPolynomial::add_or_sub(const ExprPolynomial& p2, bool add) {
 		return;
 	}
 
-	list<ExprMonomial>::const_iterator it1=   mono.begin();
-	list<ExprMonomial>::const_iterator it2=p2.mono.begin();
+	std::list<ExprMonomial>::const_iterator it1=   mono.begin();
+	std::list<ExprMonomial>::const_iterator it2=p2.mono.begin();
 
 	while (it1!=mono.end() && it2!=p2.mono.end()) {
 
 		ExprMonomial m12;
 		try {
 			//cout<< "try to sum " << *it1 << " and " << *it2 << endl;
-			pair<int,bool> result = it1->cmp_and_add(*it2, &m12, add);
+			std::pair<int,bool> result = it1->cmp_and_add(*it2, &m12, add);
 
 			if (result.second) {
 				// remove old monomial...
@@ -135,8 +134,8 @@ ExprPolynomial& ExprPolynomial::init_square(const ExprPolynomial& p) {
 	assert(dim.nb_rows()==dim.nb_cols());
 	assert(dim == p.dim);
 
-	for (list<ExprMonomial>::const_iterator it1=p.mono.begin(); it1!=p.mono.end(); ++it1) {
-		for (list<ExprMonomial>::const_iterator it2=it1; it2!=p.mono.end(); ++it2) {
+	for (std::list<ExprMonomial>::const_iterator it1=p.mono.begin(); it1!=p.mono.end(); ++it1) {
+		for (std::list<ExprMonomial>::const_iterator it2=it1; it2!=p.mono.end(); ++it2) {
 			// order or monomials is not necessarily preserved, ex: (x(1,2)+(1,2))*(x(1;2)+(1;2)) -> 5 + ...
 			if (it1==it2)
 				(*this) +=(it1->square());
@@ -152,7 +151,7 @@ ExprPolynomial& ExprPolynomial::init_mult(const Interval& c, const ExprPolynomia
 
 	if (is_zero(c)) return *this; // <=>zero
 
-	for (list<ExprMonomial>::const_iterator it=p.mono.begin(); it!=p.mono.end(); ++it) {
+	for (std::list<ExprMonomial>::const_iterator it=p.mono.begin(); it!=p.mono.end(); ++it) {
 		add_monomial(c*(*it));
 	}
 	return *this;
@@ -162,8 +161,8 @@ ExprPolynomial& ExprPolynomial::init_mult(const ExprPolynomial& p1, const ExprPo
 	assert(dim==mul_dim(p1.dim,p2.dim));
 	if (&p1==&p2) return init_square(p1); // to avoid mix with iterators
 
-	for (list<ExprMonomial>::const_iterator it1=p1.mono.begin(); it1!=p1.mono.end(); ++it1) {
-		for (list<ExprMonomial>::const_iterator it2=p2.mono.begin(); it2!=p2.mono.end(); ++it2) {
+	for (std::list<ExprMonomial>::const_iterator it1=p1.mono.begin(); it1!=p1.mono.end(); ++it1) {
+		for (std::list<ExprMonomial>::const_iterator it2=p2.mono.begin(); it2!=p2.mono.end(); ++it2) {
 			// order or monomials is not necessarily preserved, ex: (x(1,2)+(1,2))*(y(1;2)+(1;2)) -> 5 + ...
 			(*this) += it1->mul(*it2,s);
 		}
@@ -171,12 +170,12 @@ ExprPolynomial& ExprPolynomial::init_mult(const ExprPolynomial& p1, const ExprPo
 	return *this;
 }
 
-ExprPolynomial::operator string() const {
-	stringstream ss;
+ExprPolynomial::operator std::string() const {
+	std::stringstream ss;
 	if (mono.empty())
 		ss << "0";
 	else
-		for (list<ExprMonomial>::const_iterator it=mono.begin(); it!=mono.end(); ++it) {
+		for (std::list<ExprMonomial>::const_iterator it=mono.begin(); it!=mono.end(); ++it) {
 			if (it!=mono.begin()) ss << '+';
 			ss << *it;
 		}
@@ -190,7 +189,7 @@ const ExprNode& ExprPolynomial::to_expr(std::vector<const ExprNode*>* record) co
 		if (record) record->push_back(this_expr);
 	}
 	else
-		for (list<ExprMonomial>::const_iterator it=mono.begin(); it!=mono.end(); ++it) {
+		for (std::list<ExprMonomial>::const_iterator it=mono.begin(); it!=mono.end(); ++it) {
 			if (it==mono.begin())
 				this_expr = &it->to_expr(record);
 			else {
@@ -210,19 +209,19 @@ const ExprNode& ExprPolynomial::to_expr(std::vector<const ExprNode*>* record) co
 Matrix ExprPolynomial::count_occ(const ExprOccCounter& c) const {
 	// could we use std::accumulate with Matrix?
 	if (mono.empty()) return Matrix::zeros(dim.nb_rows(), dim.nb_cols());
-	list<ExprMonomial>::const_iterator it=mono.begin();
+	std::list<ExprMonomial>::const_iterator it=mono.begin();
 	Matrix res=mono.begin()->count_occ(c);
 	for (; it!=mono.end(); ++it) res += it->count_occ(c);
 	return res;
 }
 
-ostream& operator<<(ostream& os, const ExprPolynomial& p) {
-	return os << (string) p;
+std::ostream& operator<<(std::ostream& os, const ExprPolynomial& p) {
+	return os << (std::string) p;
 }
 
 int compare(const ExprPolynomial& p1, const ExprPolynomial& p2) {
-	list<ExprMonomial>::const_iterator it1=p1.mono.begin();
-	list<ExprMonomial>::const_iterator it2=p2.mono.begin();
+	std::list<ExprMonomial>::const_iterator it1=p1.mono.begin();
+	std::list<ExprMonomial>::const_iterator it2=p2.mono.begin();
 
 	int result;
 	while (it1!=p1.mono.end() && it2!=p2.mono.end()) {

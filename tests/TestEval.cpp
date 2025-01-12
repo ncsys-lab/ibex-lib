@@ -15,7 +15,6 @@
 #include "ibex_Expr.h"
 #include "ibex_Eval.h"
 
-using namespace std;
 
 //namespace {
 //

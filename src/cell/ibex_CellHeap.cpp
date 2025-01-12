@@ -10,7 +10,6 @@
 
 #include "ibex_CellHeap.h"
 
-using namespace std;
 
 namespace ibex {
 

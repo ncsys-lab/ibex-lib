@@ -14,7 +14,6 @@
 #include "ibex_ExprDiff.h"
 #include "ibex_CtcNewton.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -35,7 +34,7 @@ CtcKuhnTucker::CtcKuhnTucker(const NormalizedSystem& sys, bool reject_unbounded)
 	} catch(Exception&) {
 		//TODO: replace with ExprDiffException.
 		// Currently, DimException is also sometimes raised.
-		cerr << "Warning: symbolic differentiation has failed ==> KKT contractor disabled" << endl;
+		std::cerr << "Warning: symbolic differentiation has failed ==> KKT contractor disabled" << std::endl;
 		df = NULL;
 		dg = NULL;
 	}

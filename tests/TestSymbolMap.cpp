@@ -12,7 +12,6 @@
 #include "TestSymbolMap.h"
 #include "ibex_SymbolMap.h"
 
-using namespace std;
 
 namespace ibex {
 

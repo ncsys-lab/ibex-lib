@@ -14,7 +14,6 @@
 
 #include <sstream>
 
-using namespace std;
 
 namespace ibex {
 
@@ -23,7 +22,7 @@ void TestExpr2Minibex::expr01() {
 	Variable x("x"),y("y");
 	const ExprNode& e=((x+1)-1)+(y*x);
 
-	stringstream stream;
+	std::stringstream stream;
 
 	Expr2Minibex().print(stream,e);
 	CPPUNIT_ASSERT(strcmp(stream.str().c_str(),"  return (((x+1)-1)+(y*x));")==0);
@@ -37,7 +36,7 @@ void TestExpr2Minibex::expr02() {
 
 	const ExprNode& e=(e1*e1)-(e2+e2);
 
-	stringstream stream;
+	std::stringstream stream;
 
 	Expr2Minibex().print(stream,e);
 
@@ -53,7 +52,7 @@ void TestExpr2Minibex::expr03() {
 	const ExprConstant& c2=ExprConstant::new_scalar(3.0);
 	const ExprNode& e=(c2*(x+c1))-c2*c1;
 
-	stringstream stream;
+	std::stringstream stream;
 
 	Expr2Minibex().print(stream,e);
 
@@ -65,7 +64,7 @@ void TestExpr2Minibex::expr04() {
 	double x=0.1;
 	const ExprConstant& c=ExprConstant::new_scalar(x);
 
-	stringstream stream;
+	std::stringstream stream;
 
 	Expr2Minibex().print(stream,c,false);
 

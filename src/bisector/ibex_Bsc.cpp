@@ -12,7 +12,6 @@
 #include "ibex_Exception.h"
 #include "ibex_Id.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -34,10 +33,10 @@ void Bsc::add_property(const IntervalVector& init_box, BoxProperties& map) {
 
 }
 
-pair<IntervalVector,IntervalVector> Bsc::bisect(const IntervalVector& box) {
+std::pair<IntervalVector,IntervalVector> Bsc::bisect(const IntervalVector& box) {
 	Cell cell(box);
-	pair<Cell*,Cell*> p=bisect(cell);
-	pair<IntervalVector,IntervalVector> boxes=make_pair(p.first->box,p.second->box);
+	std::pair<Cell*,Cell*> p=bisect(cell);
+	std::pair<IntervalVector,IntervalVector> boxes=std::make_pair(p.first->box,p.second->box);
 	delete p.first;
 	delete p.second;
 	return boxes;

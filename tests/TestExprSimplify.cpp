@@ -14,7 +14,6 @@
 #include "ibex_Expr.h"
 #include <sstream>
 
-using namespace std;
 
 namespace ibex {
 void TestExprSimplify::add_zero() {

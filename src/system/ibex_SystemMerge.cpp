@@ -13,7 +13,6 @@
 
 #include <sstream>
 
-using namespace std;
 
 namespace ibex {
 
@@ -98,7 +97,7 @@ public:
 		}
 
 		// -------------  Add constraints -----------
-		vector<const ExprNode*> to_be_deleted;
+		std::vector<const ExprNode*> to_be_deleted;
 		for (int i=0; i<sys1.ctrs.size(); i++) {
 			const ExprNode& e=ExprCopy().copy(sys1.ctrs[i].f.args(), vars1, sys1.ctrs[i].f.expr());
 			add_ctr(ExprCtr(e,sys1.ctrs[i].op));
@@ -114,7 +113,7 @@ public:
 			to_be_deleted.push_back(&e);
 		}
 
-		for (vector<const ExprNode*>::iterator it=to_be_deleted.begin(); it!=to_be_deleted.end(); it++) {
+		for (std::vector<const ExprNode*>::iterator it=to_be_deleted.begin(); it!=to_be_deleted.end(); it++) {
 			cleanup(**it, false);
 		}
 	}

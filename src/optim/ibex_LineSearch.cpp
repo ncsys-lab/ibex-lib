@@ -11,7 +11,6 @@
 #include <cassert>
 #include "ibex_LineSearch.h"
 
-using namespace std;
 
 namespace ibex {
 

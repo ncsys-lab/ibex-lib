@@ -13,7 +13,6 @@
 #include <sstream>
 #include <algorithm>
 
-using namespace std;
 
 namespace ibex {
 
@@ -40,9 +39,9 @@ CovManifold::CovManifold(size_t n, size_t m, size_t nb_ineq, BoundaryType bounda
 }
 
 CovManifold::CovManifold(const char* filename) : CovManifold(0,0,0 /* tmp */, EQU_ONLY /* by default */) {
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
-	ifstream* f = CovManifold::read(filename, *this, format_id, format_version);
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
+	std::ifstream* f = CovManifold::read(filename, *this, format_id, format_version);
 	f->close();
 	delete f;
 }
@@ -93,9 +92,9 @@ CovManifold::CovManifold(const Cov& cov, bool copy) : CovIBUList(cov, copy) {
 }
 
 void CovManifold::save(const char* filename) const {
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
-	ofstream* of=CovManifold::write(filename, *this, format_id, format_version);
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
+	std::ofstream* of=CovManifold::write(filename, *this, format_id, format_version);
 	of->close();
 	delete of;
 }
@@ -166,24 +165,24 @@ void CovManifold::add_solution(const IntervalVector& existence, const IntervalVe
 		data->_manifold_solution_varset.push_back(varset);
 }
 
-ostream& operator<<(ostream& os, const CovManifold& manif) {
+std::ostream& operator<<(std::ostream& os, const CovManifold& manif) {
 
 	for (size_t i=0; i<manif.nb_solution(); i++) {
-		os << " solution n°" << (i+1) << " = " << manif.solution(i) << endl;
+		os << " solution n°" << (i+1) << " = " << manif.solution(i) << std::endl;
 	}
 
 	for (size_t i=0; i<manif.nb_boundary(); i++) {
-		os << " boundary n°" << (i+1) << " = " << manif.boundary(i) << endl;
+		os << " boundary n°" << (i+1) << " = " << manif.boundary(i) << std::endl;
 	}
 
 	for (size_t i=0; i<manif.nb_unknown(); i++) {
-		os << " unknown n°" << (i+1) << " = " << manif.unknown(i) << endl;
+		os << " unknown n°" << (i+1) << " = " << manif.unknown(i) << std::endl;
 	}
 
 	return os;
 }
 
-VarSet CovManifold::read_varset(ifstream& f, size_t n, size_t m) {
+VarSet CovManifold::read_varset(std::ifstream& f, size_t n, size_t m) {
 
 	BitSet params(n);
 
@@ -198,14 +197,14 @@ VarSet CovManifold::read_varset(ifstream& f, size_t n, size_t m) {
 	return VarSet(n,params,false);
 }
 
-void CovManifold::write_varset(ofstream& f, const VarSet& varset) {
+void CovManifold::write_varset(std::ofstream& f, const VarSet& varset) {
 	for (int i=0; i<varset.nb_param; i++)
 		write_pos_int(f, varset.param(i));
 }
 
-ifstream* CovManifold::read(const char* filename, CovManifold& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+std::ifstream* CovManifold::read(const char* filename, CovManifold& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 
-	ifstream* f = CovIBUList::read(filename, cov, format_id, format_version);
+	std::ifstream* f = CovIBUList::read(filename, cov, format_id, format_version);
 
 	size_t nb_solution, nb_boundary;
 
@@ -292,9 +291,9 @@ ifstream* CovManifold::read(const char* filename, CovManifold& cov, std::stack<u
 	}
 
 	// iterator of solution boxes
-	vector<size_t>::const_iterator it_sol=cov.data->_manifold_solution.begin();
+	std::vector<size_t>::const_iterator it_sol=cov.data->_manifold_solution.begin();
 	// iterator of boundary boxes
-	vector<size_t>::const_iterator it_bnd=cov.data->_manifold_boundary.begin();
+	std::vector<size_t>::const_iterator it_bnd=cov.data->_manifold_boundary.begin();
 
 	for (size_t i=0; i<cov.size(); i++) {
 		if (it_sol!=cov.data->_manifold_solution.end() && i==*it_sol) {
@@ -340,12 +339,12 @@ ifstream* CovManifold::read(const char* filename, CovManifold& cov, std::stack<u
 	return f;
 }
 
-ofstream* CovManifold::write(const char* filename, const CovManifold& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+std::ofstream* CovManifold::write(const char* filename, const CovManifold& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 
 	format_id.push(subformat_number);
 	format_version.push(FORMAT_VERSION);
 
-	ofstream* f = CovIBUList::write(filename, cov, format_id, format_version);
+	std::ofstream* f = CovIBUList::write(filename, cov, format_id, format_version);
 
 	write_pos_int(*f, cov.nb_eq());
 	write_pos_int(*f, cov.nb_ineq());
@@ -362,7 +361,7 @@ ofstream* CovManifold::write(const char* filename, const CovManifold& cov, std::
 		std::vector<VarSet>::const_iterator it_varset=cov.data->_manifold_solution_varset.begin();
 		std::vector<IntervalVector>::const_iterator it_unicity=cov.data->_manifold_unicity.begin();
 
-		for (vector<size_t>::const_iterator it=cov.data->_manifold_solution.begin(); it!=cov.data->_manifold_solution.end(); ++it) {
+		for (std::vector<size_t>::const_iterator it=cov.data->_manifold_solution.begin(); it!=cov.data->_manifold_solution.end(); ++it) {
 			assert(*it<numeric_limits<uint32_t>::max());
 			write_pos_int(*f, (uint32_t) *it);
 			if (cov.nb_eq() < cov.n) {
@@ -377,7 +376,7 @@ ofstream* CovManifold::write(const char* filename, const CovManifold& cov, std::
 	write_pos_int(*f, cov.nb_boundary());
 	std::vector<VarSet>::const_iterator it_varset=cov.data->_manifold_boundary_varset.begin();
 
-	for (vector<size_t>::const_iterator it=cov.data->_manifold_boundary.begin(); it!=cov.data->_manifold_boundary.end(); ++it) {
+	for (std::vector<size_t>::const_iterator it=cov.data->_manifold_boundary.begin(); it!=cov.data->_manifold_boundary.end(); ++it) {
 		assert(*it<numeric_limits<uint32_t>::max());
 		write_pos_int(*f, (uint32_t) *it);
 
@@ -390,7 +389,7 @@ ofstream* CovManifold::write(const char* filename, const CovManifold& cov, std::
 	return f;
 }
 
-void CovManifold::format(stringstream& ss, const string& title, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+void CovManifold::format(std::stringstream& ss, const std::string& title, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 	format_id.push(subformat_number);
 	format_version.push(FORMAT_VERSION);
 
@@ -429,10 +428,10 @@ void CovManifold::format(stringstream& ss, const string& title, std::stack<unsig
 	<< separator;
 }
 
-string CovManifold::format() {
-	stringstream ss;
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
+std::string CovManifold::format() {
+	std::stringstream ss;
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
 	format(ss, "CovManifold", format_id, format_version);
 	return ss.str();
 }

@@ -10,7 +10,6 @@
 #include "ibex_ExprFuncDomain.h"
 #include "ibex_System.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -23,7 +22,7 @@ ExprFuncDomain::ExprFuncDomain(const Function& f) {
 
 	sys = new System(fac);
 
-	for (vector<const ExprNode*>::iterator it=garbage.begin(); it!=garbage.end(); ++it)
+	for (std::vector<const ExprNode*>::iterator it=garbage.begin(); it!=garbage.end(); ++it)
 		delete *it;
 }
 

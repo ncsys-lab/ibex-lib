@@ -15,7 +15,6 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
 
 #define TMP_FILE_NAME "__tmp__.txt"
 
@@ -49,10 +48,10 @@ void TestNumConstraint::build_from_string02() {
 void TestNumConstraint::build_from_file01() {
 	std::ofstream outfile (TMP_FILE_NAME);
 
-	outfile << "variables x,y;" << endl << endl;
-	outfile << "constraints" << endl << endl;
-	outfile << " x+y<=1;" << endl;
-	outfile << "end" << endl;
+	outfile << "variables x,y;" << std::endl << std::endl;
+	outfile << "constraints" << std::endl << std::endl;
+	outfile << " x+y<=1;" << std::endl;
+	outfile << "end" << std::endl;
 	outfile.close();
 
 	NumConstraint c(TMP_FILE_NAME);
@@ -66,11 +65,11 @@ void TestNumConstraint::build_from_file01() {
 void TestNumConstraint::build_from_file02() {
 	std::ofstream outfile (TMP_FILE_NAME);
 
-	outfile << "variables x,y;" << endl << endl;
-	outfile << "constraints" << endl << endl;
-	outfile << " x+y<=1;" << endl;
-	outfile << " x*y<=1;" << endl;
-	outfile << "end" << endl;
+	outfile << "variables x,y;" << std::endl << std::endl;
+	outfile << "constraints" << std::endl << std::endl;
+	outfile << " x+y<=1;" << std::endl;
+	outfile << " x*y<=1;" << std::endl;
+	outfile << "end" << std::endl;
 	outfile.close();
 
 	NumConstraint c(TMP_FILE_NAME);

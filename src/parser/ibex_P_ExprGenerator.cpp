@@ -18,7 +18,6 @@
 #include <sstream>
 #include <stdlib.h>
 
-using namespace std;
 
 namespace ibex {
 
@@ -488,7 +487,7 @@ void ExprGenerator::visit(const P_ExprSum& e) {
 	int begin=first_value._2int();
 	int end=last_value._2int();
 	if(end < begin) {
-		ostringstream s;
+		std::ostringstream s;
 		s << "first value < end value (" << begin << " < " << end << "). ";
 		s << "First value must be >= end value.";
 		throw SyntaxError(s.str());
@@ -531,7 +530,7 @@ void ExprGenerator::visit(const P_ExprSum& e) {
 	scope.pop();
 }
 
-pair<int,int> ExprGenerator::visit_index_tmp(const Dim& dim, const P_ExprNode& idx, bool matlab_style) {
+std::pair<int,int> ExprGenerator::visit_index_tmp(const Dim& dim, const P_ExprNode& idx, bool matlab_style) {
 	int i1,i2;
 
 	switch(idx.op) {
@@ -573,12 +572,12 @@ pair<int,int> ExprGenerator::visit_index_tmp(const Dim& dim, const P_ExprNode& i
 	 */
 	idx.lab = new LabelConst(0); // dummy
 
-	return pair<int,int>(i1,i2);
+	return std::pair<int,int>(i1,i2);
 }
 
 DoubleIndex ExprGenerator::visit_index(const Dim& dim, const P_ExprNode& idx1, bool matlab_style) {
 
-	pair<int,int> p=visit_index_tmp(dim,idx1,matlab_style);
+	std::pair<int,int> p=visit_index_tmp(dim,idx1,matlab_style);
 
 	// If only one index is supplied
 	// it may corresponds to a row number or
@@ -597,8 +596,8 @@ DoubleIndex ExprGenerator::visit_index(const Dim& dim, const P_ExprNode& idx1, b
 
 DoubleIndex ExprGenerator::visit_index(const Dim& dim, const P_ExprNode& idx1, const P_ExprNode& idx2, bool matlab_style) {
 
-	pair<int,int> r=visit_index_tmp(dim,idx1,matlab_style);
-	pair<int,int> c=visit_index_tmp(dim,idx2,matlab_style);
+	std::pair<int,int> r=visit_index_tmp(dim,idx1,matlab_style);
+	std::pair<int,int> c=visit_index_tmp(dim,idx2,matlab_style);
 
 	if (r.first==-1) {
 		if (c.first==-1)

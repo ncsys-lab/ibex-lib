@@ -21,7 +21,6 @@
 
 #include <cstdio>
 
-using namespace std;
 
 namespace ibex {
 
@@ -136,7 +135,7 @@ void TestParser::const_var_idx() {
 		i+=6;
 
 	} catch(SyntaxError& e) {
-		cout << e << endl;
+		std::cout << e << std::endl;
 		CPPUNIT_ASSERT(false);
 	}
 }
@@ -163,7 +162,7 @@ void TestParser::func01() {
 		CPPUNIT_ASSERT(strcmp(f.arg(0).name,"x2")==0);
 		CPPUNIT_ASSERT(sameExpr(f.expr(),"x2"));
 	} catch(SyntaxError& e) {
-		cout << e << endl;
+		std::cout << e << std::endl;
 		CPPUNIT_ASSERT(false);
 	}
 }
@@ -195,7 +194,7 @@ void TestParser::func02() {
 			delete c[i];
 
 	} catch(SyntaxError& e) {
-		cout << e << endl;
+		std::cout << e << std::endl;
 		CPPUNIT_ASSERT(false);
 	}
 }
@@ -208,7 +207,7 @@ void TestParser::func03() {
 		CPPUNIT_ASSERT(strcmp(f.name,"f")==0);
 		CPPUNIT_ASSERT(f.nb_arg()==10);
 	} catch(SyntaxError& e) {
-		cout << e << endl;
+		std::cout << e << std::endl;
 		CPPUNIT_ASSERT(false);
 	}
 }
@@ -251,7 +250,7 @@ void TestParser::choco01() {
 void TestParser::loop01() {
 	try {
 		System sys(SRCDIR_TESTS "/quimper/loop01.qpr", simpl);
-		cout << sys << endl;
+		std::cout << sys << std::endl;
 		double a = 1;
 		double b = 2;
 		int c=0;
@@ -284,7 +283,7 @@ void TestParser::loop01() {
 		}
 
 	} catch(SyntaxError& s)  {
-		cout << s << endl;
+		std::cout << s << std::endl;
 	}
 }
 

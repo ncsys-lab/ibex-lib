@@ -10,7 +10,6 @@
 
 #include "ibex_Memory.h"
 
-using namespace std;
 
 namespace ibex {
 

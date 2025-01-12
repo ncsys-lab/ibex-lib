@@ -12,7 +12,6 @@
 #include "TestDoubleIndex.h"
 #include "ibex_DoubleIndex.h"
 
-using namespace std;
 
 namespace ibex {
 

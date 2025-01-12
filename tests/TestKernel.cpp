@@ -11,7 +11,6 @@
 #include "TestKernel.h"
 #include "ibex_Kernel.h"
 
-using namespace std;
 
 namespace ibex {
 

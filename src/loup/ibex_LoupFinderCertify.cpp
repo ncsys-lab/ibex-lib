@@ -14,7 +14,6 @@
 
 namespace ibex {
 
-using namespace std;
 
 LoupFinderCertify::LoupFinderCertify(const System& sys, LoupFinder& finder) : sys(sys), has_equality(false), finder(finder) {
 
@@ -33,7 +32,7 @@ std::pair<IntervalVector, double> LoupFinderCertify::find(const IntervalVector& 
 
 	IntervalVector epsbox(box.size());
 	bool pseudo_loup_found=true;
-	pair<IntervalVector,double> p;
+	std::pair<IntervalVector,double> p;
 
 	try {
 		p=finder.find(box,loup_point,loup);
@@ -122,7 +121,7 @@ std::pair<IntervalVector, double> LoupFinderCertify::find(const IntervalVector& 
 				}
 				if (satisfy_inequalities) {
 					delete af;
-					return make_pair(pdc.solution(), res);
+					return std::make_pair(pdc.solution(), res);
 				}
 			}
 		}

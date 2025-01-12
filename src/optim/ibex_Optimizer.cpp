@@ -18,7 +18,6 @@
 #include <stdlib.h>
 #include <iomanip>
 
-using namespace std;
 
 namespace ibex {
 
@@ -53,7 +52,7 @@ Optimizer::Optimizer(int n, Ctc& ctc, Bsc& bsc, LoupFinder& finder,
 										loup_point(IntervalVector::empty(n)), initial_loup(POS_INFINITY), loup_changed(false),
 										time(0), nb_cells(0), cov(NULL) {
 
-	if (trace) cout.precision(12);
+	if (trace) std::cout.precision(12);
 }
 
 
@@ -104,13 +103,13 @@ bool Optimizer::update_loup(const IntervalVector& box, BoxProperties& prop) {
 
 	try {
 
-		pair<IntervalVector,double> p=loup_finder.find(box,loup_point,loup,prop);
+		std::pair<IntervalVector,double> p=loup_finder.find(box,loup_point,loup,prop);
 		loup_point = p.first;
 		loup = p.second;
 
 		if (trace) {
-			cout << "                    ";
-			cout << "\033[32m loup= " << loup << "\033[0m" << endl;
+			std::cout << "                    ";
+			std::cout << "\033[32m loup= " << loup << "\033[0m" << std::endl;
 //			cout << " loup point=";
 //			if (loup_finder.rigorous())
 //				cout << loup_point << endl;
@@ -144,11 +143,11 @@ void Optimizer::update_uplo() {
 	if (! buffer.empty()) {
 		new_uplo= buffer.minimum();
 		if (new_uplo > loup && uplo_of_epsboxes > loup) {
-			cout << " loup = " << loup << " new_uplo=" << new_uplo <<  " uplo_of_epsboxes=" << uplo_of_epsboxes << endl;
+			std::cout << " loup = " << loup << " new_uplo=" << new_uplo <<  " uplo_of_epsboxes=" << uplo_of_epsboxes << std::endl;
 			ibex_error("optimizer: new_uplo>loup (please report bug)");
 		}
 		if (new_uplo < uplo) {
-			cout << "uplo= " << uplo << " new_uplo=" << new_uplo << endl;
+			std::cout << "uplo= " << uplo << " new_uplo=" << new_uplo << std::endl;
 			ibex_error("optimizer: new_uplo<uplo (please report bug)");
 		}
 
@@ -158,7 +157,7 @@ void Optimizer::update_uplo() {
 				uplo = new_uplo;
 
 				if (trace)
-					cout << "\033[33m uplo= " << uplo << "\033[0m" << endl;
+					std::cout << "\033[33m uplo= " << uplo << "\033[0m" << std::endl;
 			}
 		}
 		else uplo = uplo_of_epsboxes;
@@ -187,7 +186,7 @@ void Optimizer::update_uplo_of_epsboxes(double ymin) {
 	if (uplo_of_epsboxes > ymin) {
 		uplo_of_epsboxes = ymin;
 		if (trace) {
-			cout << " unprocessable tiny box: now uplo<=" << setprecision(12) <<  uplo_of_epsboxes << " uplo=" << uplo << endl;
+			std::cout << " unprocessable tiny box: now uplo<=" << std::setprecision(12) <<  uplo_of_epsboxes << " uplo=" << uplo << std::endl;
 		}
 	}
 }
@@ -424,11 +423,11 @@ Optimizer::Status Optimizer::optimize() {
 			loup_changed=false;
 			// for double heap , choose randomly the buffer : top  has to be called before pop
 			Cell *c = buffer.top();
-			if (trace >= 2) cout << " current box " << c->box << endl;
+			if (trace >= 2) std::cout << " current box " << c->box << std::endl;
 
 			try {
 
-				pair<Cell*,Cell*> new_cells=bsc.bisect(*c);
+				std::pair<Cell*,Cell*> new_cells=bsc.bisect(*c);
 				buffer.pop();
 				delete c; // deletes the cell.
 
@@ -455,7 +454,7 @@ Optimizer::Status Optimizer::optimize() {
 
 					// TODO: check if happens. What is the return code in this case?
 					if (ymax <= NEG_INFINITY) {
-						if (trace) cout << " infinite value for the minimum " << endl;
+						if (trace) std::cout << " infinite value for the minimum " << std::endl;
 						break;
 					}
 				}
@@ -500,7 +499,7 @@ Optimizer::Status Optimizer::optimize() {
 
 	/* TODO: cannot retrieve variable names here. */
 	for (int i=0; i<(extended_COV ? n+1 : n); i++)
-		cov->data->_optim_var_names.push_back(string(""));
+		cov->data->_optim_var_names.push_back(std::string(""));
 
 	cov->data->_optim_optimizer_status = (unsigned int) status;
 	cov->data->_optim_uplo = uplo;
@@ -568,72 +567,72 @@ const char* white() {
 void Optimizer::report() {
 
 	if (!cov || !buffer.empty()) { // not started
-		cout << " not started." << endl;
+		std::cout << " not started." << std::endl;
 		return;
 	}
 
 	switch(status) {
 	case SUCCESS:
-		cout << green() << " optimization successful!" << endl;
+		std::cout << green() << " optimization successful!" << std::endl;
 		break;
 	case INFEASIBLE:
-		cout << red() << " infeasible problem" << endl;
+		std::cout << red() << " infeasible problem" << std::endl;
 		break;
 	case NO_FEASIBLE_FOUND:
-		cout << red() << " no feasible point found (the problem may be infeasible)" << endl;
+		std::cout << red() << " no feasible point found (the problem may be infeasible)" << std::endl;
 		break;
 	case UNBOUNDED_OBJ:
-		cout << red() << " possibly unbounded objective (f*=-oo)" << endl;
+		std::cout << red() << " possibly unbounded objective (f*=-oo)" << std::endl;
 		break;
 	case TIME_OUT:
-		cout << red() << " time limit " << timeout << "s. reached " << endl;
+		std::cout << red() << " time limit " << timeout << "s. reached " << std::endl;
 		break;
 	case UNREACHED_PREC:
-		cout << red() << " unreached precision" << endl;
+		std::cout << red() << " unreached precision" << std::endl;
 		break;
 	}
-	cout << white() <<  endl;
+	std::cout << white() <<  std::endl;
 
 	// No solution found and optimization stopped with empty buffer
 	// before the required precision is reached => means infeasible problem
 	if (status==INFEASIBLE) {
-		cout << " infeasible problem " << endl;
+		std::cout << " infeasible problem " << std::endl;
 	} else {
-		cout << " f* in\t[" << uplo << "," << loup << "]" << endl;
-		cout << "\t(best bound)" << endl << endl;
+		std::cout << " f* in\t[" << uplo << "," << loup << "]" << std::endl;
+		std::cout << "\t(best bound)" << std::endl << std::endl;
 
 		if (loup==initial_loup)
-			cout << " x* =\t--\n\t(no feasible point found)" << endl;
+			std::cout << " x* =\t--\n\t(no feasible point found)" << std::endl;
 		else {
 			if (loup_finder.rigorous())
-				cout << " x* in\t" << loup_point << endl;
+				std::cout << " x* in\t" << loup_point << std::endl;
 			else
-				cout << " x* =\t" << loup_point.lb() << endl;
-			cout << "\t(best feasible point)" << endl;
+				std::cout << " x* =\t" << loup_point.lb() << std::endl;
+			std::cout << "\t(best feasible point)" << std::endl;
 		}
-		cout << endl;
+		std::cout << std::endl;
 		double rel_prec=get_obj_rel_prec();
 		double abs_prec=get_obj_abs_prec();
 
-		cout << " relative precision on f*:\t" << rel_prec;
+		std::cout << " relative precision on f*:\t" << rel_prec;
 		if (rel_prec <= rel_eps_f)
-			cout << green() << " [passed] " << white();
-		cout << endl;
+			std::cout << green() << " [passed] " << white();
+		std::cout << std::endl;
 
-		cout << " absolute precision on f*:\t" << abs_prec;
+		std::cout << " absolute precision on f*:\t" << abs_prec;
 		if (abs_prec <= abs_eps_f)
-			cout << green() << " [passed] " << white();
-		cout << endl;
+			std::cout << green() << " [passed] " << white();
+		std::cout << std::endl;
 	}
 
-	cout << " cpu time used:\t\t\t" << time << "s";
+	std::cout << " cpu time used:\t\t\t" << time << "s";
 	if (cov->time()!=time)
-		cout << " [total=" << cov->time() << "]";
-	cout << endl;
-	cout << " number of cells:\t\t" << nb_cells;
+		std::cout << " [total=" << cov->time() << "]";
+	std::cout << std::endl;
+	std::cout << " number of cells:\t\t" << nb_cells;
 	if (cov->nb_cells()!=nb_cells)
-		cout << " [total=" << cov->nb_cells() << "]";
-	cout << endl << endl;
+		std::cout << " [total=" << cov->nb_cells() << "]";
+	std::cout << std::endl << std::endl;
 }
 
 

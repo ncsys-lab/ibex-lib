@@ -12,7 +12,6 @@
 #include "ibex.h"
 #include "data.h"
 
-using namespace std;
 using namespace ibex;
 
 //![detection]
@@ -101,7 +100,7 @@ public:
 
 		// The q-intersection is created as before,
 		// using a temporary vector "cdist"
-		vector<Ctc*> cdist;
+		std::vector<Ctc*> cdist;
 		for (int b=0; b<N; b++) {
 			cdist.push_back(detect[b]=new Detection(b));
 		}
@@ -176,9 +175,9 @@ int main() {
 
 	Trajectory traj;
 
-	cout << endl << "initial box =" << box[0] << endl;
+	std::cout << std::endl << "initial box =" << box[0] << std::endl;
 	//fix.contract(box);
 	traj.contract(box);
-	cout << endl << "final box =" << box[0] << endl << endl;
+	std::cout << std::endl << "final box =" << box[0] << std::endl << std::endl;
 	return 0;
 }

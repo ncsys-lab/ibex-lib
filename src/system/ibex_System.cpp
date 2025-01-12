@@ -39,7 +39,6 @@ extern void ibexparse_string(const char* syntax);
 extern void ibexrestart(FILE *);
 extern FILE* ibexin;
 
-using namespace std;
 
 namespace ibex {
 
@@ -110,7 +109,7 @@ System::System(const System& sys, copy_mode mode) : id(next_id()), nb_var(0), nb
 }
 
 std::string System::minibex(bool human) const {
-	stringstream s;
+	std::stringstream s;
 	s << "variables\n";
 
 	Array<Domain> domains(args.size());
@@ -172,7 +171,7 @@ std::string System::minibex(bool human) const {
 
 std::ostream& operator<<(std::ostream& os, const System& sys) {
 
-	os << "variables: " << endl << "  ";
+	os << "variables: " << std::endl << "  ";
 	for (int i=0; i<sys.args.size(); i++) {
 		const ExprSymbol& x = sys.args[i];
 		os << x;
@@ -183,21 +182,21 @@ std::ostream& operator<<(std::ostream& os, const System& sys) {
 		}
 		if (i<sys.args.size()-1) os << ", ";
 	}
-	os << endl;
+	os << std::endl;
 
-	os << "box: " << endl << "  ";
-	os << sys.box << endl;
+	os << "box: " << std::endl << "  ";
+	os << sys.box << std::endl;
 
 
-	os << "goal: " << endl;
+	os << "goal: " << std::endl;
 	if (sys.goal!=NULL)
-	    os << "  " << sys.goal->expr() << endl;
+	    os << "  " << sys.goal->expr() << std::endl;
 	else
-		os << "  (none)" << endl;
+		os << "  (none)" << std::endl;
 	if (sys.nb_ctr>0) {
-		os << "constraints:" << endl;
+		os << "constraints:" << std::endl;
 		for (int i=0; i<sys.ctrs.size(); i++)
-			os << "  " << sys.ctrs[i] << endl;
+			os << "  " << sys.ctrs[i] << std::endl;
 	}
 	return os;
 }
@@ -342,9 +341,9 @@ bool System::is_inner(const IntervalVector& box) const {
 
 }
 
-vector<string> System::var_names() const {
+std::vector<std::string> System::var_names() const {
 
-	vector<string> var_names;
+	std::vector<std::string> var_names;
 	int v=0;
 	for (int s=0; s<args.size(); s++) {
 		const ExprSymbol& x=args[s];
@@ -355,12 +354,12 @@ vector<string> System::var_names() const {
 		case Dim::ROW_VECTOR:
 		case Dim::COL_VECTOR:
 			for (int i=0; i<x.dim.vec_size(); i++)
-				var_names.push_back(string(x.name)+'('+to_string(i+1)+')');
+				var_names.push_back(std::string(x.name)+'('+ std::to_string(i+1)+')');
 			break;
 		default: // MATRIX
 			for (int i=0; i<x.dim.nb_rows(); i++)
 				for (int j=0; j<x.dim.nb_cols(); j++)
-					var_names.push_back(string(x.name)+'('+to_string(i+1)+','+to_string(j+1)+')');
+					var_names.push_back(std::string(x.name)+'('+ std::to_string(i+1)+','+ std::to_string(j+1)+')');
 			break;
 		}
 		v+=x.dim.size();

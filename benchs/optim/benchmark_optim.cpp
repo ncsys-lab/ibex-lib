@@ -1,7 +1,6 @@
 #include "ibex.h"
 #include <sstream>
 
-using namespace std;
 using namespace ibex;
 
 #define MAX(a,b) ((a < b) ? b : a)
@@ -16,7 +15,7 @@ double_from_arg (const char *argname, const char *str)
 	double val = strtod (str, &endptr);
 	if (endptr != str + strlen(str))
 	{
-		stringstream s;
+		std::stringstream s;
 		s << "\"" << argname << "\" must be a real number";
 		ibex_error (s.str().c_str());
 	}
@@ -30,7 +29,7 @@ uint_from_arg (const char *argname, const char *str)
 	unsigned int val = (unsigned int) strtoul (str, &endptr, 10);
 	if (endptr != str + strlen(str))
 	{
-		stringstream s;
+		std::stringstream s;
 		s << "\"" << argname << "\" must be a real number";
 		ibex_error (s.str().c_str());
 	}
@@ -40,7 +39,7 @@ uint_from_arg (const char *argname, const char *str)
 void
 usage (const char *errmsg)
 {
-	stringstream s;
+	std::stringstream s;
 	s << errmsg << std::endl
 	  << "Usage: benchmark_optim ARGS" << std::endl
 	  << "Mandatory parameter are:" << std::endl
@@ -111,12 +110,12 @@ class DecimalFP
 		{
 			return (this->_v != o._v);
 		}
-		friend ostream& operator<< (ostream &, DecimalFP const &);
+		friend std::ostream& operator<< (std::ostream &, DecimalFP const &);
 };
 
 
 
-ostream& operator<< (ostream &os, DecimalFP const &v)
+std::ostream& operator<< (std::ostream &os, DecimalFP const &v)
 {
 	if (v.is_nan())
 		return os << "nan";
@@ -216,10 +215,10 @@ main (int argc, char *argv[])
 		if (argc != 0)
 			usage ("too many command-line parameter");
 
-		cout << "# INPUT: bench file: " << benchfile << endl;
-		cout << "# INPUT: time limit: " << time_limit << "s" << endl;
-		cout << "# INPUT: prec ndigits max: " << prec_max << endl;
-		cout << "# INPUT: prec ndigits min: " << prec_min << endl;
+		std::cout << "# INPUT: bench file: " << benchfile << std::endl;
+		std::cout << "# INPUT: time limit: " << time_limit << "s" << std::endl;
+		std::cout << "# INPUT: prec ndigits max: " << prec_max << std::endl;
+		std::cout << "# INPUT: prec ndigits min: " << prec_min << std::endl;
 
 		/* Check for missing command-line parameter */
 		if (prec_max.is_nan())
@@ -277,7 +276,7 @@ main (int argc, char *argv[])
 	}
 	catch (ibex::SyntaxError& e)
 	{
-		cout << e << endl;
+		std::cout << e << std::endl;
 		return EXIT_FAILURE;
 	}
 }

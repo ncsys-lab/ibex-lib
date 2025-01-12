@@ -11,7 +11,6 @@
 #include "ibex_PdcHansenFeasibility.h"
 #include "ibex_Function.h"
 
-using namespace std;
 
 namespace ibex {
 

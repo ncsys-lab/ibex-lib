@@ -12,7 +12,6 @@
 
 #include <stdlib.h>
 
-using namespace std;
 
 namespace ibex {
 
@@ -37,7 +36,7 @@ P_TmpSymbolDecl::P_TmpSymbolDecl(const char* symbol, const P_ExprNode* expr) : s
 }
 
 void P_TmpSymbolDecl::print(std::ostream& os) const {
-	os << symbol << ":=" << expr << endl;
+	os << symbol << ":=" << expr << std::endl;
 }
 
 P_TmpSymbolDecl::~P_TmpSymbolDecl() {
@@ -45,28 +44,28 @@ P_TmpSymbolDecl::~P_TmpSymbolDecl() {
 	delete &expr;
 }
 
-void P_OneConstraint::print(ostream& os) const {
+void P_OneConstraint::print(std::ostream& os) const {
 	os << expr << op << '0';
 }
 
-P_ConstraintList::P_ConstraintList(vector<P_NumConstraint*>* _ctrs) : ctrs(*_ctrs) {
+P_ConstraintList::P_ConstraintList(std::vector<P_NumConstraint*>* _ctrs) : ctrs(*_ctrs) {
 
 }
 
 P_ConstraintList::~P_ConstraintList() {
-	for (vector<P_NumConstraint*>::const_iterator it=ctrs.begin(); it!=ctrs.end(); ++it) {
+	for (std::vector<P_NumConstraint*>::const_iterator it=ctrs.begin(); it!=ctrs.end(); ++it) {
 		delete *it;
 	}
 	delete &ctrs;
 }
 
-void P_ConstraintList::print(ostream& os) const {
-	for (vector<P_NumConstraint*>::const_iterator it=ctrs.begin(); it!=ctrs.end(); ++it) {
-		os << **it << endl;
+void P_ConstraintList::print(std::ostream& os) const {
+	for (std::vector<P_NumConstraint*>::const_iterator it=ctrs.begin(); it!=ctrs.end(); ++it) {
+		os << **it << std::endl;
 	}
 }
 
-P_ConstraintLoop::P_ConstraintLoop(const char* iter, const P_ExprNode* first_value, const P_ExprNode* last_value, vector<P_NumConstraint*>* ctrs) :
+P_ConstraintLoop::P_ConstraintLoop(const char* iter, const P_ExprNode* first_value, const P_ExprNode* last_value, std::vector<P_NumConstraint*>* ctrs) :
 		 iter(strdup(iter)), first_value(*first_value), last_value(*last_value), ctrs(ctrs) {
 
 }
@@ -77,10 +76,10 @@ P_ConstraintLoop::~P_ConstraintLoop() {
 	delete &last_value;
 }
 
-void P_ConstraintLoop::print(ostream& os) const {
-	os << "for " << iter << "=" << first_value << ":" << last_value << endl;
+void P_ConstraintLoop::print(std::ostream& os) const {
+	os << "for " << iter << "=" << first_value << ":" << last_value << std::endl;
 	os << ctrs;
-	os << "end" << endl;
+	os << "end" << std::endl;
 }
 
 P_ThickEquality::P_ThickEquality(const P_ExprNode* expr, const Interval& d) : expr(*expr), d(d) {
@@ -91,7 +90,7 @@ P_ThickEquality::~P_ThickEquality() {
 	delete &expr;
 }
 
-void P_ThickEquality::print(ostream& os) const {
+void P_ThickEquality::print(std::ostream& os) const {
 	os << expr << " in " << d;
 }
 

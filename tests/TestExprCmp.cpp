@@ -13,7 +13,6 @@
 #include "ibex_ExprCmp.h"
 #include "ibex_Function.h"
 
-using namespace std;
 
 namespace ibex {
 

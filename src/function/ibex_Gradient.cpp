@@ -13,7 +13,6 @@
 #include "ibex_Gradient.h"
 #include "ibex_ExprLinearity.h"
 
-using namespace std;
 
 namespace ibex {
 

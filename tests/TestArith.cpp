@@ -16,7 +16,6 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-using namespace std;
 
 void TestArith::check_add(const Interval& x, const Interval& z, const Interval& y_expected) {
 	Interval y_actual=x+z;

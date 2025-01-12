@@ -16,7 +16,6 @@
 #include "ibex_NumConstraint.h"
 #include "ibex_HC4Revise.h"
 
-using namespace std;
 
 namespace ibex {
 

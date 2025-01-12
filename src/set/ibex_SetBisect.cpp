@@ -13,7 +13,6 @@
 #include <stack>
 #include <utility>
 
-using namespace std;
 
 namespace ibex {
 
@@ -186,9 +185,9 @@ void SetBisect::visit(const IntervalVector& nodebox, SetVisitor& visitor) const 
 	}
 }
 
-void SetBisect::print(ostream& os, const IntervalVector& nodebox, int shift) const {
+void SetBisect::print(std::ostream& os, const IntervalVector& nodebox, int shift) const {
 	for (int i=0; i<shift; i++) os << ' ';
-	os << "* " << nodebox << endl;
+	os << "* " << nodebox << std::endl;
 	left->print(os, left_box(nodebox), shift+2);
 	right->print(os, right_box(nodebox), shift+2);
 }

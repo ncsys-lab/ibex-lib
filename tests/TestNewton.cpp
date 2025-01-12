@@ -14,7 +14,6 @@
 #include "ibex_CtcNewton.h"
 #include "ibex_LinearException.h"
 
-using namespace std;
 
 namespace ibex {
 

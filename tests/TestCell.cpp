@@ -17,8 +17,7 @@
 #include "ibex_NormalizedSystem.h"
 #include "ibex_Cell.h"
 
-//using namespace std;
-
+//
 namespace ibex {
 
 long BxpTest::id = next_id();

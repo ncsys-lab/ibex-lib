@@ -11,7 +11,6 @@
 
 #include "ibex.h"
 #include "data.h"
-using namespace std;
 
 using namespace ibex;
 
@@ -29,11 +28,11 @@ int main() {
   IntervalVector box(T*2,Interval(0,L));
   Variable x(T,2);
 
-  vector<Ctc*> ctc;
+  std::vector<Ctc*> ctc;
   for (int t=0; t<T; t++) {
 
 	// ![inv]
-    vector<Ctc*> cdist;
+    std::vector<Ctc*> cdist;
     for (int b=0; b<N; b++) {
       // Create the distance constraint with 2
       // (instead of 2*T) variables
@@ -61,9 +60,9 @@ int main() {
   // FixPoint
   CtcFixPoint fix(compo);
 
-  cout << endl << "initial box =" << box << endl;
+  std::cout << std::endl << "initial box =" << box << std::endl;
   fix.contract(box);
-  cout << endl << "final box =" << box << endl << endl;
+  std::cout << std::endl << "final box =" << box << std::endl << std::endl;
 
   return 0;
 }

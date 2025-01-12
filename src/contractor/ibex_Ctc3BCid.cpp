@@ -11,7 +11,6 @@
 
 #include "ibex_Ctc3BCid.h"
 
-using namespace std;
 namespace ibex {
 
 Ctc3BCid::Ctc3BCid(const BitSet& cid_vars, Ctc& ctc, int s3b, int scid, int vhandled, double var_min_width) :

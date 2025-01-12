@@ -18,7 +18,6 @@
 
 #include <utility>
 
-using namespace std;
 
 namespace ibex {
 
@@ -63,9 +62,9 @@ void P_SysGenerator::generate(P_Source& source, System& sys, int simpl_level) {
 
 	if (source.ctrs!=NULL) { // not in case of unconstrained optimization
 
-		vector<ExprCtr*> ctrs = P_CtrGenerator(scopes).generate(*source.ctrs);
+		std::vector<ExprCtr*> ctrs = P_CtrGenerator(scopes).generate(*source.ctrs);
 
-		for (vector<ExprCtr*>::const_iterator it=ctrs.begin(); it!=ctrs.end(); it++) {
+		for (std::vector<ExprCtr*>::const_iterator it=ctrs.begin(); it!=ctrs.end(); it++) {
 			fac.add_ctr(**it); // by copy so...
 			add_garbage(garbage,(*it)->e); // ... clean it up
 			delete *it;

@@ -10,7 +10,6 @@
 #include "ibex.h"
 #include "vibes.cpp"
 
-using namespace std;
 using namespace ibex;
 
 void contract_and_draw(Ctc& c, IntervalVector& box, const char* color) {
@@ -44,7 +43,7 @@ int main() {
 	box[1]=Interval(-10,10);
 
 	// Create a stack (for depth-first search)
-	stack<IntervalVector> s;
+	std::stack<IntervalVector> s;
 
 	// Precision (boxes of size less than eps are not processed)
 	double eps=0.1;
@@ -81,7 +80,7 @@ int main() {
 		contract_and_draw(inside, box, "k[g]");
 		if (!box.is_empty() && box.max_diam()>eps) {
 			int i=box.extr_diam_index(false);
-			pair<IntervalVector,IntervalVector> p=box.bisect(i);
+			std::pair<IntervalVector,IntervalVector> p=box.bisect(i);
 			s.push(p.first);
 			s.push(p.second);
 		}

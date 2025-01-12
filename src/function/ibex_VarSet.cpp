@@ -11,7 +11,6 @@
 
 #include <sstream>
 
-using namespace std;
 
 namespace ibex {
 
@@ -139,7 +138,7 @@ void VarSet::init_bitset(const Function& f, const Array<const ExprNode>& x, bool
 			const ExprIndex* index = dynamic_cast<const ExprIndex*>(&x[i]);
 			if (!index) ibex_error("VarSet: not a symbol");
 
-			pair<const ExprSymbol*,bool**> p= index->symbol_mask();
+			std::pair<const ExprSymbol*,bool**> p= index->symbol_mask();
 			symbol=p.first;
 			mask=p.second;
 
@@ -150,7 +149,7 @@ void VarSet::init_bitset(const Function& f, const Array<const ExprNode>& x, bool
 		while (j<f.nb_arg() && strcmp(f.arg(j).name,symbol->name)!=0) j++;
 
 		if (j>=f.nb_arg()) {   // y[i] found in the arguments of f
-			stringstream s;
+			std::stringstream s;
 			s << x[i] << " is not an argument of the function";
 			ibex_error(s.str().c_str());
 		}

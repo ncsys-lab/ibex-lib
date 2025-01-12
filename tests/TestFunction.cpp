@@ -19,7 +19,6 @@
 #include <sstream>
 #include <cstdio>
 
-using namespace std;
 
 namespace ibex {
 
@@ -265,7 +264,7 @@ void TestFunction::add_symbol() {
 	CPPUNIT_ASSERT(strcmp(f.arg_name(0),"x")==0);
 	CPPUNIT_ASSERT(strcmp(f.arg_name(1),"y")==0);
 
-	vector<int>::const_iterator it=f.used_vars.begin();
+	std::vector<int>::const_iterator it=f.used_vars.begin();
 	assert(it!=f.used_vars.end() && *it==0);
 	it++;
 	assert(it==f.used_vars.end());
@@ -371,7 +370,7 @@ void TestFunction::used() {
 
 	Function f(x,y,z,e);
 
-	vector<int>::const_iterator it=f[0].used_vars.begin();
+	std::vector<int>::const_iterator it=f[0].used_vars.begin();
 	assert(it!=f[0].used_vars.end() && *it==0);
 	it++;
 	assert(it!=f[0].used_vars.end() && *it==1);
@@ -414,7 +413,7 @@ void TestFunction::used02() {
 
 	Function f(x,y,x[0]+x[2]-(y[1][1]*y[1][2]));
 
-	vector<int>::const_iterator it=f.used_vars.begin();
+	std::vector<int>::const_iterator it=f.used_vars.begin();
 	assert(it!=f.used_vars.end() && *it==0);
 	it++;
 	assert(it!=f.used_vars.end() && *it==2);

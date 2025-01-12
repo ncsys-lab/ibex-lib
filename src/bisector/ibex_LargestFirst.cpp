@@ -11,7 +11,6 @@
 #include "ibex_LargestFirst.h"
 #include "ibex_NoBisectableVariableException.h"
 
-using namespace std;
 
 namespace ibex {
 

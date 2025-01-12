@@ -6,7 +6,6 @@
  */
 #include "ibex.h"
 
-using namespace std;
 using namespace ibex;
 
 int main() {
@@ -50,10 +49,10 @@ int main() {
 	LargestFirst lf(0.1);
 
 	// Create a buffer
-	CellStack stack;
+	CellStack std::stack;
 
 	// Create the paver
-	Paver p(ctc, lf, stack);
+	Paver p(ctc, lf, std::stack);
 
 	// Discart log messages
 	p.trace = 0;
@@ -82,8 +81,8 @@ int main() {
 			IntervalVector *boxes;
 			int size=it->first.diff(it->second,boxes);
 			for (int j=0; j<size; j++) {
-				cout << boxes[j][0].lb() << " " << boxes[j][0].ub() << " " <<
-						boxes[j][1].lb() << " " << boxes[j][1].ub() << " " << i << endl;
+				std::cout << boxes[j][0].lb() << " " << boxes[j][0].ub() << " " <<
+						boxes[j][1].lb() << " " << boxes[j][1].ub() << " " << i << std::endl;
 			}
 		}
 	}

@@ -15,7 +15,6 @@
 #include "ibex_SystemFactory.h"
 #include "ibex_SyntaxError.h"
 
-using namespace std;
 
 namespace ibex {
 

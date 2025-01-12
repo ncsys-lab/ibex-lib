@@ -17,7 +17,6 @@
   #define IBEX_BENCHS_DIR "../benchs/solver"
 #endif
 
-using namespace std;
 using namespace ibex;
 
 /**
@@ -192,10 +191,10 @@ class MyCtc : public Ctc {
 
 int main() {
 
-	ofstream output;
+	std::ofstream output;
 	output.open ("doc-contractor.txt");
 
-	output << "================= this file is generated ==============" << endl;
+	output << "================= this file is generated ==============" << std::endl;
 
 
 	{
@@ -258,7 +257,7 @@ int main() {
 	}
 
 	{
-	output << "! [ctc-propag-O]" << endl;
+	output << "! [ctc-propag-O]" << std::endl;
 	//! [ctc-propag-2-C]
 
 	// Load a system of constraints
@@ -288,7 +287,7 @@ int main() {
 
 	fix.contract(box);
 
-	output << " Number of contractions with simple fixpoint=" << Count::count << endl;
+	output << " Number of contractions with simple fixpoint=" << Count::count << std::endl;
 	//! [ctc-propag-4-C]
 
 	//! [ctc-propag-5-C]
@@ -301,18 +300,18 @@ int main() {
 
 	propag.contract(box2);
 
-	output << " Number of contractions with propagation=" << Count::count << endl;
+	output << " Number of contractions with propagation=" << Count::count << std::endl;
 
-	output << " Are the results the same? " << (box.rel_distance(box2)<prec? "YES" : "NO") << endl;
+	output << " Are the results the same? " << (box.rel_distance(box2)<prec? "YES" : "NO") << std::endl;
 
 	//! [ctc-propag-5-C]
 
-	output << "! [ctc-propag-O]" << endl;
+	output << "! [ctc-propag-O]" << std::endl;
 
 	}
 
 	{
-	output << "! [ctc-input-output-O]" << endl;
+	output << "! [ctc-input-output-O]" << std::endl;
 	// Load a system of constraints
 	System sys(IBEX_BENCHS_DIR "/polynom/DiscreteBoundary-0100.bch");
 
@@ -339,12 +338,12 @@ int main() {
 
 	propag.contract(box2);
 
-	output << " Number of contractions with propagation=" << Count2::count << endl;
-	output << "! [ctc-input-output-O]" << endl;
+	output << " Number of contractions with propagation=" << Count2::count << std::endl;
+	output << "! [ctc-input-output-O]" << std::endl;
 	}
 
 	{
-	output << "! [ctc-hc4-O]" << endl;
+	output << "! [ctc-hc4-O]" << std::endl;
 	//! [ctc-hc4-C]
 
 	// Load a system of equations
@@ -354,16 +353,16 @@ int main() {
 
 	// Test the contraction
 	IntervalVector box(sys.box);
-	output << " Box before HC4:" << box << endl;
+	output << " Box before HC4:" << box << std::endl;
 	hc4.contract(box);
-	output << " Box after HC4:" << box << endl;
+	output << " Box after HC4:" << box << std::endl;
 
 	//! [ctc-hc4-C]
-	output << "! [ctc-hc4-O]" << endl;
+	output << "! [ctc-hc4-O]" << std::endl;
 	}
 
 	{
-	output << "! [ctc-inv-O]" << endl;
+	output << "! [ctc-inv-O]" << std::endl;
 	//! [ctc-inv-C]
 
 	// Build a contractor on R² wrt (x>=0 and y>=0).
@@ -389,17 +388,17 @@ int main() {
 	IntervalVector box(1,Interval(0,2*pi));
 
 	inv.contract(box);
-	output << "contracted box (first time):" << box << endl;
+	output << "contracted box (first time):" << box << std::endl;
 
 	inv.contract(box);
-	output << "contracted box (second time):" << box << endl;
+	output << "contracted box (second time):" << box << std::endl;
 
 	//! [ctc-inv-C]
-	output << "! [ctc-inv-O]" << endl;
+	output << "! [ctc-inv-O]" << std::endl;
 	}
 
 	{
-	output << "! [ctc-polytope-1-O]" << endl;
+	output << "! [ctc-polytope-1-O]" << std::endl;
 	//! [ctc-polytope-1-C]
 
 	// build the matrix
@@ -419,16 +418,16 @@ int main() {
 	IntervalVector box(2,Interval(-1,1));
 
 	// contract it
-	output << "box before contraction=" << box << endl;
+	output << "box before contraction=" << box << std::endl;
 	ctc.contract(box);
-	output << "box after contraction=" << box << endl;
+	output << "box after contraction=" << box << std::endl;
 
 	//! [ctc-polytope-1-C]
-	output << "! [ctc-polytope-1-O]" << endl;
+	output << "! [ctc-polytope-1-O]" << std::endl;
 	}
 
 	{
-	output << "! [ctc-exist-1-O]" << endl;
+	output << "! [ctc-exist-1-O]" << std::endl;
 	//! [ctc-exist-1-C]
 
 	// create a constraint on (x,y)
@@ -447,16 +446,16 @@ int main() {
 	CtcExist exist_y(c,y,box_y,epsilon);
 
 	// contract the domain of x
-	output << "box before contraction=" << box_x << endl;
+	output << "box before contraction=" << box_x << std::endl;
 	exist_y.contract(box_x);
-	output << "box after contraction=" << box_x << endl;
+	output << "box after contraction=" << box_x << std::endl;
 
 	//! [ctc-exist-1-C]
-	output << "! [ctc-exist-1-O]" << endl;
+	output << "! [ctc-exist-1-O]" << std::endl;
 	}
 
 	{
-	output << "! [ctc-exist-2-O]" << endl;
+	output << "! [ctc-exist-2-O]" << std::endl;
 	//! [ctc-exist-2-C]
 
 	// create a conjunction of two constraint on (x,y)
@@ -482,14 +481,14 @@ int main() {
 		// contract the box
 		exist_y.contract(box_x);
 
-		output << "epsilon=1e-" << _log << " box after contraction=" << box_x << endl;
+		output << "epsilon=1e-" << _log << " box after contraction=" << box_x << std::endl;
 	}
 	//! [ctc-exist-2-C]
-	output << "! [ctc-exist-2-O]" << endl;
+	output << "! [ctc-exist-2-O]" << std::endl;
 	}
 
 	{
-	output << "! [ctc-exist-3-O]" << endl;
+	output << "! [ctc-exist-3-O]" << std::endl;
 	//! [ctc-exist-3-C]
 
 	// create a system
@@ -529,10 +528,10 @@ int main() {
 		// contract the box
 		exist_y.contract(box_x);
 
-		output << "epsilon=1e-" << _log << " box after contraction=" << box_x << endl;
+		output << "epsilon=1e-" << _log << " box after contraction=" << box_x << std::endl;
 	}
 	//! [ctc-exist-3-C]
-	output << "! [ctc-exist-3-O]" << endl;
+	output << "! [ctc-exist-3-O]" << std::endl;
 	}
 
 

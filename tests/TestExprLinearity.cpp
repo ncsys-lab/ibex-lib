@@ -13,7 +13,6 @@
 #include "TestExprLinearity.h"
 #include "ibex_ExprLinearity.h"
 
-using namespace std;
 
 namespace ibex {
 

@@ -14,7 +14,6 @@
 #include <cassert>
 #include <algorithm>
 
-using namespace std;
 
 namespace ibex {
 
@@ -29,9 +28,9 @@ CovIUList::CovIUList(size_t n) : CovList(n), data(new Data()), own_data(true) {
 }
 
 CovIUList::CovIUList(const char* filename) : CovIUList((size_t) 0 /* tmp */) {
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
-	ifstream* f = CovIUList::read(filename, *this, format_id, format_version);
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
+	std::ifstream* f = CovIUList::read(filename, *this, format_id, format_version);
 	f->close();
 	delete f;
 }
@@ -61,9 +60,9 @@ CovIUList::CovIUList(const Cov& cov, bool copy) : CovList(cov, copy) {
 }
 
 void CovIUList::save(const char* filename) const {
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
-	ofstream* of=CovIUList::write(filename, *this, format_id, format_version);
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
+	std::ofstream* of=CovIUList::write(filename, *this, format_id, format_version);
 	of->close();
 	delete of;
 }
@@ -90,21 +89,21 @@ void CovIUList::add(const IntervalVector& x) {
 	add_unknown(x);
 }
 
-ostream& operator<<(ostream& os, const CovIUList& cov) {
+std::ostream& operator<<(std::ostream& os, const CovIUList& cov) {
 	for (size_t i=0; i<cov.nb_inner(); i++) {
-		os << " inner n°" << (i+1) << " = " << cov.inner(i) << endl;
+		os << " inner n°" << (i+1) << " = " << cov.inner(i) << std::endl;
 	}
 
 	for (size_t i=0; i<cov.nb_unknown(); i++) {
-		os << " unknown n°" << (i+1) << " = " << cov.unknown(i) << endl;
+		os << " unknown n°" << (i+1) << " = " << cov.unknown(i) << std::endl;
 	}
 
 	return os;
 }
 
-ifstream* CovIUList::read(const char* filename, CovIUList& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+std::ifstream* CovIUList::read(const char* filename, CovIUList& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 
-	ifstream* f = CovList::read(filename, cov, format_id, format_version);
+	std::ifstream* f = CovList::read(filename, cov, format_id, format_version);
 
 	if (cov.size()==0) return f;
 
@@ -134,7 +133,7 @@ ifstream* CovIUList::read(const char* filename, CovIUList& cov, std::stack<unsig
 		}
 	}
 
-	vector<size_t>::const_iterator it=cov.data->_IU_inner.begin(); // iterator of inner boxes
+	std::vector<size_t>::const_iterator it=cov.data->_IU_inner.begin(); // iterator of inner boxes
 
 	for (size_t i=0; i<cov.size(); i++) {
 		if (it!=cov.data->_IU_inner.end() && i==*it) {
@@ -151,23 +150,23 @@ ifstream* CovIUList::read(const char* filename, CovIUList& cov, std::stack<unsig
 	return f;
 }
 
-ofstream* CovIUList::write(const char* filename, const CovIUList& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+std::ofstream* CovIUList::write(const char* filename, const CovIUList& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 
 	format_id.push(subformat_number);
 	format_version.push(FORMAT_VERSION);
 
-	ofstream* f = CovList::write(filename, cov, format_id, format_version);
+	std::ofstream* f = CovList::write(filename, cov, format_id, format_version);
 
 	write_pos_int(*f, cov.nb_inner());
 
-	for (vector<size_t>::const_iterator it=cov.data->_IU_inner.begin(); it!=cov.data->_IU_inner.end(); ++it) {
+	for (std::vector<size_t>::const_iterator it=cov.data->_IU_inner.begin(); it!=cov.data->_IU_inner.end(); ++it) {
 		assert(*it<numeric_limits<uint32_t>::max());
 		write_pos_int(*f, (uint32_t) *it);
 	}
 	return f;
 }
 
-void CovIUList::format(stringstream& ss, const string& title, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+void CovIUList::format(std::stringstream& ss, const std::string& title, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 	format_id.push(subformat_number);
 	format_version.push(FORMAT_VERSION);
 
@@ -181,10 +180,10 @@ void CovIUList::format(stringstream& ss, const string& title, std::stack<unsigne
 	<< separator;
 }
 
-string CovIUList::format() {
-	stringstream ss;
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
+std::string CovIUList::format() {
+	std::stringstream ss;
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
 	format(ss, "CovIUList", format_id, format_version);
 	return ss.str();
 }

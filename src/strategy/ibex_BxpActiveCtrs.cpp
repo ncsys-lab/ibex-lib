@@ -10,7 +10,6 @@
 #include "ibex_BxpActiveCtrs.h"
 #include "ibex_Id.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -37,7 +36,7 @@ BxpActiveCtrs* BxpActiveCtrs::copy(const IntervalVector& box, const BoxPropertie
 }
 
 void BxpActiveCtrs::check(BoxProperties& prop) {
-	for (vector<long>::iterator it=dependencies.begin(); it!=dependencies.end(); ++it) {
+	for (std::vector<long>::iterator it=dependencies.begin(); it!=dependencies.end(); ++it) {
 		((BxpActiveCtr*) prop[*it])->check();
 	}
 	_update(prop);
@@ -52,10 +51,10 @@ void BxpActiveCtrs::_update(const BoxProperties& prop) {
 
 	BitSet::const_iterator c=ineq.begin(); // constraint number
 
-	for (vector<long>::const_iterator it=dependencies.begin(); it!=dependencies.end(); ++it) {
+	for (std::vector<long>::const_iterator it=dependencies.begin(); it!=dependencies.end(); ++it) {
 		const BxpActiveCtr* p=(const BxpActiveCtr*) prop[*it];
 		if (!p) {
-			stringstream ss;
+			std::stringstream ss;
 			ss << "[BxpActiveCtrs] missing property n°" << *it;
 			ibex_error(ss.str().c_str());
 		}
@@ -78,10 +77,10 @@ long BxpActiveCtrs::get_id(const System& sys) {
 }
 
 std::string BxpActiveCtrs::to_string() const {
-	stringstream ss;
+	std::stringstream ss;
 	ss << '[' << id << "] BxpActiveCtrs System n°" << sys.id;
 	ss << " --> ";
-	for (vector<long>::const_iterator it=dependencies.begin(); it!=dependencies.end(); ++it) {
+	for (std::vector<long>::const_iterator it=dependencies.begin(); it!=dependencies.end(); ++it) {
 		ss << *it << ' ';
 	}
 	return ss.str();

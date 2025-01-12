@@ -11,7 +11,6 @@
 
 #include "TestDim.h"
 #include "ibex_Dim.h"
-using namespace std;
 
 namespace ibex {
 

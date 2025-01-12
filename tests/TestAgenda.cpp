@@ -14,7 +14,6 @@
 #include "utils.h"
 #include <float.h>
 
-using namespace std;
 
 void TestAgenda::test01() {
 	Agenda a(10);

@@ -11,7 +11,6 @@
 #include "ibex_QInter.h"
 #include <algorithm>
 
-using namespace std;
 
 namespace ibex {
 
@@ -56,10 +55,10 @@ IntervalVector qinter(const Array<IntervalVector>& _boxes, int q) {
 			x[i][2*j+1] = boxes[j][i].ub();
 		}
 
-		sort(x[i],x[i]+2*p);
+		std::sort(x[i],x[i]+2*p);
 
 		// remove consecutive duplicates
-		double* past_the_end=unique(x[i],x[i]+2*p);
+		double* past_the_end= std::unique(x[i],x[i]+2*p);
 		// calculate new size
 		size[i]=(past_the_end-x[i]) - 1;
 
