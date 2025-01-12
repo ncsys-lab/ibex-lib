@@ -25,9 +25,11 @@ if (MATHLIB_INCDIR AND MATHLIB_LIB)
                                         INCLUDE_DIRECTORIES ${MATHLIB_INCDIR})
 else()
   message (STATUS "Will install and use mathlib from 3rd/ subdirectory")
+  set (MATHLIB_PATCH "${CMAKE_CURRENT_SOURCE_DIR}/3rd/mathlib-2.1.1.darwin.all.patch")
   ExternalProject_Add (libultim_3rd
-                        PREFIX mathlib-2.1.0
-                        URL ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mathlib-2.1.0.tar.gz
+                        PREFIX mathlib-2.1.1
+                        URL ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mathlib-2.1.1.tar.gz
+                        PATCH_COMMAND patch -p1 -i ${MATHLIB_PATCH}
                         BUILD_IN_SOURCE 1
                         CONFIGURE_COMMAND ./configure --prefix=<INSTALL_DIR>
                                                       CFLAGS=${CMAKE_C_FLAGS}
@@ -66,7 +68,7 @@ endif()
 # Looking for gaol/gaol.h, result is written in GAOL_INCDIR
 find_header_custom (GAOL "gaol/gaol.h" PATHS "${GAOL_DIR}")
 # Looking for gdtoa library, result is written in GDTOA_LIB
-find_library_custom (GDTOA "gdtoa" PATHS "${GAOL_DIR}")
+#find_library_custom (GDTOA "gdtoa" PATHS "${GAOL_DIR}")
 # Looking for gaol library, result is written in GAOL_LIB
 find_library_custom (GAOL "gaol" PATHS "${GAOL_DIR}")
 
@@ -77,16 +79,16 @@ if (COMPILER_SUPPORTS_WNO_DEPRECATED)
   set (gaol_compile_option COMPILE_OPTIONS -Wno-deprecated)
 endif()
 
-if (GAOL_INCDIR AND GAOL_LIB AND GDTOA_LIB)
-  create_target_import_and_export (gdtoa ${GDTOA_LIB} GDTOA_EXPORTFILE
-                                    NAMESPACE Ibex::
-                                    ${gaol_compile_option}
-                                    INCLUDE_DIRECTORIES ${GAOL_INCDIR})
+if (GAOL_INCDIR AND GAOL_LIB)# AND GDTOA_LIB)
+#  create_target_import_and_export (gdtoa ${GDTOA_LIB} GDTOA_EXPORTFILE
+#                                    NAMESPACE Ibex::
+#                                    ${gaol_compile_option}
+#                                    INCLUDE_DIRECTORIES ${GAOL_INCDIR})
   create_target_import_and_export (gaol ${GAOL_LIB} GAOL_EXPORTFILE
                                     NAMESPACE Ibex::
                                     ${gaol_compile_option}
                                     INCLUDE_DIRECTORIES ${GAOL_INCDIR}
-                                    LINK_LIBRARIES Ibex::gdtoa Ibex::ultim)
+                                    LINK_LIBRARIES Ibex::ultim) #Ibex::gdtoa)
 else ()
   message (STATUS "Will install and use library gaol from 3rd/ subdirectory")
   if (TARGET libultim_3rd)
@@ -99,11 +101,11 @@ else ()
     # do it at your own risk.
     set (GAOL_CONFIG_ARGS "${GAOL_CONFIG_ARGS}" "--disable-simd")
   endif ()
-  set (GAOL_PATCH "${CMAKE_CURRENT_SOURCE_DIR}/3rd/gaol-4.2.0.all.all.patch")
+  set (GAOL_PATCH "${CMAKE_CURRENT_SOURCE_DIR}/3rd/gaol-4.2.3.all.all.patch")
   ExternalProject_Add (libgaol_3rd
-                        PREFIX gaol-4.2.0
+                        PREFIX gaol-4.2.3
                         ${_gaol_depends}
-                        URL ${CMAKE_CURRENT_SOURCE_DIR}/3rd/gaol-4.2.0.tar.gz
+                        URL ${CMAKE_CURRENT_SOURCE_DIR}/3rd/gaol-4.2.3.tar.gz
                         PATCH_COMMAND patch -p1 -i ${GAOL_PATCH}
                         BUILD_IN_SOURCE 1
                         CONFIGURE_COMMAND ./configure --prefix=<INSTALL_DIR>
@@ -123,7 +125,7 @@ else ()
 
   # absolute path to the library
   lib_get_abspath_from_name (GAOL_LIB ${INSTALL_DIR}/lib gaol)
-  lib_get_abspath_from_name (GDTOA_LIB ${INSTALL_DIR}/lib gdtoa)
+#  lib_get_abspath_from_name (GDTOA_LIB ${INSTALL_DIR}/lib gdtoa)
 
   # this directory needs to exist during generation step to avoid CMake errors
   file (MAKE_DIRECTORY "${_incdir}")
@@ -134,18 +136,18 @@ else ()
 
   #
   set (_incdir $<BUILD_INTERFACE:${_incdir}>$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR_3RD}>)
-  create_target_import_and_export (gdtoa ${GDTOA_LIB} GDTOA_EXPORTFILE INSTALL
-                                    NAMESPACE Ibex::
-                                    ${gaol_compile_option}
-                                    INCLUDE_DIRECTORIES ${_incdir}
-                                    COMPONENT devtools
-                                    DEPENDS libgaol_3rd)
+#  create_target_import_and_export (gdtoa ${GDTOA_LIB} GDTOA_EXPORTFILE INSTALL
+#                                    NAMESPACE Ibex::
+#                                    ${gaol_compile_option}
+#                                    INCLUDE_DIRECTORIES ${_incdir}
+#                                    COMPONENT devtools
+#                                    DEPENDS libgaol_3rd)
   create_target_import_and_export (gaol ${GAOL_LIB} GAOL_EXPORTFILE INSTALL
                                     NAMESPACE Ibex::
                                     ${gaol_compile_option}
                                     COMPONENT devtools
                                     INCLUDE_DIRECTORIES ${_incdir}
-                                    LINK_LIBRARIES Ibex::gdtoa Ibex::ultim
+                                    LINK_LIBRARIES Ibex::ultim # Ibex::gdtoa
                                     DEPENDS libgaol_3rd)
   unset (INSTALL_DIR)
 endif ()
