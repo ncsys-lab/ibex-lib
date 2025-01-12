@@ -1,0 +1,20 @@
+--- mathlib-2.1.1/configure	2019-02-02 08:42:03
++++ mathlib-2.1.1/configure	2025-01-11 22:11:18
+@@ -11766,7 +11766,7 @@
+ $as_echo "#define IX86_CPU 1" >>confdefs.h
+ 
+ 	;;
+-i?86-apple*)
++i?86-apple* | x86_64-apple*)
+ 
+ $as_echo "#define MATHLIB_I86_MACOSX 1" >>confdefs.h
+ 
+@@ -11784,7 +11784,7 @@
+ $as_echo "#define MATHLIB_SUN 1" >>confdefs.h
+ 
+ 	;;
+-aarch64-*-linux-*)
++aarch64-*-linux-* | arm-apple*)
+ 
+ $as_echo "#define MATHLIB_AARCH64 1" >>confdefs.h
+ 

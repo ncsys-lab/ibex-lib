@@ -1,0 +1,224 @@
+diff --git a/configure b/configure
+index 3e53497..7af7363 100755
+--- gaol-4.2.3/configure
++++ gaol-4.2.3/configure
+@@ -16855,7 +16855,7 @@ else
+ fi
+ 
+ 	;;
+-i?86-apple-*)
++i?86-apple* | x86_64-apple*)
+ 
+ $as_echo "#define IX86_MACOSX 1" >>confdefs.h
+ 
+@@ -16894,7 +16894,7 @@ else
+ fi
+ 
+ 	;;
+-aarch64-*-linux-*)
++aarch64-*-linux-* | arm-apple*)
+ 
+ $as_echo "#define AARCH64_LINUX 1" >>confdefs.h
+ 
+diff --git a/gaol/gaol_double_op_apmathlib.h b/gaol/gaol_double_op_apmathlib.h
+index 3c5c6fe..5965de8 100644
+--- gaol-4.2.3/gaol/gaol_double_op_apmathlib.h
++++ gaol-4.2.3/gaol/gaol_double_op_apmathlib.h
+@@ -112,7 +112,7 @@ namespace gaol {
+     	for (;;) {
+       	if (odd(n)) {
+ 				n >>= 1;
+-				y = opposite(opposite(y)*z);
++				y = gaol_opposite(gaol_opposite(y)*z);
+ 				if (n == 0) {
+ 	  				GAOL_RND_LEAVE();
+ 	  				return y;
+@@ -120,7 +120,7 @@ namespace gaol {
+       	} else {
+ 				n>>=1;
+       	}
+-      	z = opposite(opposite(z)*z);
++      	z = gaol_opposite(gaol_opposite(z)*z);
+     	}
+ 	}
+ 
+@@ -134,9 +134,9 @@ namespace gaol {
+ 	return ipow_dn(d,e);
+       } else { // d < 0
+ 	if (even(e)) {
+-	  return ipow_dn(opposite(d),e);
++	  return ipow_dn(gaol_opposite(d),e);
+ 	} else { // odd(e)
+-	  return opposite(ipow_up(opposite(d),e));
++	  return gaol_opposite(ipow_up(gaol_opposite(d),e));
+ 	}
+       }
+     }
+@@ -151,9 +151,9 @@ namespace gaol {
+ 	return ipow_up(d,e);
+       } else { // d < 0
+ 	if (even(e)) {
+-	  return ipow_up(opposite(d),e);
++	  return ipow_up(gaol_opposite(d),e);
+ 	} else { // odd(e)
+-	  return opposite(ipow_dn(opposite(d),e));
++	  return gaol_opposite(ipow_dn(gaol_opposite(d),e));
+ 	}
+       }
+     }
+diff --git a/gaol/gaol_double_op_crlibm.h b/gaol/gaol_double_op_crlibm.h
+index ee85690..0a6afd7 100644
+--- gaol-4.2.3/gaol/gaol_double_op_crlibm.h
++++ gaol-4.2.3/gaol/gaol_double_op_crlibm.h
+@@ -88,7 +88,7 @@ namespace gaol {
+     	for (;;) {
+       	if (odd(n)) {
+ 			n >>= 1;
+-			y = opposite(opposite(y)*z);
++			y = gaol_opposite(gaol_opposite(y)*z);
+ 			if (n == 0) {
+ 	  			GAOL_RND_LEAVE();
+ 	  			return y;
+@@ -96,7 +96,7 @@ namespace gaol {
+       	} else {
+ 			n>>=1;
+       	}
+-      	z = opposite(opposite(z)*z);
++      	z = gaol_opposite(gaol_opposite(z)*z);
+     	}
+ 	}
+ 
+@@ -110,9 +110,9 @@ namespace gaol {
+ 	return ipow_dn(d,e);
+       } else { // d < 0
+ 	if (even(e)) {
+-	  return ipow_dn(opposite(d),e);
++	  return ipow_dn(gaol_opposite(d),e);
+ 	} else { // odd(e)
+-	  return opposite(ipow_up(opposite(d),e));
++	  return gaol_opposite(ipow_up(gaol_opposite(d),e));
+ 	}
+       }
+     }
+@@ -127,9 +127,9 @@ namespace gaol {
+ 	return ipow_up(d,e);
+       } else { // d < 0
+ 	if (even(e)) {
+-	  return ipow_up(opposite(d),e);
++	  return ipow_up(gaol_opposite(d),e);
+ 	} else { // odd(e)
+-	  return opposite(ipow_dn(opposite(d),e));
++	  return gaol_opposite(ipow_dn(gaol_opposite(d),e));
+ 	}
+       }
+     }
+diff --git a/gaol/gaol_double_op_m.h b/gaol/gaol_double_op_m.h
+index a647136..0aa43aa 100644
+--- gaol-4.2.3/gaol/gaol_double_op_m.h
++++ gaol-4.2.3/gaol/gaol_double_op_m.h
+@@ -115,7 +115,7 @@ namespace gaol {
+     	for (;;) {
+       	if (odd(n)) {
+ 				n >>= 1;
+-				y = opposite(opposite(y)*z);
++				y = gaol_opposite(gaol_opposite(y)*z);
+ 				if (n == 0) {
+ 	  				GAOL_RND_LEAVE();
+ 	  				return y;
+@@ -123,7 +123,7 @@ namespace gaol {
+       	} else {
+ 				n>>=1;
+       	}
+-      	z = opposite(opposite(z)*z);
++      	z = gaol_opposite(gaol_opposite(z)*z);
+     	}
+ 	}
+ 
+@@ -137,9 +137,9 @@ namespace gaol {
+ 	return ipow_dn(d,e);
+       } else { // d < 0
+ 	if (even(e)) {
+-	  return ipow_dn(opposite(d),e);
++	  return ipow_dn(gaol_opposite(d),e);
+ 	} else { // odd(e)
+-	  return opposite(ipow_up(opposite(d),e));
++	  return gaol_opposite(ipow_up(gaol_opposite(d),e));
+ 	}
+       }
+     }
+@@ -154,9 +154,9 @@ namespace gaol {
+ 	return ipow_up(d,e);
+       } else { // d < 0
+ 	if (even(e)) {
+-	  return ipow_up(opposite(d),e);
++	  return ipow_up(gaol_opposite(d),e);
+ 	} else { // odd(e)
+-	  return opposite(ipow_dn(opposite(d),e));
++	  return gaol_opposite(ipow_dn(gaol_opposite(d),e));
+ 	}
+       }
+     }
+diff --git a/gaol/gaol_exceptions.h b/gaol/gaol_exceptions.h
+index 95ee047..6db2607 100644
+--- gaol-4.2.3/gaol/gaol_exceptions.h
++++ gaol-4.2.3/gaol/gaol_exceptions.h
+@@ -68,7 +68,7 @@ namespace gaol {
+     */
+     gaol_exception(const char* f, unsigned l, const string& e);
+ 
+-    ~gaol_exception() {}
++    ~gaol_exception() _NOEXCEPT {}
+     /*!
+       \brief Accessor for the file name
+ 
+diff --git a/gaol/gaol_fpu_fenv.h b/gaol/gaol_fpu_fenv.h
+index bd0938c..c69135d 100644
+--- gaol-4.2.3/gaol/gaol_fpu_fenv.h
++++ gaol-4.2.3/gaol/gaol_fpu_fenv.h
+@@ -42,7 +42,7 @@
+ // FIXME: Using an hexadecimal constant is not portable!
+ #define GAOL_FPU_MASK 0x0a3f
+ 
+-#if __APPLE__
++#if IX86_MACOSX
+ #   define CTRLWORD(v) (v).__control
+ #elif IX86_LINUX
+ #   define CTRLWORD(v) (v).__control_word
+diff --git a/gaol/gaol_interval.h b/gaol/gaol_interval.h
+index 4017a7e..002ada9 100644
+--- gaol-4.2.3/gaol/gaol_interval.h
++++ gaol-4.2.3/gaol/gaol_interval.h
+@@ -32,6 +32,7 @@
+ 
+ #include <cmath>
+ #include <iosfwd>
++#include <ios> /* for std::streamsize, patch from ibex */
+ #include <string>
+ #include <limits>
+ #include "gaol/gaol_config.h"
+diff --git a/gaol/gaol_port.h b/gaol/gaol_port.h
+index a17a901..aacf4c2 100644
+--- gaol-4.2.3/gaol/gaol_port.h
++++ gaol-4.2.3/gaol/gaol_port.h
+@@ -89,9 +89,9 @@ namespace gaol {
+ 
+ #if HAVE_ROUNDING_MATH_OPTION
+   INLINE double f_negate_simple(double x) { return -x; }
+-#  define opposite(x) f_negate_simple(x)
++#  define gaol_opposite(x) f_negate_simple(x)
+ #else
+-#  define opposite(x) f_negate(x)
++#  define gaol_opposite(x) f_negate(x)
+ #endif // HAVE_ROUNDING_MATH_OPTION
+ 
+   /*!
+@@ -145,8 +145,7 @@ namespace gaol {
+ #endif
+ 
+ #ifndef GAOL_NAN
+-  static uintdouble NaN_val = {{IFBIGENDIAN(0x7ff80000, 0x0)}};
+-#define GAOL_NAN (gaol::NaN_val.d)
++#define GAOL_NAN (((uintdouble) {{IFBIGENDIAN(0x7ff80000, 0x0)}}).d)
+ #endif
+ 
+   // #define GAOL_INFINITY std::numeric_limits<double>::infinity()
