@@ -160,7 +160,7 @@ std::ofstream* CovIUList::write(const char* filename, const CovIUList& cov, std:
 	write_pos_int(*f, cov.nb_inner());
 
 	for (std::vector<size_t>::const_iterator it=cov.data->_IU_inner.begin(); it!=cov.data->_IU_inner.end(); ++it) {
-		assert(*it<numeric_limits<uint32_t>::max());
+		assert(*it<std::numeric_limits<uint32_t>::max());
 		write_pos_int(*f, (uint32_t) *it);
 	}
 	return f;

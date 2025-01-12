@@ -194,7 +194,7 @@ std::ofstream* CovIBUList::write(const char* filename, const CovIBUList& cov, st
 	write_pos_int(*f, cov.nb_boundary());
 
 	for (std::vector<size_t>::const_iterator it=cov.data->_IBU_boundary.begin(); it!=cov.data->_IBU_boundary.end(); ++it) {
-		assert(*it<numeric_limits<uint32_t>::max());
+		assert(*it<std::numeric_limits<uint32_t>::max());
 		write_pos_int(*f, (uint32_t) *it);
 	}
 

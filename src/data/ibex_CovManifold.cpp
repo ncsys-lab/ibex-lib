@@ -362,7 +362,7 @@ std::ofstream* CovManifold::write(const char* filename, const CovManifold& cov, 
 		std::vector<IntervalVector>::const_iterator it_unicity=cov.data->_manifold_unicity.begin();
 
 		for (std::vector<size_t>::const_iterator it=cov.data->_manifold_solution.begin(); it!=cov.data->_manifold_solution.end(); ++it) {
-			assert(*it<numeric_limits<uint32_t>::max());
+			assert(*it<std::numeric_limits<uint32_t>::max());
 			write_pos_int(*f, (uint32_t) *it);
 			if (cov.nb_eq() < cov.n) {
 				write_varset(*f, *it_varset);
@@ -377,7 +377,7 @@ std::ofstream* CovManifold::write(const char* filename, const CovManifold& cov, 
 	std::vector<VarSet>::const_iterator it_varset=cov.data->_manifold_boundary_varset.begin();
 
 	for (std::vector<size_t>::const_iterator it=cov.data->_manifold_boundary.begin(); it!=cov.data->_manifold_boundary.end(); ++it) {
-		assert(*it<numeric_limits<uint32_t>::max());
+		assert(*it<std::numeric_limits<uint32_t>::max());
 		write_pos_int(*f, (uint32_t) *it);
 
 		if (cov.nb_eq()>0 && cov.nb_eq() < cov.n) {
