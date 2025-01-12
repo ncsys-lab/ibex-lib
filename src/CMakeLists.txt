@@ -54,7 +54,7 @@ flex_target (Flex parser/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/parser/lexer.lex.cc
 # BISON
 find_package (BISON)
 if (NOT BISON_FOUND)
-  message (FATAL_ERROR "Flex is needed to build the parser")
+  message (FATAL_ERROR "Bison is needed to build the parser")
 endif ()
 bison_target (Parser parser/parser.yc
                   ${CMAKE_CURRENT_BINARY_DIR}/parser/parser.tab.cc
