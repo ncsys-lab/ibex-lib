@@ -38,42 +38,42 @@ void TestCtcForAll::test01() {
 	double right_bound=+0.3616933019201018; // the positive one such that f(x,-0.01)=0
 	//double right_bound=+0.3194335081419453; // the positive one such that f(x,-0.1)=0
 
-	std::stack<IntervalVector> std::stack;
-	std::stack.push(box);
+	std::stack<IntervalVector> stack;
+	stack.push(box);
 	IntervalVector sol=box;
-	while (!std::stack.empty() && sol.max_diam()>1e-03) {
-		sol=std::stack.top();
-		std::stack.pop();
+	while (!stack.empty() && sol.max_diam()>1e-03) {
+		sol=stack.top();
+		stack.pop();
 		forall_y.contract(sol);
 		if (!sol.is_empty()) {
 			std::pair<IntervalVector,IntervalVector> p=sol.bisect(0);
-			std::stack.push(p.first);
-			std::stack.push(p.second);
+			stack.push(p.first);
+			stack.push(p.second);
 		}
 	}
 
 	// note: we use the fact that the solver always explores the right
 	// branch first
-	CPPUNIT_ASSERT(!std::stack.empty());
+	CPPUNIT_ASSERT(!stack.empty());
 	CPPUNIT_ASSERT(sol[0].contains(right_bound));
 
-	while (!std::stack.empty()) std::stack.pop();
+	while (!stack.empty()) stack.pop();
 
-	std::stack.push(box);
+	stack.push(box);
 	sol=box;
-	while (!std::stack.empty() && sol.max_diam()>1e-03) {
-		sol=std::stack.top();
-		std::stack.pop();
+	while (!stack.empty() && sol.max_diam()>1e-03) {
+		sol=stack.top();
+		stack.pop();
 		forall_x.contract(sol);
 		if (!sol.is_empty()) {
 			std::pair<IntervalVector,IntervalVector> p=sol.bisect(0);
-			std::stack.push(p.first);
-			std::stack.push(p.second);
+			stack.push(p.first);
+			stack.push(p.second);
 		}
 	}
 
 	// note: we use the fact that the constraint is symmetric in x/y
-	CPPUNIT_ASSERT(!std::stack.empty());
+	CPPUNIT_ASSERT(!stack.empty());
 	CPPUNIT_ASSERT(sol[0].contains(right_bound));
 }
 

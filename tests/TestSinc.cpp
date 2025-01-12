@@ -87,9 +87,9 @@ void TestSinc::solve() {
 
     CtcFwdBwd c(sys.f_ctrs[0]);
     RoundRobin rr(1e-7);
-    CellStack std::stack;
+    CellStack stack;
 
-	Solver solver(sys, c, rr, std::stack, Vector(1,1e-7), Vector(1,1e-7));
+	Solver solver(sys, c, rr, stack, Vector(1,1e-7), Vector(1,1e-7));
 	solver.solve(IntervalVector(1,Interval(-100,100)));
 
     CPPUNIT_ASSERT(solver.get_data().nb_solution()==2);

@@ -33,17 +33,17 @@ void TestCtcExist::test01() {
 
 	double right_bound=+0.3872983346072957;
 
-	std::stack<IntervalVector> std::stack;
-	std::stack.push(box);
+	std::stack<IntervalVector> stack;
+	stack.push(box);
 	IntervalVector sol=box;
-	while (!std::stack.empty() && sol.max_diam()>1e-03) {
-		sol=std::stack.top();
-		std::stack.pop();
+	while (!stack.empty() && sol.max_diam()>1e-03) {
+		sol=stack.top();
+		stack.pop();
 		exist_y.contract(sol);
 		if (!sol.is_empty()) {
 			std::pair<IntervalVector,IntervalVector> p=sol.bisect(0);
-			std::stack.push(p.first);
-			std::stack.push(p.second);
+			stack.push(p.first);
+			stack.push(p.second);
 		}
 	}
 
@@ -51,19 +51,19 @@ void TestCtcExist::test01() {
 	// branch first
 	CPPUNIT_ASSERT(sol[0].contains(right_bound));
 
-	while (!std::stack.empty()) std::stack.pop();
+	while (!stack.empty()) stack.pop();
 
-	std::stack.push(box);
+	stack.push(box);
 
 	sol=box;
-	while (!std::stack.empty() && sol.max_diam()>1e-03) {
-		sol=std::stack.top();
-		std::stack.pop();
+	while (!stack.empty() && sol.max_diam()>1e-03) {
+		sol=stack.top();
+		stack.pop();
 		exist_x.contract(sol);
 		if (!sol.is_empty()) {
 			std::pair<IntervalVector,IntervalVector> p=sol.bisect(0);
-			std::stack.push(p.first);
-			std::stack.push(p.second);
+			stack.push(p.first);
+			stack.push(p.second);
 		}
 	}
 	// note: we use the fact that the constraint is symmetric in x/y

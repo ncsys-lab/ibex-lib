@@ -46,11 +46,11 @@ void TestSolver::circle1() {
 	Vector sol2(2,_sol2);
 	System sys(f);
 	RoundRobin rr(1e-3);
-	CellStack std::stack;
+	CellStack stack;
 	CtcHC4 hc4(sys);
 	Vector prec(2,1e-3);
 
-	Solver solver(sys,hc4,rr,std::stack,prec,prec);
+	Solver solver(sys,hc4,rr,stack,prec,prec);
 	solver.start(IntervalVector(2,Interval(-10,10)));
 
 	CovSolverData::BoxStatus status;
@@ -84,10 +84,10 @@ void TestSolver::circle2() {
 	Vector sol1(2,_sol1);
 	System sys(f);
 	RoundRobin rr(1e-3);
-	CellStack std::stack;
+	CellStack stack;
 	CtcHC4 hc4(sys);
 	Vector prec(2,1e-3);
-	Solver solver(sys,hc4,rr,std::stack,prec,prec);
+	Solver solver(sys,hc4,rr,stack,prec,prec);
 
 	solver.start(IntervalVector(2,Interval(-10,10)));
 
@@ -124,10 +124,10 @@ void TestSolver::circle3() {
 	Vector sol2(2,_sol2);
 	System sys(f);
 	RoundRobin rr(1e-3);
-	CellStack std::stack;
+	CellStack stack;
 	CtcHC4 hc4(sys);
 	Vector prec(2,1e-3);
-	Solver solver(sys,hc4,rr,std::stack,prec,prec);
+	Solver solver(sys,hc4,rr,stack,prec,prec);
 
 	solver.start(IntervalVector(2,Interval(-10,10)));
 
@@ -173,12 +173,12 @@ void TestSolver::circle4() {
 
 	System sys(f);
 	RoundRobin rr(1e-3);
-	CellStack std::stack;
+	CellStack stack;
 	CtcHC4 hc4(sys);
 
 	VarSet params(sys.f_ctrs,sys.args[2],false);
 	Vector prec(3,1e-3);
-	Solver solver(sys,hc4,rr,std::stack,prec,prec);
+	Solver solver(sys,hc4,rr,stack,prec,prec);
 	solver.set_params(params);
 	IntervalVector box(3);
 	box[0]=Interval(-10,10);
