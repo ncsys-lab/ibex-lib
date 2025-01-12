@@ -10,7 +10,6 @@
 #include "ibex.h"
 #include "vibes.cpp"
 
-using namespace std;
 using namespace ibex;
 
 int n=500;

@@ -12,7 +12,6 @@
 #include "TestLPSolver.h"
 #include "ibex_LPSolver.h"
 
-using namespace std;
 
 namespace ibex {
 

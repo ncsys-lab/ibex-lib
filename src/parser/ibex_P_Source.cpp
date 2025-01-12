@@ -11,7 +11,6 @@
 #include "ibex_Expr.h"
 #include "ibex_P_Source.h"
 
-using namespace std;
 
 namespace ibex {
 namespace parser {
@@ -31,15 +30,15 @@ P_Source::~P_Source() {
 	// Note: Now that there is no more application nodes (ExprApply),
 	// we can safely destroy auxiliary functions.
 	//if (cleanup_func)
-	for (vector<Function*>::iterator it=func.begin(); it!=func.end(); ++it)
+	for (std::vector<Function*>::iterator it=func.begin(); it!=func.end(); ++it)
 		delete *it;
 }
 
-ostream& operator<<(ostream& os, const P_Source& source) {
+std::ostream& operator<<(std::ostream& os, const P_Source& source) {
 	if (source.goal)
-		os << "minimize " << *source.goal << endl;
+		os << "minimize " << *source.goal << std::endl;
 	if (source.ctrs) {
-		os << "constraints" << endl;
+		os << "constraints" << std::endl;
 		os << *source.ctrs;
 	}
 	return os;

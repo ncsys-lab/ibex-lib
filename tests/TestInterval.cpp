@@ -13,7 +13,6 @@
 #include "utils.h"
 #include <float.h>
 
-using namespace std;
 void TestInterval::cons01() {
 	check(Interval(),Interval(NEG_INFINITY,POS_INFINITY));
 	check((Interval())=Interval(),Interval(NEG_INFINITY,POS_INFINITY));

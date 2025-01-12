@@ -10,7 +10,6 @@
 
 #include "ibex_CellBuffer.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -24,7 +23,7 @@ std::ostream& CellBuffer::print(std::ostream& os) const{
 
 	os << top()->box;
 
-	return os << endl;
+	return os << std::endl;
 }
 
 std::ostream& operator<<(std::ostream& os, const CellBuffer& h) {

@@ -12,7 +12,6 @@
 #include "TestExprCopy.h"
 #include "ibex_ExprCopy.h"
 
-using namespace std;
 
 namespace ibex {
 

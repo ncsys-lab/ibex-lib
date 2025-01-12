@@ -13,19 +13,18 @@
 #include "ibex_SetInterval.h"
 #include "ibex_Sep.h"
 
-using namespace std;
 
 namespace ibex {
 
 
-pair<SetNode*,SetLeaf*> diff(const IntervalVector& x, const IntervalVector& y, BoolInterval x_status, BoolInterval y_status, double eps) {
+std::pair<SetNode*,SetLeaf*> diff(const IntervalVector& x, const IntervalVector& y, BoolInterval x_status, BoolInterval y_status, double eps) {
 
 	assert(!x.is_empty());
 
 	assert(x_status!=y_status);
 
 	if (y.is_empty()) {
-		return pair<SetNode*,SetLeaf*>(new SetLeaf(x_status),NULL);
+		return std::pair<SetNode*,SetLeaf*>(new SetLeaf(x_status),NULL);
 	}
 
 	const int nn=x.size();
@@ -70,7 +69,7 @@ pair<SetNode*,SetLeaf*> diff(const IntervalVector& x, const IntervalVector& y, B
 			if (c[i]==x[var]) {
 				delete[] tmp;
 				delete[] c;
-				return pair<SetNode*,SetLeaf*>(new SetLeaf(x_status),NULL);
+				return std::pair<SetNode*,SetLeaf*>(new SetLeaf(x_status),NULL);
 			}
 
 			tmp[b].var = var;
@@ -155,7 +154,7 @@ pair<SetNode*,SetLeaf*> diff(const IntervalVector& x, const IntervalVector& y, B
 	// both x and y with status MAYBE -> skip
 	if (y_status == x_status) {
 		delete[] tmp;
-		return pair<SetNode*,SetLeaf*>(y_node,y_node);
+		return std::pair<SetNode*,SetLeaf*>(y_node,y_node);
 	}
 
 	// we first proceed with the eps-enlarged slices (this order
@@ -193,7 +192,7 @@ pair<SetNode*,SetLeaf*> diff(const IntervalVector& x, const IntervalVector& y, B
 	}
 
 	delete[] tmp;
-	return pair<SetNode*,SetLeaf*>(bisect,y_node);
+	return std::pair<SetNode*,SetLeaf*>(bisect,y_node);
 }
 
 
@@ -227,7 +226,7 @@ SetNode* SetLeaf::inter(bool iset, const IntervalVector& nodebox, Sep& sep, doub
 	}
 
 	BoolInterval tmp_leaf2_status = sep.status1()==YES? MAYBE : YES;
-	pair<SetNode*,SetLeaf*> new_nodes2=diff(nodebox, box1, sep.status1(), tmp_leaf2_status, 0);
+	std::pair<SetNode*,SetLeaf*> new_nodes2=diff(nodebox, box1, sep.status1(), tmp_leaf2_status, 0);
 
 	SetNode* root2=new_nodes2.first;
 	SetLeaf* leaf2=new_nodes2.second;
@@ -235,7 +234,7 @@ SetNode* SetLeaf::inter(bool iset, const IntervalVector& nodebox, Sep& sep, doub
 	if (leaf2!=NULL) {
 
 		BoolInterval tmp_leaf3_status = sep.status2()==YES? MAYBE : YES;
-		pair<SetNode*,SetLeaf*> new_nodes3=diff(box1, box2, sep.status2(), tmp_leaf3_status, 0);
+		std::pair<SetNode*,SetLeaf*> new_nodes3=diff(box1, box2, sep.status2(), tmp_leaf3_status, 0);
 
 		SetNode* root3=new_nodes3.first;
 		SetLeaf* leaf3=new_nodes3.second;
@@ -254,7 +253,7 @@ SetNode* SetLeaf::inter(bool iset, const IntervalVector& nodebox, Sep& sep, doub
 
 			if (box.max_diam()>eps) {
 				int var=box.extr_diam_index(false);
-				pair<IntervalVector,IntervalVector> p=box.bisect(var);
+				std::pair<IntervalVector,IntervalVector> p=box.bisect(var);
 				double pt=p.first[var].ub();
 				assert(box[var].interior_contains(pt));
 
@@ -371,9 +370,9 @@ void SetLeaf::visit(const IntervalVector& nodebox, SetVisitor& visitor) const {
 	visitor.visit_leaf(nodebox, status);
 }
 
-void SetLeaf::print(ostream& os, const IntervalVector& nodebox, int shift) const {
+void SetLeaf::print(std::ostream& os, const IntervalVector& nodebox, int shift) const {
 	for (int i=0; i<shift; i++) os << ' ';
-	os  << nodebox << " " << (status==YES?"Y":(status==NO?"N":"?")) << endl;
+	os  << nodebox << " " << (status==YES?"Y":(status==NO?"N":"?")) << std::endl;
 }
 
 void SetLeaf::replace_with(SetNode* node) {

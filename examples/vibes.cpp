@@ -59,7 +59,6 @@ namespace vibes {
 // Vibes messaging implementation
 //
 
-using namespace std;
 
 namespace vibes
 {
@@ -71,7 +70,7 @@ namespace vibes
   FILE *channel=0;
 
   /// Current figure name (client-maintained state)
-  string current_fig="default";
+  std::string current_fig="default";
 
   //
   // Management of connection to the Vibes server
@@ -169,7 +168,7 @@ namespace vibes
 
   void axisLabels(const std::string &x_label, const std::string &y_label, const std::string &figureName)
   {
-    vector<string> labels;
+    std::vector<std::string> labels;
     labels.push_back(x_label);
     labels.push_back(y_label);
     axisLabels(labels, figureName);
@@ -196,7 +195,7 @@ namespace vibes
     fflush(channel);
   }
 
-  void drawBox(const vector<double> &bounds, Params params)
+  void drawBox(const std::vector<double> &bounds, Params params)
   {
     assert(!bounds.empty());
     assert(bounds.size()%2 == 0);
@@ -204,7 +203,7 @@ namespace vibes
     Params msg;
     msg["action"] = "draw";
     msg["figure"] = params.pop("figure",current_fig);
-    msg["shape"] = (params, "type", "box", "bounds", vector<Value>(bounds.begin(),bounds.end()));
+    msg["shape"] = (params, "type", "box", "bounds", std::vector<Value>(bounds.begin(),bounds.end()));
 
     fputs(Value(msg).toJSONString().append("\n\n").c_str(), channel);
     fflush(channel);
@@ -241,15 +240,15 @@ namespace vibes
       fflush(channel);
   }
 
-  void drawConfidenceEllipse(const vector<double> &center, const vector<double> &cov,
+  void drawConfidenceEllipse(const std::vector<double> &center, const std::vector<double> &cov,
                              const double &K, Params params)
   {
       Params msg;
       msg["action"] = "draw";
       msg["figure"] = params.pop("figure",current_fig);
       msg["shape"] = (params, "type", "ellipse",
-                              "center", vector<Value>(center.begin(),center.end()),
-                              "covariance", vector<Value>(cov.begin(),cov.end()),
+                              "center", std::vector<Value>(center.begin(),center.end()),
+                              "covariance", std::vector<Value>(cov.begin(),cov.end()),
                               "sigma", K);
 
       fputs(Value(msg).toJSONString().append("\n\n").c_str(), channel);

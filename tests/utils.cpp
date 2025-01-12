@@ -14,7 +14,6 @@
 #include <math.h>
 #include <sstream>
 
-using namespace std;
 
 double ERROR = 1e-10;
 

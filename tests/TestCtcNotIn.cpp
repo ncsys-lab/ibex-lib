@@ -10,7 +10,6 @@
 
 #include "TestCtcNotIn.h"
 
-using namespace std;
 
 namespace ibex {
 

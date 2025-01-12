@@ -10,7 +10,6 @@
 
 #include "data.h"
 
-using namespace std;
 
 /*======================================= data ========================================*/
 const int N=10;                // number of beacons
@@ -30,27 +29,27 @@ void init_data() {
 
 	RNG::srand(1111);
 
-	cout << "************** beacons **************" << endl;
+	std::cout << "************** beacons **************" << std::endl;
 	for (int b=0; b<N; b++) {
 		// set beacons exact positions
 		// remark: we don't put uncertainty right now because we
 		// need the exact values to calculate the distances.
 		beacons[b][0]= RNG::rand(0,L); //((double) rand()/RAND_MAX)*L;
 		beacons[b][1]= RNG::rand(0,L); //((double) rand()/RAND_MAX)*L;
-		cout << "beacon n°" << b <<  " x=" << beacons[b][0] << " y=" << beacons[b][1] << endl;
+		std::cout << "beacon n°" << b <<  " x=" << beacons[b][0] << " y=" << beacons[b][1] << std::endl;
 	}
-	cout << endl;
+	std::cout << std::endl;
 
 	// generate the initial position
 	// of the robot randomly
 	double x1= RNG::rand(0,L);//((double) rand()/RAND_MAX)*L;
 	double y1= RNG::rand(0,L); //((double) rand()/RAND_MAX)*L;
 
-	cout << "************** robot **************" << endl;
+	std::cout << "************** robot **************" << std::endl;
 
 	for (int t=0; t<T; t++) {
 
-		cout << "x[" << t << "]=" << x1 << " y[" << t << "]=" << y1 << endl ;
+		std::cout << "x[" << t << "]=" << x1 << " y[" << t << "]=" << y1 << std::endl ;
 
 		// for each beacon, a measurement is generated from the position
 		// of the robot at time t

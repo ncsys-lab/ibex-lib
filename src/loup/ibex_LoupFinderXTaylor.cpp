@@ -10,7 +10,6 @@
 
 #include "ibex_LoupFinderXTaylor.h"
 
-using namespace std;
 
 namespace ibex {
 

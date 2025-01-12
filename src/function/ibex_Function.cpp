@@ -17,7 +17,6 @@
 #include "ibex_Gradient.h"
 #include "ibex_ExprFuncDomain.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -168,7 +167,7 @@ const ExprNode& Function::operator()(const ExprNode& arg1, const ExprNode& arg2,
 	return ExprCopy().copy(args(),Array<const ExprNode>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20),expr());
 }
 
-const ExprNode& Function::operator()(const vector<const ExprNode*>& arg) const {
+const ExprNode& Function::operator()(const std::vector<const ExprNode*>& arg) const {
 	return ExprCopy().copy(args(),arg, expr());
 }
 

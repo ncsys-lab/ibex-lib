@@ -11,7 +11,6 @@
 
 #include "ibex_ExprLinearity.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -83,7 +82,7 @@ Array<Domain>* ExprLinearity::build_zero(const Dim& dim) const {
 ExprLinearity::LinData ExprLinearity::build_cst(const Domain& value) const {
 	Array<Domain>* d=build_zero(value.dim);
 	(*d)[n]=value;
-	return make_pair(d,CONSTANT);
+	return std::make_pair(d,CONSTANT);
 }
 
 void ExprLinearity::visit(const ExprSymbol& e, int k) {
@@ -108,7 +107,7 @@ void ExprLinearity::visit(const ExprSymbol& e, int k) {
 		break;
 	}
 
-	insert_coeff_and_check(e, make_pair(d,LINEAR));
+	insert_coeff_and_check(e, std::make_pair(d,LINEAR));
 }
 
 void ExprLinearity::visit(const ExprNode& e) {
@@ -140,7 +139,7 @@ void ExprLinearity::visit(const ExprIndex& e) {
 					type=expr_type;
 			}
 		}
-		insert_coeff_and_check(e, make_pair(d,type));
+		insert_coeff_and_check(e, std::make_pair(d,type));
 	}
 }
 
@@ -173,7 +172,7 @@ void ExprLinearity::visit(const ExprVector& e) {
 		d->set_ref(i,*new Domain(array, e.row_vector()));
 	}
 
-	insert_coeff_and_check(e, make_pair(d,type));
+	insert_coeff_and_check(e, std::make_pair(d,type));
 }
 
 void ExprLinearity::visit(const ExprMul& e) {
@@ -223,7 +222,7 @@ void ExprLinearity::visit(const ExprMul& e) {
 		}
 	}
 
-	insert_coeff_and_check(e, make_pair(d,type));
+	insert_coeff_and_check(e, std::make_pair(d,type));
 }
 
 void ExprLinearity::visit(const ExprDiv& e) {
@@ -261,7 +260,7 @@ void ExprLinearity::visit(const ExprDiv& e) {
 						type=NONLINEAR;
 			}
 		}
-		insert_coeff_and_check(e, make_pair(d,type));
+		insert_coeff_and_check(e, std::make_pair(d,type));
 	}
 }
 
@@ -303,7 +302,7 @@ void ExprLinearity::binary(const ExprBinaryOp& e, Domain (*fcst)(const Domain&,c
 			}
 		}
 
-		insert_coeff_and_check(e, make_pair(d,type));
+		insert_coeff_and_check(e, std::make_pair(d,type));
 	}
 }
 
@@ -338,7 +337,7 @@ void ExprLinearity::unary(const ExprUnaryOp& e, Domain (*fcst)(const Domain&), b
 			}
 		}
 
-		insert_coeff_and_check(e, make_pair(d,type));
+		insert_coeff_and_check(e, std::make_pair(d,type));
 	}
 }
 
@@ -360,7 +359,7 @@ void ExprLinearity::visit(const ExprPower& e) {
 			if (i<n && expr_d[i].is_zero()) (*d)[i].clear();
 		}
 
-		insert_coeff_and_check(e, make_pair(d,NONLINEAR));
+		insert_coeff_and_check(e, std::make_pair(d,NONLINEAR));
 	}
 }
 
@@ -382,7 +381,7 @@ void ExprLinearity::visit(const ExprChi& e) {
 			(*d)[i].clear();
 	}
 
-	insert_coeff_and_check(e, make_pair(d,NONLINEAR));
+	insert_coeff_and_check(e, std::make_pair(d,NONLINEAR));
 }
 
 void ExprLinearity::visit(const ExprSymbol& e) { assert(false); }

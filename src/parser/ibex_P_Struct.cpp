@@ -16,13 +16,12 @@
 
 #include <sstream>
 
-using namespace std;
 
 extern char* ibextext;
 extern int ibex_lineno;
 
 // note: do not confuse with ibex_error in tools/ibex_Exception.h
-void ibexerror (const string& msg) {
+void ibexerror (const std::string& msg) {
 	throw ibex::SyntaxError(msg, ibextext, ibex_lineno);
 }
 
@@ -45,7 +44,7 @@ void init_symbol_domain(const char* destname, Domain& dest, const Domain& src) {
 		case Dim::MATRIX:       dest.m().init(x); break;
 		}
 	} else {
-		stringstream s;
+		std::stringstream s;
 		s << "Symbol \"" << destname << "\"";
 
 		if (dest.dim.type()==Dim::ROW_VECTOR && src.dim.type()==Dim::COL_VECTOR && dest.dim.vec_size()==src.dim.vec_size()) {

@@ -12,7 +12,6 @@
 #include "TestExprDiff.h"
 #include "ibex_ExprDiff.h"
 
-using namespace std;
 
 namespace ibex {
 

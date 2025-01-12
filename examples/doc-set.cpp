@@ -14,10 +14,9 @@
 
 #include <fstream>
 
-using namespace std;
 using namespace ibex;
 
-ofstream output;
+std::ofstream output;
 
 /**
  * This file contains examples of the documentation.
@@ -37,7 +36,7 @@ class ToConsole : public SetVisitor {
       case NO:     output << "out"; break;
       case MAYBE : output << "?"; break;
     }
-    output << endl;
+    output << std::endl;
   }
 };
 //! [set-visit-1-C]
@@ -88,7 +87,7 @@ int main() {
 
   output.open ("doc-set.txt");
 
-  output << "================= this file is generated ==============" << endl;
+  output << "================= this file is generated ==============" << std::endl;
 
   {
   //! [set-init-1-C]
@@ -143,14 +142,14 @@ int main() {
   }
 
   {
-  output << "! [set-visit-2-O]" << endl;
+  output << "! [set-visit-2-O]" << std::endl;
   //! [set-visit-2-C]
   Set set("set-example");
 
   ToConsole to_console;
   set.visit(to_console);
   //! [set-visit-2-C]
-  output << "! [set-visit-2-O]" << endl;
+  output << "! [set-visit-2-O]" << std::endl;
   }
 
   {

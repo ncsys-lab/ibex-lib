@@ -11,7 +11,6 @@
 #include "ibex_PdcFirstOrder.h"
 #include "ibex_Linear.h"
 
-using namespace std;
 
 namespace ibex {
 

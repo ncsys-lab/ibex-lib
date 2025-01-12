@@ -11,7 +11,6 @@
 #include "ibex_LoupFinderDuality.h"
 #include "ibex_BxpLinearRelaxArgMin.h"
 
-using namespace std;
 
 namespace ibex {
 

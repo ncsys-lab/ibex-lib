@@ -12,7 +12,6 @@
 #include "TestCtcInteger.h"
 #include "ibex_CtcInteger.h"
 
-using namespace std;
 
 namespace ibex {
 

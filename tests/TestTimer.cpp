@@ -13,7 +13,6 @@
 #include "ibex_Timer.h"
 #include "ibex_Interval.h"
 
-using namespace std;
 
 namespace ibex {
 

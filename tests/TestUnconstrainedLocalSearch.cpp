@@ -11,7 +11,6 @@
 #include "TestUnconstrainedLocalSearch.h"
 #include "ibex_UnconstrainedLocalSearch.h"
 
-using namespace std;
 
 namespace ibex {
 

@@ -25,7 +25,6 @@
 #include "ibex_Random.h"
 #include "ibex_NormalizedSystem.h"
 
-using namespace std;
 
 namespace ibex {
 

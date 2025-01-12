@@ -12,7 +12,6 @@
 #include "ibex_SetLeaf.h"
 #include "ibex_SetBisect.h"
 
-using namespace std;
 
 namespace ibex {
 

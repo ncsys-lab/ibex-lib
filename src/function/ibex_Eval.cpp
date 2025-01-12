@@ -15,7 +15,6 @@
 
 #include <typeinfo>
 
-using namespace std;
 
 namespace ibex {
 

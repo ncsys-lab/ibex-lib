@@ -14,7 +14,6 @@
   #define IBEX_BENCHS_DIR "../benchs/solver"
 #endif
 
-using namespace std;
 using namespace ibex;
 
 /**
@@ -23,13 +22,13 @@ using namespace ibex;
 
 int main() {
 
-	ofstream output;
+	std::ofstream output;
 	output.open ("doc-solver.txt");
 
-	output << "================= this file is generated ==============" << endl;
+	output << "================= this file is generated ==============" << std::endl;
 
 	{
-	output << "! [solver-call-default-O]" << endl;
+	output << "! [solver-call-default-O]" << std::endl;
 	//! [solver-call-default-C]
 	/* Build a system of equations from the file */
 	System system(IBEX_BENCHS_DIR "/others/kolev36.bch");
@@ -40,13 +39,13 @@ int main() {
 	solver.solve(system.box); // Run the solver
 
 	/* Display the solutions. */
-	output << solver.get_data() << endl;
+	output << solver.get_data() << std::endl;
 	//! [solver-call-default-C]
-	output << "! [solver-call-default-O]" << endl;
+	output << "! [solver-call-default-O]" << std::endl;
 	}
 
 	{
-	output << "! [solver-solver-generic-O]" << endl;
+	output << "! [solver-solver-generic-O]" << std::endl;
 	//! [solver-solver-generic-C]
 
 	/* Create the function (x,y)->( ||(x,y)||-d,  ||(x,y)-(1,0)||-d ) */
@@ -93,13 +92,13 @@ int main() {
 	s.solve(box);
 
 	/* Display the solutions */
-	output << s.get_data() << endl;
+	output << s.get_data() << std::endl;
 	//! [solver-solver-generic-C]
-	output << "! [solver-solver-generic-O]" << endl;
+	output << "! [solver-solver-generic-O]" << std::endl;
 	}
 
 	{
-	output << "! [solver-implem-default-O]" << endl;
+	output << "! [solver-implem-default-O]" << std::endl;
 	//! [solver-implem-default-C]
 
 	System system(IBEX_BENCHS_DIR "/others/kolev36.bch");
@@ -140,14 +139,14 @@ int main() {
 	s.solve(system.box);
 
 	/* Display the solutions */
-	output << s.get_data() << endl;
+	output << s.get_data() << std::endl;
 
 	/* Report performances */
-	output << "cpu time used=" << s.get_time() << "s."<< endl;
-	output << "number of cells=" << s.get_nb_cells() << endl;
+	output << "cpu time used=" << s.get_time() << "s."<< std::endl;
+	output << "number of cells=" << s.get_nb_cells() << std::endl;
 
 	//! [solver-implem-default-C]
-	output << "! [solver-implem-default-O]" << endl;
+	output << "! [solver-implem-default-O]" << std::endl;
 	}
 
 	{
@@ -168,21 +167,21 @@ int main() {
 
 	// Create a partition of the initial box into two subboxes,
 	// by bisecting any variable (here, n°4)
-	pair<IntervalVector,IntervalVector> pair=sys1.box.bisect(4);
+	std::pair<IntervalVector,IntervalVector> std::pair=sys1.box.bisect(4);
 
 	// =======================================================
 	// Run the solvers in parallel
 	// =======================================================
 #pragma omp parallel sections
 	{
-		solver1.solve(pair.first);
+		solver1.solve(std::pair.first);
 #pragma omp section
-		solver2.solve(pair.second);
+		solver2.solve(std::pair.second);
 	}
 	// =======================================================
 
-	output << "solver #1 found " << solver1.get_data().size() << endl;
-	output << "solver #2 found " << solver2.get_data().size() << endl;
+	output << "solver #1 found " << solver1.get_data().size() << std::endl;
+	output << "solver #2 found " << solver2.get_data().size() << std::endl;
 	//! [solver-parallel-C-1]
 
 	{

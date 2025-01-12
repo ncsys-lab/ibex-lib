@@ -19,9 +19,12 @@
 #include <stdlib.h>
 #include <cstdio>
 
+<<<<<<< HEAD
 constexpr double TestCov::solver_time;
 	
 using namespace std;
+=======
+>>>>>>> 1c18a60b (Stop using namespace std.)
 
 uint32_t TestCov::sol[nsol]             = { 1, 5, 8 };
 bool TestCov::is_sol[N]                 = { 0, 1, 0, 0, 0, 1, 0, 0, 1, 0 };
@@ -50,16 +53,16 @@ uint32_t TestCov::varset_bnd[nbnd][n-m]     = { {0, 1}, {1, 2}, {0, 2} };
 
 double TestCov::unicity_infl = 0.5;
 
-string TestCov::solver_var_names[n]      = { "x1", "x2", "x3" };
+std::string TestCov::solver_var_names[n]      = { "x1", "x2", "x3" };
 
 
 namespace {
 
-char* open_file(ofstream& f) { // return char* must be freed
+char* open_file(std::ofstream& f) { // return char* must be freed
 	char *tmpname = (char*) malloc(L_tmpnam);
 	char* ret=tmpnam(tmpname);
 	assert(ret!=NULL);
-	f.open(tmpname, ios::out | ios::trunc | ios::binary);
+	f.open(tmpname, std::ios::out | std::ios::trunc | std::ios::binary);
 	return tmpname;
 }
 
@@ -69,15 +72,15 @@ void remove_file(char* filename) { // close file and free "filename"
 	free(filename);
 }
 
-void write(ofstream& of, const char* x) {
+void write(std::ofstream& of, const char* x) {
 	of.write(x, (strlen(x)+1)*sizeof(char));
 }
 
-void write(ofstream& of, uint32_t x) {
+void write(std::ofstream& of, uint32_t x) {
 	of.write((const char*) &x, sizeof(uint32_t));
 }
 
-void write(ofstream& of, double x) {
+void write(std::ofstream& of, double x) {
 	of.write((const char*) &x, sizeof(double));
 }
 
@@ -87,8 +90,8 @@ void write(ofstream& of, double x) {
 
 /*=============================================================================================*/
 
-vector<IntervalVector> TestCov::boxes() {
-	vector<IntervalVector> res;
+std::vector<IntervalVector> TestCov::boxes() {
+	std::vector<IntervalVector> res;
 	for (size_t i=0; i<N; i++) {
 		res.push_back(IntervalVector(n,Interval(0,i)));
 	}
@@ -97,7 +100,7 @@ vector<IntervalVector> TestCov::boxes() {
 
 /*=============================================================================================*/
 
-void TestCov::write_cov(ofstream& f, ScenarioType scenario, unsigned int level, bool right_version) {
+void TestCov::write_cov(std::ofstream& f, ScenarioType scenario, unsigned int level, bool right_version) {
 	write(f,"IBEX COVERING FILE "); // signature
 	write(f,(uint32_t) level);      // subformat level
 	for (unsigned int i=0; i<=level; i++) // format sequence
@@ -111,11 +114,11 @@ void TestCov::write_cov(ofstream& f, ScenarioType scenario, unsigned int level, 
 	write(f,(uint32_t) n);          // box dimension
 }
 
-void TestCov::write_covlist(ofstream& f, ScenarioType scenario, unsigned int level, bool right_version) {
+void TestCov::write_covlist(std::ofstream& f, ScenarioType scenario, unsigned int level, bool right_version) {
 	write_cov(f,scenario,level,right_version);
 	write(f,(uint32_t) N);  // number of boxes
 
-	vector<IntervalVector> b = boxes();
+	std::vector<IntervalVector> b = boxes();
 
 	for (size_t i=0; i<N; i++) {
 		for (size_t j=0; j<n; j++) {
@@ -125,7 +128,7 @@ void TestCov::write_covlist(ofstream& f, ScenarioType scenario, unsigned int lev
 	}
 }
 
-void TestCov::write_covIUlist(ofstream& f, ScenarioType scenario, unsigned int level, bool right_version) {
+void TestCov::write_covIUlist(std::ofstream& f, ScenarioType scenario, unsigned int level, bool right_version) {
 	write_covlist(f,scenario,level,right_version);
 
 	if (scenario==INEQ_EQ_ONLY || scenario==INEQ_HALF_BALL) {
@@ -138,7 +141,7 @@ void TestCov::write_covIUlist(ofstream& f, ScenarioType scenario, unsigned int l
 	}
 }
 
-void TestCov::write_covIBUlist(ofstream& f, ScenarioType scenario, unsigned int level, bool right_version) {
+void TestCov::write_covIBUlist(std::ofstream& f, ScenarioType scenario, unsigned int level, bool right_version) {
 	write_covIUlist(f,scenario,level,right_version);
 	write(f, (uint32_t) 0);           // type of boundary boxes = INNER_PT
 
@@ -169,7 +172,7 @@ void TestCov::write_covIBUlist(ofstream& f, ScenarioType scenario, unsigned int 
 	}
 }
 
-void TestCov::write_covManifold(ofstream& f, ScenarioType scenario, unsigned int level, bool right_version) {
+void TestCov::write_covManifold(std::ofstream& f, ScenarioType scenario, unsigned int level, bool right_version) {
 	write_covIBUlist(f,scenario, level,right_version);
 
 	size_t nb_eq = (scenario==INEQ_EQ_ONLY || scenario==INEQ_HALF_BALL) ? 0 : m;
@@ -177,7 +180,7 @@ void TestCov::write_covManifold(ofstream& f, ScenarioType scenario, unsigned int
 	write(f, (uint32_t) nb_eq);   // number of equalities
 	write(f, (uint32_t) nb_ineq); // number of inequalities
 
-	vector<IntervalVector> b=boxes();
+	std::vector<IntervalVector> b=boxes();
 
 	switch(scenario) {
 	case INEQ_EQ_ONLY:
@@ -247,7 +250,7 @@ void TestCov::write_covManifold(ofstream& f, ScenarioType scenario, unsigned int
 	}
 }
 
-void TestCov::write_covSolverData(ofstream& f, ScenarioType scenario, unsigned int level, bool right_version) {
+void TestCov::write_covSolverData(std::ofstream& f, ScenarioType scenario, unsigned int level, bool right_version) {
 	write_covManifold(f,scenario,level,right_version);
 
 	for (size_t i=0; i<n; i++)
@@ -280,7 +283,7 @@ void TestCov::test_covlist(ScenarioType scenario, CovList& cov) {
 
 	CPPUNIT_ASSERT(cov.size()==N);
 
-	vector<IntervalVector> b=boxes();
+	std::vector<IntervalVector> b=boxes();
 
 	for (size_t i=0; i<N; i++) {
 		//cout << cov[i] << endl;
@@ -306,7 +309,7 @@ void TestCov::test_covIUlist(ScenarioType scenario, CovIUList& cov) {
 			}
 		}
 
-		vector<IntervalVector> b=boxes();
+		std::vector<IntervalVector> b=boxes();
 
 		for (size_t i=0; i<nsol; i++) {
 			CPPUNIT_ASSERT(cov.inner(i)==b[sol[i]]);
@@ -324,7 +327,7 @@ void TestCov::test_covIUlist(ScenarioType scenario, CovIUList& cov) {
 void TestCov::test_covIBUlist(ScenarioType scenario, CovIBUList& cov) {
 	test_covIUlist(scenario, cov);
 
-	vector<IntervalVector> b=boxes();
+	std::vector<IntervalVector> b=boxes();
 
 	switch(scenario) {
 	case INEQ_EQ_ONLY:
@@ -464,7 +467,7 @@ void TestCov::test_covManifold(ScenarioType scenario, CovManifold& cov) {
 		  );
 	}
 
-	vector<IntervalVector> b=boxes();
+	std::vector<IntervalVector> b=boxes();
 
 	for (size_t i=0; i<nsol; i++) {
 		CPPUNIT_ASSERT(cov.solution(i)==b[sol[i]]);
@@ -530,7 +533,7 @@ void TestCov::test_covSolverData(ScenarioType scenario, CovSolverData& cov) {
 	CPPUNIT_ASSERT(cov.nb_cells() == solver_nb_cells);
 	CPPUNIT_ASSERT(cov.nb_pending() == npen);
 
-	vector<IntervalVector> b=boxes();
+	std::vector<IntervalVector> b=boxes();
 
 	for (size_t i=0; i<npen; i++) {
 		CPPUNIT_ASSERT(cov.pending(i)==b[pen[i]]);
@@ -550,7 +553,7 @@ Cov* TestCov::build_cov(ScenarioType scenario) {
 CovList* TestCov::build_covlist(ScenarioType scenario) {
 	CovList* cov = new CovList(n);// box dimension
 
-	vector<IntervalVector> b=boxes();
+	std::vector<IntervalVector> b=boxes();
 
 	for (size_t i=0; i<N; i++) {
 		cov->add(b[i]);
@@ -562,7 +565,7 @@ CovList* TestCov::build_covlist(ScenarioType scenario) {
 CovIUList* TestCov::build_covIUlist(ScenarioType scenario) {
 	CovIUList* cov = new CovIUList(n); // box dimension
 
-	vector<IntervalVector> b=boxes();
+	std::vector<IntervalVector> b=boxes();
 
 	for (size_t i=0; i<N; i++) {
 		if ((scenario==INEQ_EQ_ONLY || scenario==INEQ_HALF_BALL) && is_sol[i])
@@ -577,7 +580,7 @@ CovIUList* TestCov::build_covIUlist(ScenarioType scenario) {
 CovIBUList* TestCov::build_covIBUlist(ScenarioType scenario) {
 	CovIBUList* cov = new CovIBUList(n); // box dimension
 
-	vector<IntervalVector> b=boxes();
+	std::vector<IntervalVector> b=boxes();
 
 	for (size_t i=0; i<N; i++) {
 		if ((scenario==INEQ_EQ_ONLY || scenario==INEQ_HALF_BALL) && is_sol[i])
@@ -601,7 +604,7 @@ CovManifold* TestCov::build_covManifold(ScenarioType scenario) {
 
 	CovManifold* cov = new CovManifold(n, nb_eq, nb_ineq, boundary_type); // box dimension
 
-	vector<IntervalVector> b=boxes();
+	std::vector<IntervalVector> b=boxes();
 
 	int isol=0;
 	int ibnd=0;
@@ -643,7 +646,7 @@ CovSolverData* TestCov::build_covSolverData(ScenarioType scenario) {
 
 	CovSolverData* cov = new CovSolverData(n, nb_eq, nb_ineq, boundary_type); // box dimension
 
-	vector<IntervalVector> b=boxes();
+	std::vector<IntervalVector> b=boxes();
 
 	int isol=0;
 		int ibnd=0;
@@ -676,7 +679,7 @@ CovSolverData* TestCov::build_covSolverData(ScenarioType scenario) {
 			cov->add_unknown(b[i]);
 	}
 
-	vector<string> var_names;
+	std::vector<std::string> var_names;
 	for (size_t i=0; i<n; i++)
 		var_names.push_back(solver_var_names[i]);
 
@@ -697,7 +700,7 @@ void TestCov::covfac(ScenarioType scenario) {
 }
 
 void TestCov::read_covfile(ScenarioType scenario) {
-	ofstream f;
+	std::ofstream f;
 	char* filename=open_file(f);
 	write_cov(f,scenario,0);
 	f.close();
@@ -737,7 +740,7 @@ void TestCov::covlistfac2(ScenarioType scenario) {
 }
 
 void TestCov::read_covlistfile1(ScenarioType scenario) {
-	ofstream f;
+	std::ofstream f;
 	char* filename=open_file(f);
 	write_covlist(f,scenario,1);
 	f.close();
@@ -748,7 +751,7 @@ void TestCov::read_covlistfile1(ScenarioType scenario) {
 }
 
 void TestCov::read_covlistfile2(ScenarioType scenario) {
-	ofstream f;
+	std::ofstream f;
 	char* filename=open_file(f);
 	write_cov(f,scenario,0);
 	f.close();
@@ -790,7 +793,7 @@ void TestCov::covIUlistfac2(ScenarioType scenario) {
 }
 
 void TestCov::read_covIUlistfile1(ScenarioType scenario) {
-	ofstream f;
+	std::ofstream f;
 	char* filename=open_file(f);
 	write_covIUlist(f,scenario,2);
 	f.close();
@@ -801,7 +804,7 @@ void TestCov::read_covIUlistfile1(ScenarioType scenario) {
 }
 
 void TestCov::read_covIUlistfile2(ScenarioType scenario) {
-	ofstream f;
+	std::ofstream f;
 	char* filename=open_file(f);
 	write_covlist(f,scenario,1);
 	f.close();
@@ -844,7 +847,7 @@ void TestCov::covIBUlistfac2(ScenarioType scenario) {
 }
 
 void TestCov::read_covIBUlistfile1(ScenarioType scenario) {
-	ofstream f;
+	std::ofstream f;
 	char* filename=open_file(f);
 	write_covIBUlist(f,scenario,3);
 	f.close();
@@ -855,7 +858,7 @@ void TestCov::read_covIBUlistfile1(ScenarioType scenario) {
 }
 
 void TestCov::read_covIBUlistfile2(ScenarioType scenario) {
-	ofstream f;
+	std::ofstream f;
 	char* filename=open_file(f);
 	write_covIUlist(f,scenario,2);
 	f.close();
@@ -868,7 +871,7 @@ void TestCov::read_covIBUlistfile2(ScenarioType scenario) {
 }
 
 void TestCov::read_covIBUlistfile3(ScenarioType scenario) {
-	ofstream f;
+	std::ofstream f;
 	char* filename=open_file(f);
 	write_covIBUlist(f,scenario,3,false);
 	f.close();
@@ -935,7 +938,7 @@ void TestCov::covManifoldfac2(ScenarioType scenario) {
 }
 
 void TestCov::read_covManifoldfile1(ScenarioType scenario) {
-	ofstream f;
+	std::ofstream f;
 	char* filename=open_file(f);
 	write_covManifold(f,scenario,4);
 	f.close();
@@ -946,7 +949,7 @@ void TestCov::read_covManifoldfile1(ScenarioType scenario) {
 }
 
 void TestCov::read_covManifoldfile2(ScenarioType scenario) {
-	ofstream f;
+	std::ofstream f;
 	char* filename=open_file(f);
 	write_covIBUlist(f,scenario,3);
 	f.close();
@@ -1016,7 +1019,7 @@ void TestCov::covSolverDatafac2(ScenarioType scenario) {
 
 
 void TestCov::read_covSolverDatafile1(ScenarioType scenario) {
-	ofstream f;
+	std::ofstream f;
 	char* filename=open_file(f);
 	write_covSolverData(f,scenario,5);
 	f.close();
@@ -1027,7 +1030,7 @@ void TestCov::read_covSolverDatafile1(ScenarioType scenario) {
 }
 
 void TestCov::read_covSolverDatafile2(ScenarioType scenario) {
-	ofstream f;
+	std::ofstream f;
 	char* filename=open_file(f);
 	write_covManifold(f,scenario,4);
 	f.close();

@@ -12,7 +12,6 @@
 
 #include <algorithm>
 
-using namespace std;
 
 namespace ibex {
 
@@ -40,7 +39,7 @@ int BoxProperties::topo_sort_rec(const Bxp& el, Map<long,int,false>& level) cons
 	} catch(Map<long,int,false>::NotFound&) {
 		l=0;
 		level.insert_new(el.id, -1); // -1 means: in visit
-		for (std::vector<long>::const_iterator it=el.dependencies.begin(); it!=el.dependencies.end(); ++it) {
+		for (std::vector<long>::const_iterator it=el.dependencies.begin(); it!=el.dependencies.end(); it++) {
 			try {
 				int l2=topo_sort_rec(map[*it], level);
 				if (l2>=l) l=l2+1;
@@ -58,7 +57,7 @@ void BoxProperties::topo_sort() const {
 
 	Map<long,int,false> level;
 
-	for (Map<long,Bxp>::const_iterator it=map.begin(); it!=map.end(); ++it) {
+	for (Map<long,Bxp>::const_iterator it=map.begin(); it!=map.end(); it++) {
 		// push the property in the dependency array
 		dep.push_back(it->second);
 		// and determine its level
@@ -98,7 +97,7 @@ void BoxProperties::update(const BoxEvent& e) {
 	// We could also create each time a new property map with
 	// the required properties only. But we have shared
 	// memory to avoid copies -> not very safe
-	for (vector<Bxp*>::iterator it=dep.begin(); it!=dep.end(); ++it) {
+	for (std::vector<Bxp*>::iterator it=dep.begin(); it!=dep.end(); ++it) {
 		(*it)->update(e,*this);
 	}
 }
@@ -120,7 +119,7 @@ void BoxProperties::update_bisect(const Bisection& b, BoxProperties& lprop, BoxP
 	if (!_dep_up2date) topo_sort();
 
 	// Duplicate properties respecting dependencies
-	for (vector<Bxp*>::iterator it=dep.begin(); it!=dep.end(); ++it) {
+	for (std::vector<Bxp*>::iterator it=dep.begin(); it!=dep.end(); it++) {
 		Bxp* p1 = (*it)->copy(b.left, lprop);
 		p1->update(BoxEvent(b.left,BoxEvent::CONTRACT,BitSet::singleton(b.box.size(), b.pt.var)), lprop);
 
@@ -150,7 +149,7 @@ BoxProperties::BoxProperties(const IntervalVector& box, const BoxProperties& p) 
 	if (!p._dep_up2date) p.topo_sort();
 
 	// Duplicate properties respecting dependencies
-	for (vector<Bxp*>::iterator it=p.dep.begin(); it!=p.dep.end(); ++it) {
+	for (std::vector<Bxp*>::iterator it=p.dep.begin(); it!=p.dep.end(); it++) {
 		Bxp* bxp=(*it)->copy(box, *this);
 		add(bxp);
 		dep.push_back(bxp);
@@ -160,14 +159,14 @@ BoxProperties::BoxProperties(const IntervalVector& box, const BoxProperties& p) 
 }
 
 BoxProperties::~BoxProperties() {
-	for (Map<long,Bxp>::iterator it=map.begin(); it!=map.end(); ++it)
+	for (Map<long,Bxp>::iterator it=map.begin(); it!=map.end(); it++)
 		delete it->second;
 }
 
-ostream& operator<<(ostream& os, const BoxProperties& p) {
+std::ostream& operator<<(std::ostream& os, const BoxProperties& p) {
 	os << "{\n";
-	for (Map<long,Bxp>::const_iterator it=p.map.begin(); it!=p.map.end(); ++it) {
-		os << "  " << it->second->to_string() << endl;
+	for (Map<long,Bxp>::const_iterator it=p.map.begin(); it!=p.map.end(); it++) {
+		os << "  " << it->second->to_string() << std::endl;
 	}
 	os << "}";
 	return os;

@@ -9,11 +9,9 @@
 
 #include <atomic>
 
-using namespace std;
 
 namespace {
-
-atomic_long id_count(0);
+	std::atomic_long id_count(0);
 
 }
 

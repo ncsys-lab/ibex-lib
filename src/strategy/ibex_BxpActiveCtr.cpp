@@ -10,7 +10,6 @@
 #include "ibex_BxpActiveCtr.h"
 #include "ibex_Id.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -59,7 +58,7 @@ long BxpActiveCtr::get_id(const NumConstraint& ctr) {
 }
 
 std::string BxpActiveCtr::to_string() const {
-	stringstream ss;
+	std::stringstream ss;
 	ss << '[' << id << "] BxpActiveCtr Ctr n°" << ctr.id;
 	return ss.str();
 }

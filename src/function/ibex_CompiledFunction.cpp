@@ -15,7 +15,6 @@
 #include <algorithm>
 #include <list>
 
-using namespace std;
 
 namespace ibex {
 
@@ -272,7 +271,7 @@ std::ostream& operator<<(std::ostream& os, const CompiledFunction& f) {
 			if (j<f.nb_args[i]-1) os << ",";
 		}
 		os << ")\t" << (*f.nodes)[i];
-		os << endl;
+		os << std::endl;
 	}
 	os << "================================================" << std::endl;
 	return os;

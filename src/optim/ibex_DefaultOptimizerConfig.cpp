@@ -27,7 +27,6 @@
 #include "ibex_CtcKuhnTucker.h"
 #include "ibex_CtcKuhnTuckerLP.h"
 
-using namespace std;
 
 namespace ibex {
 

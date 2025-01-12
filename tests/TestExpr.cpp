@@ -14,7 +14,6 @@
 #include "ibex_Function.h"
 #include <sstream>
 
-using namespace std;
 
 namespace ibex {
 
@@ -447,7 +446,7 @@ void TestExpr::index01() {
 	CPPUNIT_ASSERT(e.type()==Dim::ROW_VECTOR);
 	CPPUNIT_ASSERT(sameExpr(e,"x(2,:)"));
 	CPPUNIT_ASSERT(e.indexed_symbol());
-	pair<const ExprSymbol*, bool**> p=e.symbol_mask();
+	std::pair<const ExprSymbol*, bool**> p=e.symbol_mask();
 	CPPUNIT_ASSERT(p.first==&x);
 	bool mask[3][4]={{false,false,false,false},{true,true,true,true},{false,false,false,false}};
 //	for (int i=0; i<3; i++) {
@@ -471,7 +470,7 @@ void TestExpr::index02() {
 	CPPUNIT_ASSERT(sameExpr(e,"x(2,:)(2)"));
 	CPPUNIT_ASSERT(e.indexed_symbol());
 
-	pair<const ExprSymbol*, bool**> p=e.symbol_mask();
+	std::pair<const ExprSymbol*, bool**> p=e.symbol_mask();
 	CPPUNIT_ASSERT(p.first==&x);
 	bool mask[3][4]={{false,false,false,false},{false,true,false,false},{false,false,false,false}};
 	CPPUNIT_ASSERT(same_mask(3,4,(bool*) mask,p.second));
@@ -482,7 +481,7 @@ void TestExpr::index03() {
 	const ExprIndex& e=x[DoubleIndex::one_elt(x.dim,2,1)];
 	CPPUNIT_ASSERT(e.indexed_symbol());
 	CPPUNIT_ASSERT(sameExpr(e,"x(3,2)"));
-	pair<const ExprSymbol*, bool**> p=e.symbol_mask();
+	std::pair<const ExprSymbol*, bool**> p=e.symbol_mask();
 	CPPUNIT_ASSERT(p.first==&x);
 	bool mask[3][4]={{false,false,false,false},{false,false,false,false},{false,true,false,false}};
 	CPPUNIT_ASSERT(same_mask(3,4,(bool*) mask,p.second));
@@ -495,7 +494,7 @@ void TestExpr::index04() {
 	const ExprIndex& tmp=x[DoubleIndex::submatrix(x.dim,1,2,1,4)];
 	const ExprIndex& e=tmp[DoubleIndex::submatrix(x.dim,0,1,2,3)];
 	CPPUNIT_ASSERT(e.indexed_symbol());
-	pair<const ExprSymbol*, bool**> p=e.symbol_mask();
+	std::pair<const ExprSymbol*, bool**> p=e.symbol_mask();
 	CPPUNIT_ASSERT(p.first==&x);
 	bool mask[3][4]={{false,false,false,false},
 			         {false,false, true, true},

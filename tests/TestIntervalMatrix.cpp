@@ -14,7 +14,6 @@
 #include "ibex_Random.h"
 #include "utils.h"
 
-using namespace std;
 
 namespace {
 

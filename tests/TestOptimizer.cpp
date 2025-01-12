@@ -15,7 +15,6 @@
 #include "ibex_DefaultOptimizer.h"
 #include "ibex_SystemFactory.h"
 
-using namespace std;
 
 namespace ibex {
 

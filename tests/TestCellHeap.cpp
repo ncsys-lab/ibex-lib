@@ -17,7 +17,6 @@
 #include "ibex_System.h"
 #include "ibex_SystemFactory.h"
 
-using namespace std;
 
 namespace ibex {
 

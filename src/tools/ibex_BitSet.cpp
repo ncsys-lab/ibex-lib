@@ -9,7 +9,6 @@
 
 #include "ibex_BitSet.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -37,7 +36,7 @@ BitSet BitSet::compose(const BitSet& b) const {
 	return b2;
 }
 
-ostream& operator<<(ostream& os, const BitSet& b) {
+std::ostream& operator<<(std::ostream& os, const BitSet& b) {
 	int c;
 	os << '(';
 	for (int i=0; i<b.size(); i++) {

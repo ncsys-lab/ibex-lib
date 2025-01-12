@@ -11,7 +11,6 @@
 
 #include "ibex_Ctc3BCid.h"
 
-using namespace std;
 namespace ibex {
 
 constexpr int Ctc3BCid::default_s3b;

@@ -9,7 +9,6 @@
 
 #include "ibex.h"
 
-using namespace std;
 using namespace ibex;
 
 /**
@@ -18,10 +17,10 @@ using namespace ibex;
 
 int main() {
 
-ofstream output;
+std::ofstream output;
 output.open ("doc-covfiles.txt");
 
-output << "================= this file is generated ==============" << endl;
+output << "================= this file is generated ==============" << std::endl;
 
 {
 //! [cov-ex1-build-C]
@@ -47,51 +46,51 @@ solver.solve(sys.box);
 //! [cov-ex1-build-C]
 
 {
-output << "! [cov-ex1-list-O]" << endl;
+output << "! [cov-ex1-list-O]" << std::endl;
 //! [cov-ex1-list-C]
 const CovList& cov = solver.get_data();
-output << "The list contains " << cov.size() << " boxes" << endl;
+output << "The list contains " << cov.size() << " boxes" << std::endl;
 for (size_t i=0; i<cov.size(); i++) {
-  output << "box n°" << i << " = " << cov[i] << endl;
+  output << "box n°" << i << " = " << cov[i] << std::endl;
 }
 //! [cov-ex1-list-C]
-output << "! [cov-ex1-list-O]" << endl;
+output << "! [cov-ex1-list-O]" << std::endl;
 }
 
 {
-output << "! [cov-ex1-IUlist-O]" << endl;
+output << "! [cov-ex1-IUlist-O]" << std::endl;
 //! [cov-ex1-IUlist-C]
 const CovIUList& cov = solver.get_data();
-output << "Inner boxes:" << endl;
+output << "Inner boxes:" << std::endl;
 for (size_t i=0; i<cov.nb_inner(); i++) {
-  output << "inner n°" << i << " = " << cov.inner(i) << endl;
+  output << "inner n°" << i << " = " << cov.inner(i) << std::endl;
 }
-output << endl << "Unknown boxes:" << endl;
+output << std::endl << "Unknown boxes:" << std::endl;
 for (size_t i=0; i<cov.nb_unknown(); i++) {
-  output << "unknown n°" << i << " = " << cov.unknown(i) << endl;
+  output << "unknown n°" << i << " = " << cov.unknown(i) << std::endl;
 }
 //! [cov-ex1-IUlist-C]
-output << "! [cov-ex1-IUlist-O]" << endl;
+output << "! [cov-ex1-IUlist-O]" << std::endl;
 }
 
 {
-output << "! [cov-ex1-SolverData-O]" << endl;
+output << "! [cov-ex1-SolverData-O]" << std::endl;
 //! [cov-ex1-SolverData-C]
 const CovSolverData& cov = solver.get_data();
-output << "Inner boxes:" << endl;
+output << "Inner boxes:" << std::endl;
 for (size_t i=0; i<cov.nb_inner(); i++) {
-  output << "inner n°" << i << " = " << cov.inner(i) << endl;
+  output << "inner n°" << i << " = " << cov.inner(i) << std::endl;
 }
-output << endl << "Unknown boxes:" << endl;
+output << std::endl << "Unknown boxes:" << std::endl;
 for (size_t i=0; i<cov.nb_unknown(); i++) {
-  output << "unknown n°" << i << " = " << cov.unknown(i) << endl;
+  output << "unknown n°" << i << " = " << cov.unknown(i) << std::endl;
 }
-output << endl << "Pending boxes:" << endl;
+output << std::endl << "Pending boxes:" << std::endl;
 for (size_t i=0; i<cov.nb_pending(); i++) {
-  output << "Pending n°" << i << " = " << cov.pending(i) << endl;
+  output << "Pending n°" << i << " = " << cov.pending(i) << std::endl;
 }
 //! [cov-ex1-SolverData-C]
-output << "! [cov-ex1-SolverData-O]" << endl;
+output << "! [cov-ex1-SolverData-O]" << std::endl;
 }
 }
 
@@ -124,17 +123,17 @@ opt_fac.add_goal(x+y);
 System opt(opt_fac);
 //! [cov-ex2-optim-C]
 
-output << "! [cov-ex2-run-O]" << endl;
+output << "! [cov-ex2-run-O]" << std::endl;
 //! [cov-ex2-run-C]
 DefaultOptimizer optim(opt);
 
 // run the optimizer with solver data as input covering:
 optim.optimize(solver.get_data());
 
-output << " best bound=" << optim.get_loup() << endl;
+output << " best bound=" << optim.get_loup() << std::endl;
 
 //! [cov-ex2-run-C]
-output << "! [cov-ex2-run-O]" << endl;
+output << "! [cov-ex2-run-O]" << std::endl;
 
 }
 
@@ -176,15 +175,15 @@ System sys(sys_fac);
 // -------------------------------------
 //! [cov-ex3-solver-sys-C]
 
-output << "! [cov-ex3-solver-run-O]" << endl;
+output << "! [cov-ex3-solver-run-O]" << std::endl;
 //! [cov-ex3-solver-run-C]
 // solve the problem
 DefaultSolver solver(sys,0.1,0.1);
 solver.solve(optim.get_data());
-output << solver.get_data() << endl;
+output << solver.get_data() << std::endl;
 
 //! [cov-ex3-solver-run-C]
-output << "! [cov-ex3-solver-run-O]" << endl;
+output << "! [cov-ex3-solver-run-O]" << std::endl;
 }
 
 }

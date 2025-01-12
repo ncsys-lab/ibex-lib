@@ -12,7 +12,6 @@
 #include "ibex_LinearizerXTaylor.h"
 #include "ibex_BxpLinearRelaxArgMin.h"
 
-using namespace std;
 
 namespace ibex {
 

@@ -11,7 +11,6 @@
 #include "ibex_CtcAcid.h"
 #include <algorithm>
 
-using namespace std;
 
 namespace ibex {
 
@@ -135,7 +134,7 @@ void CtcAcid::contract(IntervalVector& box, ContractContext& context) {
 
 // en optim, l'objectif est placé en 1er
 void CtcAcid::putobjfirst() {
-	vector <int>::iterator result = find(smearorder.begin(), smearorder.end(), nb_var-1);
+	std::vector <int>::iterator result = find(smearorder.begin(), smearorder.end(), nb_var-1);
 	smearorder.erase(result);
 	smearorder.insert(smearorder.begin(),nb_var-1);
 }
@@ -210,7 +209,7 @@ void CtcAcid::compute_smearorder(IntervalVector& box) {
 			}
 		}
 		smearorder.push_back(varorder2[k]);
-		vector <int>::iterator result = find(varorder2.begin(), varorder2.end(), varorder2[k]);
+		std::vector <int>::iterator result = find(varorder2.begin(), varorder2.end(), varorder2[k]);
 		varorder2.erase(result);
 	}
 	varorder2.clear();

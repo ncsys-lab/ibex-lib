@@ -14,7 +14,6 @@
 #include "ibex_Eval.h"
 #include "Ponts30.h"
 
-using namespace std;
 
 namespace ibex {
 

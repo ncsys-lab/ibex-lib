@@ -18,7 +18,6 @@
 #include <typeinfo>
 #include <algorithm>
 
-using namespace std;
 
 namespace ibex {
 

@@ -13,9 +13,8 @@
 #include "ibex_ExprSubNodes.h"
 #include "ibex_NodeMap.h"
 
-using namespace std;
 
-#define CLONE_VEC vector<pair<DoubleIndex, const ExprNode*> >
+#define CLONE_VEC std::vector<std::pair<DoubleIndex, const ExprNode*> >
 
 namespace ibex {
 
@@ -195,7 +194,7 @@ void ExprSimplify::insert(const ExprNode& e, const ExprNode& e2) {
 	if (!idx_clones.found(e)) {
 		idx_clones.insert(e,new CLONE_VEC());
 	}
-	idx_clones[e]->push_back(pair<DoubleIndex,const ExprNode*>(idx,&e2));
+	idx_clones[e]->push_back(std::pair<DoubleIndex,const ExprNode*>(idx,&e2));
 }
 
 const ExprNode& ExprSimplify::get(const ExprNode& e, const DoubleIndex& idx2) {
@@ -222,7 +221,7 @@ const ExprNode& ExprSimplify::get(const ExprNode& e, const DoubleIndex& idx2) {
 
 void ExprSimplify::visit(const ExprVector& e) {
 
-	vector<const ExprNode*> res;
+	std::vector<const ExprNode*> res;
 	unsigned int i=0;
 	bool all_cst=true;
 	bool all_same=true;

@@ -12,7 +12,6 @@
 #include "TestDomain.h"
 #include "ibex_Interval.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -205,7 +204,7 @@ void TestDomain::load01() {
 
 	IntervalVector box(11,Interval(0,1));
 
-	vector<int> vars;
+	std::vector<int> vars;
 	vars.push_back(3);
 	vars.push_back(5);
 	vars.push_back(7);
@@ -241,7 +240,7 @@ void TestDomain::load02() {
 
 	IntervalVector box(11,Interval::all_reals());
 
-	vector<int> vars;
+	std::vector<int> vars;
 	vars.push_back(3);
 	vars.push_back(5);
 	vars.push_back(7);

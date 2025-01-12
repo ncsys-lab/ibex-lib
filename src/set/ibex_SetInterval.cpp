@@ -9,7 +9,6 @@
 
 #include "ibex_SetInterval.h"
 
-using namespace std;
 
 namespace ibex {
 SetInterval::SetInterval(const IntervalVector& box, BoolInterval status) : Set(box,status) {

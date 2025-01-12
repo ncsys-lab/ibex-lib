@@ -21,7 +21,6 @@
 
 #define IBEX_OPTIM_BENCHS_DIR "../plugins/optim/benchs"
 
-using namespace std;
 using namespace ibex;
 
 /**
@@ -46,7 +45,7 @@ int main() {
 	// - calculate the interval sum x+y
 	Interval x(1,2);
 	Interval y(3,4);
-	cout << "x+y=" << x+y << endl; // display [4,6]
+	std::cout << "x+y=" << x+y << std::endl; // display [4,6]
 	//! [basic-op-itv]
 	}
 
@@ -224,7 +223,7 @@ int main() {
 	/* create the function x->(dist(x,pt1),dist(x,pt2)). */
 	Function f(x,Return(dist(x,pt1),dist(x,pt2)),"f");
 
-	cout << f << endl;
+	std::cout << f << std::endl;
 	//! [func-vec-value-3]
 	}
 
@@ -375,7 +374,7 @@ int main() {
 	c.contract(box);
 
 	/* display ([0.2929, 0.7072] ; [0.2929, 0.7072]) */
-	cout << box << endl;
+	std::cout << box << std::endl;
 	//! [ctc-fwd-bwd2]
 	}
 
@@ -392,7 +391,7 @@ int main() {
 
 	fp.contract(box);
 	/* display ([0.4990, 0.5001] ; [0.4990, 0.5001]) */
-	cout << "box after fixpoint=" << box << endl;
+	std::cout << "box after fixpoint=" << box << std::endl;
 	//! [ctc-fixpoint]
 	}
 
@@ -407,7 +406,7 @@ int main() {
 
 	CtcUnion ctc3(ctc1,ctc2); // a contractor w.r.t. (x<=-1 or x>=1)
 	ctc3.contract(box); // box will be contracted to [1,oo)
-	cout << box << endl;
+	std::cout << box << std::endl;
 	//! [ctc-union]
 	}
 
@@ -421,7 +420,7 @@ int main() {
 	IntervalVector box(1,Interval::all_reals());  // the box (-oo,oo)
 	CtcCompo ctc3(ctc1,ctc2);  // a contractor w.r.t. (x>=-1 and x<=1)
 	ctc3.contract(box);  // box will be contracted to [-1,1]
-	cout << box << endl;
+	std::cout << box << std::endl;
 	//! [ctc-inter]
 	}
 
@@ -442,7 +441,7 @@ int main() {
 	newton.contract(box);
 
 	/* display a very small box enclosing (1,0) */
-	cout << box << endl;
+	std::cout << box << std::endl;
 	//! [ctc-newton]
 	}
 
@@ -502,7 +501,7 @@ int main() {
 	/* Perform a first contraction */
 	IntervalVector box=initbox;
 	q.contract(box);
-	cout << "after q-inter =" << box << endl;
+	std::cout << "after q-inter =" << box << std::endl;
 	//! [ctc-qinter5]
 
 	//! [ctc-qinter6]
@@ -511,7 +510,7 @@ int main() {
 
 	/* Perform a stronger contraction with the fixpoint */
 	fix.contract(box);
-	cout << "after fix+q-inter =" << box << endl;
+	std::cout << "after fix+q-inter =" << box << std::endl;
 	//! [ctc-qinter6]
 	}
 
@@ -537,19 +536,19 @@ int main() {
 	IntervalVector x(3,Interval(0,1));
 
 	c.contract(x);
-	cout << x << endl;// ([0.25, 0.75] ; [0.25, 0.75] ; [0.25, 0.75])
+	std::cout << x << std::endl;// ([0.25, 0.75] ; [0.25, 0.75] ; [0.25, 0.75])
 
 	c.contract(x);
-	cout << x << endl;// ([0.375, 0.625] ; [0.375, 0.625] ; [0.375, 0.625])
+	std::cout << x << std::endl;// ([0.375, 0.625] ; [0.375, 0.625] ; [0.375, 0.625])
 
 	c.contract(x);
-	cout << x << endl;// ([0.4375, 0.5625] ; [0.4375, 0.5625] ; [0.4375, 0.5625])
+	std::cout << x << std::endl;// ([0.4375, 0.5625] ; [0.4375, 0.5625] ; [0.4375, 0.5625])
 	//! [ctc-own2]
 
 	//! [ctc-own3]
 	CtcFixPoint fp(c,0.001);
 	fp.contract(x);
-	cout << x << endl;// ([0.4999999999999999, 0.5000000000000001], ...
+	std::cout << x << std::endl;// ([0.4999999999999999, 0.5000000000000001], ...
 	//! [ctc-own3]
 	}
 

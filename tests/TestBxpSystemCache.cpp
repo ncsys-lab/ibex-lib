@@ -14,7 +14,6 @@
 #include "ibex_BxpSystemCache.h"
 #include "ibex_SystemFactory.h"
 
-using namespace std;
 
 namespace ibex {
 

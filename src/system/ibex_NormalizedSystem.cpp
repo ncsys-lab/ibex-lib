@@ -12,12 +12,9 @@
 #include "ibex_ExtendedSystem.h"
 #include "ibex_ExprCopy.h"
 
-using namespace std;
 
 namespace ibex {
 
-constexpr double NormalizedSystem::default_eps_h;
-	
 namespace {
 
 void set_lb_ub(const Domain& x, Domain& l, Domain& u, double eps_h) {
@@ -64,9 +61,9 @@ NormalizedSystem::NormalizedSystem(const System& sys, double eps, bool extended,
 	int nb_arg;
 	int k=0; // index of components of sys.f_ctrs
 
-	vector<const ExprNode*> _f_ctr;  // for building f_ctrs
-	vector<CmpOp> _ops;              // for building ops
-	vector<NumConstraint*> _ctrs;    // for building ctrs
+	std::vector<const ExprNode*> _f_ctr;  // for building f_ctrs
+	std::vector<CmpOp> _ops;              // for building ops
+	std::vector<NumConstraint*> _ctrs;    // for building ctrs
 
 	if (extended && sys.goal) {
 		nb_arg = sys.args.size()+1;
@@ -203,16 +200,16 @@ NormalizedSystem::NormalizedSystem(const System& sys, double eps, bool extended,
 	(int&) nb_ctr = _ctrs.size();
 	ctrs.resize(nb_ctr);
 
-	vector<NumConstraint*>::iterator it=_ctrs.begin();
-	for (int i=0; i<nb_ctr; i++, ++it) {
+	std::vector<NumConstraint*>::iterator it=_ctrs.begin();
+	for (int i=0; i<nb_ctr; i++, it++) {
 		ctrs.set_ref(i,**it);
 	}
 
 	int m=_f_ctr.size();
 
 	ops = m==0? NULL : new CmpOp[m];
-	vector<CmpOp>::iterator it2=_ops.begin();
-	for (int i=0; i<m; i++, ++it2) {
+	std::vector<CmpOp>::iterator it2=_ops.begin();
+	for (int i=0; i<m; i++, it2++) {
 		ops[i]=*it2;
 	}
 

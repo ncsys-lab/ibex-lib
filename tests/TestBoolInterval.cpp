@@ -12,7 +12,6 @@
 #include "TestBoolInterval.h"
 #include "ibex_BoolInterval.h"
 
-using namespace std;
 
 namespace ibex {
 

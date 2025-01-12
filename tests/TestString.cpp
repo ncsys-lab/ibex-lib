@@ -15,7 +15,6 @@
 #include "ibex_SyntaxError.h"
 #include "ibex_SymbolMap.h"
 
-using namespace std;
 
 namespace ibex {
 

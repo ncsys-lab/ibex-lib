@@ -12,7 +12,6 @@
 #include "TestTrace.h"
 #include "ibex_ExprOperators.h"
 
-using namespace std;
 
 namespace ibex {
 

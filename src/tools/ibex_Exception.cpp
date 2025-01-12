@@ -13,38 +13,37 @@
 #include <stdlib.h>
 #include <cassert>
 
-using namespace std;
 
 namespace ibex {
 
 void ibex_error(const std::string& message) {
-	cerr << "error: " << message << endl;
+	std::cerr << "error: " << message << std::endl;
 	//throw std::runtime_error(message); //
 	assert(false); // allow tracing with gdb
 	exit(-1);
 }
 
 void ibex_error(const char* message) {
-	cerr << "error: " << message << endl;
+	std::cerr << "error: " << message << std::endl;
 	//throw std::runtime_error(message); //
 	assert(false); // allow tracing with gdb
 	exit(-1);
 }
 
 void ibex_warning(const char* message) {
-	cerr << "\033[33mwarning: " << message << "\033[0m" << endl;
+	std::cerr << "\033[33mwarning: " << message << "\033[0m" << std::endl;
 }
 
 void ibex_warning(const std::string& message) {
-	cerr << "warning: " << message << endl;
+	std::cerr << "warning: " << message << std::endl;
 }
 
 void not_implemented(const char* feature) {
-	cerr << "***********************************************************************" << endl;
-	cerr << "IBEX has crashed because the following feature is not implemented yet:" << endl;
-	cerr << feature << endl;
-	cerr << "Please, submit a new feature request." << endl;
-	cerr << "***********************************************************************" << endl;
+	std::cerr << "***********************************************************************" << std::endl;
+	std::cerr << "IBEX has crashed because the following feature is not implemented yet:" << std::endl;
+	std::cerr << feature << std::endl;
+	std::cerr << "Please, submit a new feature request." << std::endl;
+	std::cerr << "***********************************************************************" << std::endl;
 	exit(-1);
 }
 } /* namespace ibex */

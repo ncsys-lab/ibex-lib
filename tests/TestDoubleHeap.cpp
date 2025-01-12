@@ -12,7 +12,6 @@
 #include "TestDoubleHeap.h"
 #include "ibex_DoubleHeap.h"
 
-using namespace std;
 
 namespace ibex {
 

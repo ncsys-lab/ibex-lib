@@ -13,7 +13,6 @@
 #include <sstream>
 #include <cassert>
 
-using namespace std;
 
 namespace ibex {
 
@@ -28,9 +27,9 @@ CovList::CovList(size_t n) : Cov(n), data(new Data()), own_data(true) {
 }
 
 CovList::CovList(const char* filename) : CovList((size_t) 0 /*tmp*/) {
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
-	ifstream* f = CovList::read(filename, *this, format_id, format_version);
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
+	std::ifstream* f = CovList::read(filename, *this, format_id, format_version);
 	f->close();
 	delete f;
 }
@@ -42,7 +41,7 @@ CovList::CovList(const Cov& cov, bool copy) : Cov(cov.n) {
 		if (copy) {
 			data = new Data();
 			data->lst  = covlist->data->lst;
-			for (list<IntervalVector>::iterator it=data->lst.begin(); it!=data->lst.end(); ++it)
+			for (std::list<IntervalVector>::iterator it=data->lst.begin(); it!=data->lst.end(); ++it)
 				data->vec.push_back(&(*it));
 			own_data = true;
 		} else {
@@ -57,9 +56,9 @@ CovList::CovList(const Cov& cov, bool copy) : Cov(cov.n) {
 }
 
 void CovList::save(const char* filename) const {
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
-	ofstream* of=CovList::write(filename, *this, format_id, format_version);
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
+	std::ofstream* of=CovList::write(filename, *this, format_id, format_version);
 	of->close();
 	delete of;
 }
@@ -81,17 +80,17 @@ void CovList::add(const IntervalVector& x) {
 	data->vec.push_back(&data->lst.back());
 }
 
-ostream& operator<<(ostream& os, const CovList& cov) {
+std::ostream& operator<<(std::ostream& os, const CovList& cov) {
 
 	for (size_t i=0; i<cov.size(); i++) {
-		os << " " << cov[i] << endl;
+		os << " " << cov[i] << std::endl;
 	}
-	os << endl;
+	os << std::endl;
 
 	return os;
 }
 
-IntervalVector CovList::read_box(ifstream& f, size_t n) {
+IntervalVector CovList::read_box(std::ifstream& f, size_t n) {
 
 	IntervalVector box(n);
 
@@ -104,16 +103,16 @@ IntervalVector CovList::read_box(ifstream& f, size_t n) {
 	return box;
 }
 
-void CovList::write_box(ofstream& f, const IntervalVector& box) {
+void CovList::write_box(std::ofstream& f, const IntervalVector& box) {
 	for (int i=0; i<box.size(); i++) {
 		write_double(f,box[i].lb());
 		write_double(f,box[i].ub());
 	}
 }
 
-ifstream* CovList::read(const char* filename, CovList& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+std::ifstream* CovList::read(const char* filename, CovList& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 
-	ifstream* f = Cov::read(filename, cov, format_id, format_version);
+	std::ifstream* f = Cov::read(filename, cov, format_id, format_version);
 
 	if (format_id.empty() || format_id.top()!=subformat_number || format_version.top()!=FORMAT_VERSION) return f;
 	else {
@@ -130,12 +129,12 @@ ifstream* CovList::read(const char* filename, CovList& cov, std::stack<unsigned 
 	return f;
 }
 
-ofstream* CovList::write(const char* filename, const CovList& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+std::ofstream* CovList::write(const char* filename, const CovList& cov, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 
 	format_id.push(subformat_number);
 	format_version.push(FORMAT_VERSION);
 
-	ofstream* f = Cov::write(filename, cov, format_id, format_version);
+	std::ofstream* f = Cov::write(filename, cov, format_id, format_version);
 
 	write_pos_int(*f, cov.size());
 
@@ -146,7 +145,7 @@ ofstream* CovList::write(const char* filename, const CovList& cov, std::stack<un
 	return f;
 }
 
-void CovList::format(stringstream& ss, const string& title, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
+void CovList::format(std::stringstream& ss, const std::string& title, std::stack<unsigned int>& format_id, std::stack<unsigned int>& format_version) {
 	format_id.push(subformat_number);
 	format_version.push(FORMAT_VERSION);
 
@@ -158,10 +157,10 @@ void CovList::format(stringstream& ss, const string& title, std::stack<unsigned 
 			<< separator;
 }
 
-string CovList::format() {
-	stringstream ss;
-	stack<unsigned int> format_id;
-	stack<unsigned int> format_version;
+std::string CovList::format() {
+	std::stringstream ss;
+	std::stack<unsigned int> format_id;
+	std::stack<unsigned int> format_version;
 	format(ss, "CovList", format_id, format_version);
 	return ss.str();
 }

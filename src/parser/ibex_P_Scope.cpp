@@ -15,7 +15,6 @@
 
 #include <sstream>
 
-using namespace std;
 
 namespace ibex {
 namespace parser {
@@ -32,7 +31,7 @@ public:
 
 	virtual int token() const=0;
 
-	virtual void print(ostream& os) const=0;
+	virtual void print(std::ostream& os) const=0;
 };
 
 class P_Scope::S_Cst : public P_Scope::S_Object {
@@ -81,7 +80,7 @@ public:
 
 	int token() const { return TK_CONSTANT; }
 
-	void print(ostream& os) const { os << "constant " << domain; }
+	void print(std::ostream& os) const { os << "constant " << domain; }
 
 	Domain domain;
 
@@ -110,7 +109,7 @@ public:
 
 	int token() const { return TK_FUNC_SYMBOL; }
 
-	void print(ostream& os) const { os << "function " << *f; }
+	void print(std::ostream& os) const { os << "function " << *f; }
 
 	Function* f;
 };
@@ -123,7 +122,7 @@ public:
 
 	int token() const { return TK_EXPR_TMP_SYMBOL; }
 
-	void print(ostream& os) const {
+	void print(std::ostream& os) const {
 		if (expr)
 			os << "expression tmp " << *expr;
 		else
@@ -144,7 +143,7 @@ public:
 
 	int token() const { return TK_ENTITY; }
 
-	void print(ostream& os) const { os << "var " << symbol.name; }
+	void print(std::ostream& os) const { os << "var " << symbol.name; }
 
 	const ExprSymbol& symbol;
 	const Domain d;
@@ -162,7 +161,7 @@ public:
 
 	int token() const { return TK_ITERATOR; }
 
-	void print(ostream& os) const { os << "iterator " << value; }
+	void print(std::ostream& os) const { os << "iterator " << value; }
 
 	int value;
 };
@@ -204,7 +203,7 @@ P_Scope::~P_Scope() {
 }
 
 P_Scope::S_Object* P_Scope::lookup(const char* id) {
-	list<SymbolMap<S_Object*> >::iterator it=tab.begin();
+	std::list<SymbolMap<S_Object*> >::iterator it=tab.begin();
 	while (it!=tab.end()) {
 		try {
 			S_Object* o=(*it)[id];
@@ -233,7 +232,7 @@ void P_Scope::add_func(const char* id, Function* f) {
 
 void P_Scope::add_expr_tmp_symbol(const char* id, const ExprNode* expr) {
 	if (tab.front().used(id)) {
-		ostringstream s;
+		std::ostringstream s;
 		s << "P_Scope: temporary symbol \"" << id << "\" re-assigned in the same scope (please report bug)";
 		ibex_error(s.str().c_str());
 	}
@@ -284,7 +283,7 @@ const ExprNode* P_Scope::get_tmp_expr_node(const char* id) const {
 
 std::vector<const ExprNode*> P_Scope::get_all_existing_nodes() const {
 	std::vector<const ExprNode*> vec;
-	for (list<SymbolMap<S_Object*> >::const_iterator it=tab.begin(); it!=tab.end(); ++it) {
+	for (std::list<SymbolMap<S_Object*> >::const_iterator it=tab.begin(); it!=tab.end(); ++it) {
 		for (IBEXMAP(P_Scope::S_Object*)::const_iterator it2=it->begin(); it2!=it->end(); ++it2) {
 			S_Object& o=*it2->second;
 			if (o.token()==TK_EXPR_TMP_SYMBOL) {
@@ -363,14 +362,14 @@ int P_Scope::token(const char* id) const {
 }
 
 
-ostream& operator<<(ostream& os, const P_Scope& scope) {
+std::ostream& operator<<(std::ostream& os, const P_Scope& scope) {
 	os << "Scopes :\n";
-	for (list<SymbolMap<P_Scope::S_Object*> >::const_iterator it=scope.tab.begin(); it!=scope.tab.end(); ++it) {
+	for (std::list<SymbolMap<P_Scope::S_Object*> >::const_iterator it=scope.tab.begin(); it!=scope.tab.end(); ++it) {
 		os << "----------------------------------------\n";
 		for (IBEXMAP(P_Scope::S_Object*)::const_iterator it2=it->begin(); it2!=it->end(); ++it2) {
 			os << "  " << it2->first << " ";
 			it2->second->print(os);
-			os << endl;
+			os << std::endl;
 		}
 		os << "----------------------------------------\n";
 	}

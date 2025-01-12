@@ -11,7 +11,6 @@
 #include "ibex_NoBisectableVariableException.h"
 #include <cassert>
 
-using namespace std;
 
 namespace ibex {
 
@@ -76,7 +75,7 @@ void CtcForAll::contract(IntervalVector& box, ContractContext& context) {
 
 			// get and immediately bisect the domain of parameters (strategy inspired by Optimizer)
 			try {
-				pair<IntervalVector,IntervalVector> cut = bsc->bisect(l.top());
+				std::pair<IntervalVector,IntervalVector> cut = bsc->bisect(l.top());
 
 				l.pop();
 

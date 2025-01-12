@@ -11,7 +11,6 @@
 #include "ibex_SmearFunction.h"
 #include "ibex_ExtendedSystem.h"
 
-using namespace std;
 
 namespace ibex {
 

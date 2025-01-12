@@ -15,7 +15,6 @@
 #define IBEX_BENCHS_DIR "../plugins/solver/benchs"
 #endif
 
-using namespace std;
 using namespace ibex;
 
 /**

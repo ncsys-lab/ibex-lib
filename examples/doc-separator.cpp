@@ -13,10 +13,9 @@
 
 #include <fstream>
 
-using namespace std;
 using namespace ibex;
 
-ofstream output;
+std::ofstream output;
 
 /**
  * This file contains examples of the documentation.
@@ -26,18 +25,18 @@ int main() {
 
   output.open ("doc-separator.txt");
 
-  output << "================= this file is generated ==============" << endl;
+  output << "================= this file is generated ==============" << std::endl;
 
   {
-  output << "! [sep-ctc-pair-O]" << endl;
+  output << "! [sep-ctc-pair-O]" << std::endl;
   //! [sep-ctc-pair-C]
 
   //! [sep-ctc-pair-C]
-  output << "! [sep-ctc-pair-O]" << endl;
+  output << "! [sep-ctc-pair-O]" << std::endl;
   }
 
   {
-  output << "! [sep-fwd-bwd-O]" << endl;
+  output << "! [sep-fwd-bwd-O]" << std::endl;
   //! [sep-fwd-bwd-C]
 
   // Define the function
@@ -57,15 +56,15 @@ int main() {
 
   s.separate(x_in,x_out);
 
-  output << "result of inner contraction=" << x_in << endl;
-  output << "result of outer contraction=" << x_out << endl;
+  output << "result of inner contraction=" << x_in << std::endl;
+  output << "result of outer contraction=" << x_out << std::endl;
 
   //! [sep-fwd-bwd-C]
-  output << "! [sep-fwd-bwd-O]" << endl;
+  output << "! [sep-fwd-bwd-O]" << std::endl;
   }
 
   {
-  output << "! [sep-boundary-O]" << endl;
+  output << "! [sep-boundary-O]" << std::endl;
   //! [sep-boundary-C]
 
   // Define the function
@@ -87,11 +86,11 @@ int main() {
 
   s.separate(x_in,x_out);
 
-  output << "result of inner contraction=" << x_in << endl;
-  output << "result of outer contraction=" << x_out << endl;
+  output << "result of inner contraction=" << x_in << std::endl;
+  output << "result of outer contraction=" << x_out << std::endl;
 
   //! [sep-boundary-C]
-  output << "! [sep-boundary-O]" << endl;
+  output << "! [sep-boundary-O]" << std::endl;
   }
 
 }

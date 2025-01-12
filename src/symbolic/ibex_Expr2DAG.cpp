@@ -10,7 +10,6 @@
 #include "ibex_Expr2DAG.h"
 #include "ibex_ExprSubNodes.h"
 
-using namespace std;
 
 namespace ibex {
 

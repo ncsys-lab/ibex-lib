@@ -13,7 +13,6 @@
 #include "ibex_Interval.h"
 #include "utils.h"
 
-using namespace std;
 
 void TestIntervalVector::cons01() {
 	IntervalVector x(2);
@@ -711,16 +710,16 @@ bool TestIntervalVector::test_diff(int n, double _x[][2], double _y[][2], int m,
 	IntervalVector* c;
 	int nn=x.diff(y,c,compactness);
 	if (debug) {
-		cout << x << " diff " << y << " gives:" << endl;
+		std::cout << x << " diff " << y << " gives:" << std::endl;
 		for (int i=0; i<nn; i++) {
-			cout << c[i] << endl;
+			std::cout << c[i] << std::endl;
 		}
-		cout << "==================================\n";
+		std::cout << "==================================\n";
 	}
 	if (nn!=m) return false;
 	for (int i=0; i<nn; i++) {
 		if (c[i]!=mz[i]) {
-			if (debug) cout << "i=" << i << c[i] << "!=" << mz[i] << endl;
+			if (debug) std::cout << "i=" << i << c[i] << "!=" << mz[i] << std::endl;
 			delete[] c;
 			return false;
 		}

@@ -11,7 +11,6 @@
 #include "ibex_Paver.h"
 #include "ibex_Timer.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -43,13 +42,13 @@ void Paver::contract(Cell& cell, SubPaving* paving) {
 		// 	    cout.precision(17);
 		// 	    cout << "box[" << j << "]=" << box[j] << endl;
 		// 	  }
-		if (trace)  cout << "    ctc " << i;
+		if (trace)  std::cout << "    ctc " << i;
 		tmpbox=cell.box;
 
 		ctc[i].contract(cell.box);
 
 		if (cell.box.is_empty()) {
-			if (trace) cout << " -> empty set" << endl;
+			if (trace) std::cout << " -> empty set" << std::endl;
 			paving[i].add(tmpbox);
 			return;
 		}
@@ -59,11 +58,11 @@ void Paver::contract(Cell& cell, SubPaving* paving) {
 
 			paving[i].add(tmpbox,cell.box);
 
-			if (trace) cout << " -> contracts" << endl;
+			if (trace) std::cout << " -> contracts" << std::endl;
 
 		} else {
 			fix_count++;
-			if (trace) cout << " -> nothing" << endl;
+			if (trace) std::cout << " -> nothing" << std::endl;
 		}
 
 		i = ctc_loop? (i+1)%ctc.size() : i+1;
@@ -73,7 +72,7 @@ void Paver::contract(Cell& cell, SubPaving* paving) {
 
 void Paver::bisect(Cell& c) {
 
-	pair<Cell*,Cell*> new_cells=bsc.bisect(c);
+	std::pair<Cell*,Cell*> new_cells=bsc.bisect(c);
 
 	delete buffer.pop();
 	buffer.push(new_cells.first);
@@ -105,7 +104,7 @@ SubPaving* Paver::pave(const IntervalVector& init_box) {
 	while (!buffer.empty()) {
 		Cell* c=buffer.top();
 
-		if (trace) cout << buffer << endl;
+		if (trace) std::cout << buffer << std::endl;
 
 		contract(*c, paving);
 

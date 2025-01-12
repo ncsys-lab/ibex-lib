@@ -14,7 +14,6 @@
 #include "ibex_ExprCopy.h"
 #include "ibex_Function.h"
 
-using namespace std;
 
 namespace ibex {
 

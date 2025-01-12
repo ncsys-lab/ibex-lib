@@ -13,7 +13,6 @@
 #include "ibex_ExtendedSystem.h"
 #include "ibex_BxpSystemCache.h"
 
-using namespace std;
 
 namespace ibex {
 

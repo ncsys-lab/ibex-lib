@@ -12,7 +12,6 @@
 #include "ibex_NormalizedSystem.h"
 #include "ibex_ExtendedSystem.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -62,8 +61,8 @@ void BxpLinearRelaxArgMin::update(const BoxEvent& event, const BoxProperties& pr
 	}
 }
 
-string BxpLinearRelaxArgMin::to_string() const {
-	stringstream ss;
+std::string BxpLinearRelaxArgMin::to_string() const {
+	std::stringstream ss;
 	ss << '[' << id << "] BxpLinearRelaxArgmin Sys n°";
 	const NormalizedSystem* norm_sys = dynamic_cast<const NormalizedSystem*>(&sys);
 	ss << (norm_sys? norm_sys->original_sys_id : sys.id);

@@ -13,7 +13,6 @@
 #include "ibex_LargestFirst.h"
 #include "ibex_BoolInterval.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -62,7 +61,7 @@ void SetImage::pave(const IntervalVector& x, double epsilon) {
 
 	assert(x.size()==n);
 
-	stack<IntervalVector> Ldomain;
+	std::stack<IntervalVector> Ldomain;
 	IntervalVector xtilde(n);
 	IntervalVector ytilde(n);
 	LargestFirst lf(epsilon);
@@ -87,7 +86,7 @@ void SetImage::pave(const IntervalVector& x, double epsilon) {
 		else if (xtilde.max_diam()<=epsilon)
 			Lboundary.push_back(ytilde);
 		else  {
-			pair<IntervalVector,IntervalVector> boxes=lf.bisect(xtilde);
+			std::pair<IntervalVector,IntervalVector> boxes=lf.bisect(xtilde);
 			Ldomain.push(boxes.first);
 			Ldomain.push(boxes.second);
 		}

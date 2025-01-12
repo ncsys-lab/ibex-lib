@@ -14,7 +14,6 @@
 #include "ibex_Bxp.h"
 #include "ibex_Bxp.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -26,13 +25,13 @@ Cell::Cell(const Cell& e) : box(e.box), prop(this->box, e.prop), bisected_var(e.
 
 }
 
-pair<Cell*,Cell*> Cell::bisect(const BisectionPoint& pt) const {
+std::pair<Cell*,Cell*> Cell::bisect(const BisectionPoint& pt) const {
 
 	Cell* cleft;
 	Cell* cright;
 
 	if (pt.rel_pos) {
-		pair<IntervalVector,IntervalVector> boxes=box.bisect(pt.var,pt.pos);
+		std::pair<IntervalVector,IntervalVector> boxes=box.bisect(pt.var,pt.pos);
 		cleft = new Cell(boxes.first, pt.var, depth+1);
 		cright = new Cell(boxes.second, pt.var, depth+1);
 	} else {
@@ -46,7 +45,7 @@ pair<Cell*,Cell*> Cell::bisect(const BisectionPoint& pt) const {
 
 	prop.update_bisect(Bisection(box, pt, cleft->box, cright->box), cleft->prop, cright->prop);
 
-	return pair<Cell*,Cell*>(cleft,cright);
+	return std::pair<Cell*,Cell*>(cleft,cright);
 }
 
 Cell::~Cell() {

@@ -19,7 +19,6 @@
 
 #include <vector>
 
-using namespace std;
 
 namespace ibex {
 

@@ -18,7 +18,6 @@
 #include <algorithm>
 
 
-using namespace std;
 
 namespace ibex {
 
@@ -114,14 +113,14 @@ const ExprNode& ExprSimplify2::simplify(const ExprNode& e) {
 	 * and that does not appear in the final expression have just
 	 * to be deleted
 	 */
-	for (vector<const ExprNode*>::iterator it=record.begin(); it!=record.end(); ++it) {
+	for (std::vector<const ExprNode*>::iterator it=record.begin(); it!=record.end(); ++it) {
 		if (!new_nodes.found(**it)) {
 			delete *it;
 		}
 	}
 	record.clear(); // important for next call to simplify()
 
-	vector<const ExprNode*> expr_symbols;
+	std::vector<const ExprNode*> expr_symbols;
 
 	/** All the old nodes that are neither symbols, locked
 	 * or in the final expression also have to be deleted
@@ -204,7 +203,7 @@ const ExprNode* ExprSimplify2::visit(const ExprIndex& e) {
 				rec(left(*expr2)[e.index.rows(left(*expr2).dim,e.index.first_row(),e.index.last_row())]) *
 				rec(right(*expr2)[e.index.cols(right(*expr2).dim,e.index.first_col(),e.index.last_col())])));
 	} else if (is_vec(*expr2)) {
-		vector<const ExprNode*> res;
+		std::vector<const ExprNode*> res;
 		const DoubleIndex& idx=e.index;
 		const ExprVector& v=(const ExprVector&) *expr2;
 		unsigned int i=0;

@@ -18,7 +18,6 @@
 #define TOO_LARGE 1e30
 #define TOO_SMALL 1e-10
 
-using namespace std;
 
 namespace ibex {
 
@@ -510,29 +509,29 @@ bool is_posdef_rohn(const IntervalMatrix& A) {
 
 	// the integer is the position in the vector where the sign
 	// has to be changed.
-	stack<pair<Vector,int> > s;
+	std::stack<std::pair<Vector,int> > s;
 
 	// The first index is 1 to break symmetry (the sign of index 0
 	// is always 1).
-	s.push(make_pair(Vector::ones(n),1));
+	s.push(std::make_pair(Vector::ones(n),1));
 
 	// initial test with z=(1,...,1)
 	if (!is_posdef_sylvester(midA - radA)) return false;
 
 	while (!s.empty()) {
-		pair<Vector,int> p=s.top();
+		std::pair<Vector,int> p=s.top();
 		s.pop();
 
 		Vector& v=p.first;
 		int i=p.second;
 
-		if (i<n-1) s.push(make_pair(v,i+1));
+		if (i<n-1) s.push(std::make_pair(v,i+1));
 
 		v[i]=-1;
 		Tz=Matrix::diag(v);
 		if (!is_posdef_sylvester(midA - Tz*radA*Tz)) return false;
 
-		if (i<n-1) s.push(make_pair(v,i+1));
+		if (i<n-1) s.push(std::make_pair(v,i+1));
 	}
 
 	return true;

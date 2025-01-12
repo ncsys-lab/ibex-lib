@@ -14,7 +14,6 @@
 #include "utils.h"
 #include <float.h>
 
-using namespace std;
 
 namespace {
 int _bitset1[3] = { 3, 7, 9 };

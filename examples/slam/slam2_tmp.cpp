@@ -11,7 +11,6 @@
 
 #include "ibex.h"
 #include "data.h"
-using namespace std;
 
 using namespace ibex;
 
@@ -29,13 +28,13 @@ int main() {
   IntervalVector box(T*2,Interval(0,L));
   Variable x(T,2);
 
-  vector<Ctc*> ctc;
+  std::vector<Ctc*> ctc;
   for (int t=0; t<T; t++) {
     // ![qinter]
     // create a temporary subvector
     // for collecting all the contractors corresponding
     // to the detections at time t
-    vector<Ctc*> cdist;
+    std::vector<Ctc*> cdist;
     for (int b=0; b<N; b++) {
       NumConstraint* c=new NumConstraint(
           x,dist(x[t],beacons[b])=d[t][b]);
@@ -59,9 +58,9 @@ int main() {
   // FixPoint
   CtcFixPoint fix(compo);
 
-  cout << endl << "initial box =" << box << endl;
+  std::cout << std::endl << "initial box =" << box << std::endl;
   fix.contract(box);
-  cout << endl << "final box =" << box << endl << endl;
+  std::cout << std::endl << "final box =" << box << std::endl << std::endl;
 
   return 0;
 }

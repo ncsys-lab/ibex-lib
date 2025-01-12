@@ -16,7 +16,6 @@
 
 #define IBEX_OPTIM_BENCHS_DIR "../benchs/optim"
 
-using namespace std;
 using namespace ibex;
 
 /**
@@ -25,13 +24,13 @@ using namespace ibex;
 
 int main() {
 
-  ofstream output;
+  std::ofstream output;
   output.open ("doc-optim.txt");
 
-  output << "================= this file is generated ==============" << endl;
+  output << "================= this file is generated ==============" << std::endl;
 
   {
-  output << "! [optim-call-default-O]" << endl;
+  output << "! [optim-call-default-O]" << std::endl;
   //! [optim-call-default-C]
 
   /* Build a constrained optimization problem from the file */
@@ -43,14 +42,14 @@ int main() {
   o.optimize(sys.box);// Run the optimizer
 
   /* Display the result. */
-  output << "interval for the minimum: " << Interval(o.get_uplo(),o.get_loup()) << endl;
-  output << "minimizer: " << o.get_loup_point() << endl;
+  output << "interval for the minimum: " << Interval(o.get_uplo(),o.get_loup()) << std::endl;
+  output << "minimizer: " << o.get_loup_point() << std::endl;
   //! [optim-call-default-C]
-  output << "! [optim-call-default-O]" << endl;
+  output << "! [optim-call-default-O]" << std::endl;
   }
 
   {
-  output << "! [optim-implem-default-O]" << endl;
+  output << "! [optim-implem-default-O]" << std::endl;
   //! [optim-implem-default-C]
 
   System system(IBEX_OPTIM_BENCHS_DIR "/easy/ex3_1_3.bch");
@@ -97,18 +96,18 @@ int main() {
   o.optimize(system.box,prec);
 
   /* Display a safe enclosure of the minimum */
-  output << "f* in " << Interval(o.get_uplo(),o.get_loup()) << endl;
+  output << "f* in " << Interval(o.get_uplo(),o.get_loup()) << std::endl;
 
   /* Report performances */
-  output << "cpu time used=" << o.get_time() << "s."<< endl;
-  output << "number of cells=" << o.get_nb_cells() << endl;
+  output << "cpu time used=" << o.get_time() << "s."<< std::endl;
+  output << "number of cells=" << o.get_nb_cells() << std::endl;
 
   //! [optim-implem-default-C]
-  output << "! [optim-implem-default-O]" << endl;
+  output << "! [optim-implem-default-O]" << std::endl;
   }
 
   {
-  output << "! [optim-all-minima-O]" << endl;
+  output << "! [optim-all-minima-O]" << std::endl;
   //! [optim-all-minima-C]
   // ========== 1st step ==========
   // Build the original system: 
@@ -141,7 +140,7 @@ int main() {
   // the form of manifold)
   const CovSolverData& minima=solver.get_data();
   //! [optim-all-minima-C]
-  output << "! [optim-all-minima-O]" << endl;
+  output << "! [optim-all-minima-O]" << std::endl;
   minima.save("doc-optim-all-minima.cov");
   }
 

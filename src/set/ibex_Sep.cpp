@@ -10,7 +10,6 @@
 
 #include "ibex_Sep.h"
 
-using namespace std;
 
 namespace ibex {
 

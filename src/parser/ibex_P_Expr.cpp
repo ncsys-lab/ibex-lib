@@ -16,7 +16,6 @@
 
 extern void ibexerror (const std::string& msg);
 
-using namespace std;
 
 namespace ibex {
 namespace parser {
@@ -61,7 +60,7 @@ Interval P_ExprNode::_2itv() const {
 	return d.i();
 }
 
-ostream& operator<<(ostream& os, const P_ExprNode& e) {
+std::ostream& operator<<(std::ostream& os, const P_ExprNode& e) {
 	P_ExprPrinter p(os,e);
 	return os;
 }
@@ -159,7 +158,7 @@ P_ExprGenericBinaryOp::~P_ExprGenericBinaryOp() {
 const P_ExprNode* apply(Function& f, const Array<const P_ExprNode>& args) {
 	int n=f.nb_arg();
 	if (n!=args.size()) {
-		stringstream s;
+		std::stringstream s;
 		s << "function " << f.name << " expects " << n << " argument" << (n>1? "s":"");
 		ibexerror(s.str());
 		return &args[0]; // just to avoid a "warning control reaches end of non-void function"

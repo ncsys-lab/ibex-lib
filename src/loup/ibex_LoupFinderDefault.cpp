@@ -14,7 +14,6 @@
 #include "ibex_BxpLinearRelaxArgMin.h"
 #include "ibex_LoupFinderProbing.h"
 
-using namespace std;
 
 namespace ibex {
 
@@ -39,7 +38,7 @@ void LoupFinderDefault::add_property(const IntervalVector& init_box, BoxProperti
 
 std::pair<IntervalVector, double> LoupFinderDefault::find(const IntervalVector& box, const IntervalVector& old_loup_point, double old_loup, BoxProperties& prop) {
 
-	pair<IntervalVector,double> p=make_pair(old_loup_point, old_loup);
+	std::pair<IntervalVector,double> p=std::make_pair(old_loup_point, old_loup);
 
 	bool found=false;
 
@@ -67,7 +66,7 @@ std::pair<IntervalVector, double> LoupFinderDefault::find(const IntervalVector& 
 			double loup = p.second;
 			LoupFinderProbing(finder_x_taylor.sys).dichotomic_line_search(loup_point, loup, *argmin->argmin(), false);
 			//cout << "better loup found! " << loup << endl;
-			p=make_pair(loup_point,loup);
+			p=std::make_pair(loup_point,loup);
 		}
 		return p;
 	} else

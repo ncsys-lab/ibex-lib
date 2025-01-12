@@ -20,7 +20,7 @@ namespace {
 
 class ExprNodes : public virtual ExprVisitor<void> {
 public:
-	vector<const ExprNode*> nodes;
+	std::vector<const ExprNode*> nodes;
 	NodeMap<bool> visited;
 
 	ExprNodes(const Array<const ExprSymbol>* args) {
@@ -101,13 +101,13 @@ void ExprSubNodes::init(const Array<const ExprSymbol>* args, const Array<const E
 	// gives much better results... but we loses
 	// reproducibility (because, by copying an expression,
 	// the ids hence the order changes)
-//	for (IBEX_NODE_MAP(const ExprNode*)::const_iterator it=en.map.begin(); it!=en.map.end(); ++it) {
+//	for (IBEX_NODE_MAP(const ExprNode*)::const_iterator it=en.map.begin(); it!=en.map.end(); it++) {
 //		assert(i<e.size);
 //		tab[i++]=it->second;
 //	}
 
 	// ============ 2nd method ============
-	for (vector<const ExprNode*>::iterator it=en.nodes.begin(); it!=en.nodes.end(); ++it) {
+	for (std::vector<const ExprNode*>::iterator it=en.nodes.begin(); it!=en.nodes.end(); it++) {
 		tab[i++]=*it;
 	}
 

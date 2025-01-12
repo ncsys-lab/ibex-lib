@@ -10,7 +10,6 @@
 
 #include "ibex_CellBeamSearch.h"
 
-using namespace std;
 
 namespace ibex {
 
