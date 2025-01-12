@@ -1,6 +1,8 @@
---- mathlib-2.1.1/configure	2019-02-02 08:42:03
-+++ mathlib-2.1.1/configure	2025-01-11 22:11:18
-@@ -11766,7 +11766,7 @@
+diff --git a/configure b/configure
+index 48b8622..0b31c58 100755
+--- mathlib-2.1.1/configure
++++ mathlib-2.1.1//configure
+@@ -11766,7 +11766,7 @@ $as_echo "#define MATHLIB_CYGWIN 1" >>confdefs.h
  $as_echo "#define IX86_CPU 1" >>confdefs.h
  
  	;;
@@ -9,7 +11,7 @@
  
  $as_echo "#define MATHLIB_I86_MACOSX 1" >>confdefs.h
  
-@@ -11784,7 +11784,7 @@
+@@ -11784,7 +11784,7 @@ $as_echo "#define MATHLIB_AIX 1" >>confdefs.h
  $as_echo "#define MATHLIB_SUN 1" >>confdefs.h
  
  	;;
@@ -18,3 +20,61 @@
  
  $as_echo "#define MATHLIB_AARCH64 1" >>confdefs.h
  
+diff --git a/configure.ac b/configure.ac
+index 7cd8e74..f8beb7c 100644
+--- mathlib-2.1.1/configure.ac
++++ mathlib-2.1.1//configure.ac
+@@ -86,7 +86,7 @@ i?86-*-cygwin*)
+ 	AC_DEFINE(IX86_CPU,1,
+ 				[Define this if your system is ix86-based]) 
+ 	;;
+-i?86-apple*)
++i?86-apple* | x86_64-apple*)
+ 	AC_DEFINE(MATHLIB_I86_MACOSX,1,
+ 				[Define this if your system is a ix86 running MacOSX])
+ 	AC_DEFINE(IX86_CPU,1,
+@@ -100,7 +100,7 @@ rs6000-* | powerpc-*)
+ 	AC_DEFINE(MATHLIB_SUN,1,
+ 	          [Define this if your system is SUN based])
+ 	;;
+-aarch64-*-linux-*)
++aarch64-*-linux-* | arm-apple*)
+ 	AC_DEFINE(MATHLIB_AARCH64,1,
+ 		[Define this if your system is ARM64 based])
+ 	;;
+diff --git a/src/AARCH64_DPChange.c b/src/AARCH64_DPChange.c
+index a48ea92..9033b04 100644
+--- mathlib-2.1.1/src/AARCH64_DPChange.c
++++ mathlib-2.1.1//src/AARCH64_DPChange.c
+@@ -18,6 +18,7 @@
+ #include <stdio.h>
+ #if HAVE_FENV_H
+ #  include <fenv.h>
++#pragma STDC FENV_ACCESS ON
+ #endif /* HAVE_FENV_H */
+ 
+ #define FESETENV fesetenv
+diff --git a/src/IX86MACOSX_DPChange.c b/src/IX86MACOSX_DPChange.c
+index 374eb3f..c83a984 100644
+--- mathlib-2.1.1/src/IX86MACOSX_DPChange.c
++++ mathlib-2.1.1//src/IX86MACOSX_DPChange.c
+@@ -18,6 +18,7 @@
+ #include <stdio.h>
+ #if HAVE_FENV_H
+ #  include <fenv.h>
++#pragma STDC FENV_ACCESS ON
+ #endif /* HAVE_FENV_H */
+ 
+ unsigned  short OrgDPStatus=0;
+diff --git a/src/LINUX64_DPChange.c b/src/LINUX64_DPChange.c
+index d7d7ceb..8a6223d 100644
+--- mathlib-2.1.1/src/LINUX64_DPChange.c
++++ mathlib-2.1.1//src/LINUX64_DPChange.c
+@@ -18,6 +18,7 @@
+ #include <stdio.h>
+ #if HAVE_FENV_H
+ #  include <fenv.h>
++#pragma STDC FENV_ACCESS ON
+ #endif /* HAVE_FENV_H */
+ 
+ /* 

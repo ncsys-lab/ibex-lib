@@ -20,6 +20,41 @@ index 3e53497..7af7363 100755
  
  $as_echo "#define AARCH64_LINUX 1" >>confdefs.h
  
+diff --git a/configure.ac b/configure.ac
+index 8bf0691..225a0f6 100644
+--- gaol-4.2.3/configure.ac
++++ gaol-4.2.3/configure.ac
+@@ -354,7 +354,7 @@ i?86-*-cygwin*)
+           [Define this if your system is a cygwin-based ix86 or compatible])
+ 	AM_CONDITIONAL([IS_CYGWIN_COND],[true])
+ 	;;
+-i?86-apple-*)
++i?86-apple* | x86_64-apple*)
+ 	AC_DEFINE(IX86_MACOSX,1,
+           [Define this if your system is a Linux-based ix86 or compatible])
+ 	AM_CONDITIONAL([IS_CYGWIN_COND],[false])
+@@ -369,7 +369,7 @@ powerpc*)
+ 	  [Define this if your system is a PowerPc under MacOs X])
+ 	AM_CONDITIONAL([IS_CYGWIN_COND],[false])
+ 	;;
+-aarch64-*-linux-*)
++aarch64-*-linux-* | arm-apple*)
+ 	AC_DEFINE(AARCH64_LINUX,1,
+ 		[Define this if your system is an AARCH64-based computer under Linux])
+ 	AM_CONDITIONAL([IS_CYGWIN_COND],[false])
+diff --git a/gaol/gaol_common.cpp b/gaol/gaol_common.cpp
+index ba48614..cda9f97 100644
+--- gaol-4.2.3/gaol/gaol_common.cpp
++++ gaol-4.2.3/gaol/gaol_common.cpp
+@@ -75,7 +75,7 @@ namespace gaol {
+             save_fpu_state_crlibm = ::crlibm_init();
+ #endif
+ #if !GAOL_PRESERVE_ROUNDING
+-            reset_fpu_cw(GAOL_FPU_MASK); // 53 bits precision, all exceptions masked, rounding to +oo
++            default_fpu_cw(); // 53 bits precision, all exceptions masked, rounding to +oo
+ #   if USING_SSE2_INSTRUCTIONS
+             round_upward_sse();
+ #   endif
 diff --git a/gaol/gaol_double_op_apmathlib.h b/gaol/gaol_double_op_apmathlib.h
 index 3c5c6fe..5965de8 100644
 --- gaol-4.2.3/gaol/gaol_double_op_apmathlib.h
@@ -159,7 +194,7 @@ index a647136..0aa43aa 100644
        }
      }
 diff --git a/gaol/gaol_exceptions.h b/gaol/gaol_exceptions.h
-index 95ee047..6db2607 100644
+index 95ee047..1c18a85 100644
 --- gaol-4.2.3/gaol/gaol_exceptions.h
 +++ gaol-4.2.3/gaol/gaol_exceptions.h
 @@ -68,7 +68,7 @@ namespace gaol {
@@ -171,19 +206,143 @@ index 95ee047..6db2607 100644
      /*!
        \brief Accessor for the file name
  
+diff --git a/gaol/gaol_fpu.h b/gaol/gaol_fpu.h
+index a08af58..ec33f62 100644
+--- gaol-4.2.3/gaol/gaol_fpu.h
++++ gaol-4.2.3/gaol/gaol_fpu.h
+@@ -42,12 +42,12 @@
+   problems with it being expanded to multiple statements.
+   The same hold for GAOL_RND_ENTER_SSE()
+ */
+-#  define GAOL_RND_ENTER()      unsigned short int _save_state=get_fpu_cw(); round_upward()
++#  define GAOL_RND_ENTER()      fenv_t _save_state=get_fpu_cw(); round_upward()
+ #  define GAOL_RND_LEAVE()      reset_fpu_cw(_save_state)
+-#  define GAOL_RND_PRESERVE()   unsigned short int _save_state=get_fpu_cw()
++#  define GAOL_RND_PRESERVE()   fenv_t _save_state=get_fpu_cw()
+ #  define GAOL_RND_RESTORE()    reset_fpu_cw(_save_state)
+ #  if USING_SSE2_INSTRUCTIONS
+-#     define GAOL_RND_ENTER_SSE() 	unsigned int _save_state_sse = _mm_getcsr(); round_upward_sse()
++#     define GAOL_RND_ENTER_SSE() 	fenv_t _save_state_sse = _mm_getcsr(); round_upward_sse()
+ #     define GAOL_RND_LEAVE_SSE()	_mm_setcsr(_save_state_sse)
+ #  endif
+ #else // !GAOL_PRESERVE_ROUNDING
+@@ -65,6 +65,7 @@
+ #if HAVE_FENV_H
+ #  include "gaol/gaol_fpu_fenv.h"
+ #elif defined (_MSC_VER)
++typedef fenv_t unsigned int;
+ #  include "gaol/gaol_fpu_msvc.h"
+ #else
+ #  error "Don't know how to define FPU manipulation functions"
 diff --git a/gaol/gaol_fpu_fenv.h b/gaol/gaol_fpu_fenv.h
-index bd0938c..c69135d 100644
+index bd0938c..f679b53 100644
 --- gaol-4.2.3/gaol/gaol_fpu_fenv.h
 +++ gaol-4.2.3/gaol/gaol_fpu_fenv.h
-@@ -42,7 +42,7 @@
- // FIXME: Using an hexadecimal constant is not portable!
- #define GAOL_FPU_MASK 0x0a3f
+@@ -37,18 +37,7 @@
  
+ #include "gaol/gaol_port.h"
+ #include <fenv.h>
+-
+-//  Mask 0x0a7f: 53 bits precision, all exceptions masked, rounding to +oo
+-// FIXME: Using an hexadecimal constant is not portable!
+-#define GAOL_FPU_MASK 0x0a3f
+-
 -#if __APPLE__
+-#   define CTRLWORD(v) (v).__control
+-#elif IX86_LINUX
+-#   define CTRLWORD(v) (v).__control_word
+-#elif AARCH64_LINUX
+-#   define CTRLWORD(v) (v).__fpcr
+-#endif 
++#pragma STDC FENV_ACCESS ON
+ 
+ #if USING_SSE2_INSTRUCTIONS
+ #  include <xmmintrin.h>
+@@ -109,19 +98,36 @@ round_nearest(void)
+   fesetround(FE_TONEAREST);
+ }
+ 
+-INLINE unsigned short int get_fpu_cw()
++INLINE fenv_t get_fpu_cw()
+ {
+   fenv_t tmp;
+   fegetenv(&tmp);
+-  return CTRLWORD(tmp);
++  return tmp;
+ }
+ 
+-INLINE void reset_fpu_cw(unsigned short int st)
++INLINE void reset_fpu_cw(fenv_t st)
+ {
+-  fenv_t tmp;
+-  fegetenv(&tmp);
+-  CTRLWORD(tmp) = st;
+-  fesetenv(&tmp);
++  fesetenv(&st);
++}
++
++//  Mask 0x0a7f: 53 bits precision, all exceptions masked, rounding to +oo
++// FIXME: Using an hexadecimal constant is not portable!
++#define GAOL_FPU_MASK 0x0a3f
++INLINE void default_fpu_cw()
++{
++	fenv_t tmp;
 +#if IX86_MACOSX
- #   define CTRLWORD(v) (v).__control
- #elif IX86_LINUX
- #   define CTRLWORD(v) (v).__control_word
++	fegetenv(&tmp);
++	tmp.__control = GAOL_FPU_MASK;
++    fesetenv(tmp);
++#elif IX86_LINUX
++	fegetenv(&tmp);
++	tmp.__control_word = GAOL_FPU_MASK;
++	fesetenv(tmp);
++#elif AARCH64_LINUX
++	feholdexcept(&tmp);    // mask all exceptions
++    fesetround(FE_UPWARD); // round to +oo
++#endif
+ }
+ 
+   /*!
+diff --git a/gaol/gaol_fpu_msvc.h b/gaol/gaol_fpu_msvc.h
+index f3ebc55..020e790 100644
+--- gaol-4.2.3/gaol/gaol_fpu_msvc.h
++++ gaol-4.2.3/gaol/gaol_fpu_msvc.h
+@@ -101,16 +101,21 @@ round_nearest(void)
+ 	_control87(_RC_NEAR,_MCW_RC);
+ }
+ 
+-INLINE unsigned short int get_fpu_cw()
++INLINE unsigned int get_fpu_cw()
+ {
+   return _control87(0,0);
+ }
+ 
+-INLINE void reset_fpu_cw(unsigned short int st)
++INLINE void reset_fpu_cw(unsigned int st)
+ {
+ 	_control87(st,_MCW_DN|_MCW_EM|_MCW_IC|_MCW_RC|_MCW_PC);
+ }
+ 
++INLINE void default_fpu_cw()
++{
++	reset_fpu_cw(GAOL_FPU_MASK);
++}
++
+   /*!
+     \brief Returns the opposite of the argument
+ 
+diff --git a/gaol/gaol_interval.cpp b/gaol/gaol_interval.cpp
+index b294164..488f9f6 100644
+--- gaol-4.2.3/gaol/gaol_interval.cpp
++++ gaol-4.2.3/gaol/gaol_interval.cpp
+@@ -1143,7 +1143,7 @@ interval nth_root(const interval& I, unsigned int n)
+       return std::numeric_limits<double>::max();
+     }
+ 
+-    unsigned short int _save_state=get_fpu_cw(); round_nearest();
++    fenv_t _save_state=get_fpu_cw(); round_nearest();
+     double middle = 0.5*(left()+right());
+ 	 if (std::isinf(middle)) {
+ 		middle = 0.5*left() + 0.5*right();
 diff --git a/gaol/gaol_interval.h b/gaol/gaol_interval.h
 index 4017a7e..002ada9 100644
 --- gaol-4.2.3/gaol/gaol_interval.h
@@ -222,3 +381,15 @@ index a17a901..aacf4c2 100644
  #endif
  
    // #define GAOL_INFINITY std::numeric_limits<double>::infinity()
+diff --git a/gaol/sysdeps/gaol_exact_c99.h b/gaol/sysdeps/gaol_exact_c99.h
+index 97d6ad4..361c265 100644
+--- gaol-4.2.3/gaol/sysdeps/gaol_exact_c99.h
++++ gaol-4.2.3/gaol/sysdeps/gaol_exact_c99.h
+@@ -34,6 +34,7 @@
+  file.
+  */
+ # include <fenv.h>
++#pragma STDC FENV_ACCESS ON
+ 
+ inline int get_inexact(void)
+ {
