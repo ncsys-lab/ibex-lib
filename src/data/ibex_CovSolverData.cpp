@@ -257,7 +257,7 @@ std::ofstream* CovSolverData::write(const char* filename, const CovSolverData& c
 
 
 	for (std::vector<size_t>::const_iterator it=cov.data->_solver_pending.begin(); it!=cov.data->_solver_pending.end(); ++it) {
-		assert(*it<numeric_limits<uint32_t>::max());
+		assert(*it<std::numeric_limits<uint32_t>::max());
 		write_pos_int(*f, (uint32_t) *it);
 	}
 
