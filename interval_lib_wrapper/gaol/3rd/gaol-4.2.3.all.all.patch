@@ -207,10 +207,10 @@ index 95ee047..1c18a85 100644
        \brief Accessor for the file name
  
 diff --git a/gaol/gaol_fpu.h b/gaol/gaol_fpu.h
-index a08af58..ec33f62 100644
+index a08af58..f0a3601 100644
 --- gaol-4.2.3/gaol/gaol_fpu.h
 +++ gaol-4.2.3/gaol/gaol_fpu.h
-@@ -42,12 +42,12 @@
+@@ -42,9 +42,9 @@
    problems with it being expanded to multiple statements.
    The same hold for GAOL_RND_ENTER_SSE()
  */
@@ -221,11 +221,7 @@ index a08af58..ec33f62 100644
 +#  define GAOL_RND_PRESERVE()   fenv_t _save_state=get_fpu_cw()
  #  define GAOL_RND_RESTORE()    reset_fpu_cw(_save_state)
  #  if USING_SSE2_INSTRUCTIONS
--#     define GAOL_RND_ENTER_SSE() 	unsigned int _save_state_sse = _mm_getcsr(); round_upward_sse()
-+#     define GAOL_RND_ENTER_SSE() 	fenv_t _save_state_sse = _mm_getcsr(); round_upward_sse()
- #     define GAOL_RND_LEAVE_SSE()	_mm_setcsr(_save_state_sse)
- #  endif
- #else // !GAOL_PRESERVE_ROUNDING
+ #     define GAOL_RND_ENTER_SSE() 	unsigned int _save_state_sse = _mm_getcsr(); round_upward_sse()
 @@ -65,6 +65,7 @@
  #if HAVE_FENV_H
  #  include "gaol/gaol_fpu_fenv.h"
