@@ -286,11 +286,11 @@ index bd0938c..f679b53 100644
 +#if IX86_MACOSX
 +	fegetenv(&tmp);
 +	tmp.__control = GAOL_FPU_MASK;
-+    fesetenv(tmp);
++    fesetenv(&tmp);
 +#elif IX86_LINUX
 +	fegetenv(&tmp);
 +	tmp.__control_word = GAOL_FPU_MASK;
-+	fesetenv(tmp);
++	fesetenv(&tmp);
 +#elif AARCH64_LINUX
 +	feholdexcept(&tmp);    // mask all exceptions
 +    fesetround(FE_UPWARD); // round to +oo
