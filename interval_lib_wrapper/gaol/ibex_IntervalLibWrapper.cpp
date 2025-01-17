@@ -23,6 +23,20 @@ namespace ibex {
 //const Interval Interval::half_pi()(gaol::interval::half_pi);
 //
  */
+<<<<<<< HEAD
+=======
+namespace {
+// we use Gaol not in PRESERVE_ROUNDING mode, thus assuming
+// the rounding mode is always set upward.
+// Calling this function in the initialization of one static constant
+// (like EMPTY_SET) should be enough as these constants are all
+// initialized before the first Ibex function call occurs.
+void init_gaol() {
+	gaol::init();
+	gaol::round_upward();
+}
+}
+>>>>>>> 059d1fe7 (Call gaol::init from wrapper.)
 
 // we have no other choice than copy-pasting
 // the definitions (from goal_interval.cpp)
