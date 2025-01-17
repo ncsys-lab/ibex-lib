@@ -32,6 +32,7 @@ namespace {
 // (like EMPTY_SET) should be enough as these constants are all
 // initialized before the first Ibex function call occurs.
 void init_gaol() {
+	gaol::init();
 	gaol::round_upward();
 }
 }
