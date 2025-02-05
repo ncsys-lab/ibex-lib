@@ -555,7 +555,8 @@ void Function::init(const Array<const ExprSymbol>& x, const ExprNode& y, const c
 
 	_eval = new Eval(*this);
 	_hc4revise = new HC4Revise(*_eval);
-	_grad = new Gradient(*_eval);
+	// _grad = new Gradient(*_eval);
+	_grad = nullptr;
 	_inhc4revise = new InHC4Revise(*_eval);
 
 	// ===== display adjacency (debug) =========
