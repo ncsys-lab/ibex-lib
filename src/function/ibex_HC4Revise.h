@@ -40,7 +40,7 @@ public:
 	 *       x is set to the empty set although f([x])\subseteq [y]
 	 *       and the return value is "false".
 	 */
-	bool proj(const Domain& y, IntervalVector& x);
+	bool proj(const Domain& y, IntervalVector& x, const std::function<void(int index, const Interval &old_value, const Interval &new_value)> &callback);
 
 	/**
 	 * \brief Ratio for the contraction of a

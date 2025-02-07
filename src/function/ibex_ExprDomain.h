@@ -85,7 +85,10 @@ public:
 	 * \param grad - true<=>read "g" (gradient) false <=>read "d" (domain)
 	 * \see #ibex::ExprLabel
 	 */
-	void read_arg_domains(typename D::VECTOR& box) const;
+	void read_arg_domains(typename D::VECTOR& box,
+						 const std::function<void(int index, const Interval &old_value, const Interval &new_value)> &callback =
+						 [](int, const Interval&, const Interval&){}
+) const;
 
 private:
 	ExprTemplateDomain(const ExprTemplateDomain&); // forbidden
@@ -193,12 +196,15 @@ inline void ExprTemplateDomain<D>::write_arg_domains(const typename D::VECTOR& b
 }
 
 template<class D>
-inline void ExprTemplateDomain<D>::read_arg_domains(typename D::VECTOR& box) const {
+inline void ExprTemplateDomain<D>::read_arg_domains(typename D::VECTOR& box, const std::function<void(int index, const Interval &old_value, const Interval &new_value)> &callback) const {
 	if (ExprData<TemplateDomain<D> >::f.all_args_scalar()) {
 
 		for (std::vector<int>::const_iterator  j=ExprData<TemplateDomain<D> >::f.used_vars.begin();
 				j!=ExprData<TemplateDomain<D> >::f.used_vars.end(); ++j) {
-			box[*j]=ExprData<TemplateDomain<D> >::args[*j].i();
+			const auto &old_value=box[*j];
+			const auto &new_value=ExprData<TemplateDomain<D> >::args[*j].i();
+			if (old_value != new_value) callback(*j, old_value, new_value);
+			box[*j]=new_value;
 		}
 	}
 	else {

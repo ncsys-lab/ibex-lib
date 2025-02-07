@@ -33,7 +33,7 @@ bool HC4Revise::proj(const Domain& y, Array<Domain>& x) {
 //bool HC4Revise::proj(const Domain& y, const Array<const Domain>& x) {
 //}
 
-bool HC4Revise::proj(const Domain& y, IntervalVector& x) {
+bool HC4Revise::proj(const Domain& y, IntervalVector& x, const std::function<void(int index, const Interval &old_value, const Interval &new_value)> &callback) {
 	eval.eval(x);
 	//std::cout << "forward:" << std::endl; f.cf.print(d);
 
@@ -42,7 +42,7 @@ bool HC4Revise::proj(const Domain& y, IntervalVector& x) {
 	try {
 		is_inner = backward(y);
 
-		d.read_arg_domains(x);
+		d.read_arg_domains(x, callback);
 
 		return is_inner;
 
