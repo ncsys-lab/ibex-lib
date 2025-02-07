@@ -774,7 +774,10 @@ public:
 	 * \brief Contract x w.r.t. f(x)=y.
 	 * \throw EmptyBoxException if x is empty.
 	 */
-	bool backward(const Domain& y, IntervalVector& x) const;
+	bool backward(const Domain& y, IntervalVector& x,
+		const std::function<void(int index, const Interval &old_value, const Interval &new_value)> &callback =
+		[](int, const Interval&,const Interval&){}
+		) const;
 
 	/**
 	 * \brief Contract x w.r.t. f(x)=y.
@@ -1063,8 +1066,8 @@ inline void Function::backward(const V& algo) const {
 	cf.backward<V>(algo);
 }
 
-inline bool Function::backward(const Domain& y, IntervalVector& x) const {
-	return ((Function*) this)->_hc4revise->proj(y,x);
+inline bool Function::backward(const Domain& y, IntervalVector& x, const std::function<void(int index, const Interval &old_value, const Interval &new_value)> &callback) const {
+	return ((Function*) this)->_hc4revise->proj(y,x, callback);
 }
 
 inline bool Function::backward(const Interval& y, IntervalVector& x) const {
