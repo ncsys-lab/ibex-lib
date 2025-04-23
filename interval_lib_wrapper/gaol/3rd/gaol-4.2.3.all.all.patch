@@ -202,7 +202,7 @@ index 95ee047..1c18a85 100644
      gaol_exception(const char* f, unsigned l, const string& e);
  
 -    ~gaol_exception() {}
-+    ~gaol_exception() _NOEXCEPT {}
++    ~gaol_exception() noexcept {}
      /*!
        \brief Accessor for the file name
  
