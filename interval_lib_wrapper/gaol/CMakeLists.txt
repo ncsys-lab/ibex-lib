@@ -18,6 +18,11 @@ find_header_custom (MATHLIB "MathLib.h" PATHS "${MATHLIB_DIR}" "${GAOL_DIR}")
 # Looking for ultim library, result is written in MATHLIB_LIB
 find_library_custom (MATHLIB "ultim" PATHS "${MATHLIB_DIR}" "${GAOL_DIR}")
 
+set(ROSETTA_PREFIX "")
+if (CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
+  set(ROSETTA_PREFIX arch -x86_64)
+endif ()
+
 if (MATHLIB_INCDIR AND MATHLIB_LIB)
   get_filename_component (MATHLIB_LIBDIR "${MATHLIB_LIB}" DIRECTORY)
   create_target_import_and_export (ultim ${MATHLIB_LIB} MATHLIB_EXPORTFILE
@@ -31,8 +36,10 @@ else()
                         URL ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mathlib-2.1.1.tar.gz
                         PATCH_COMMAND patch -p1 -i ${MATHLIB_PATCH}
                         BUILD_IN_SOURCE 1
-                        CONFIGURE_COMMAND ./configure --prefix=<INSTALL_DIR>
-                                                      CFLAGS=${CMAKE_C_FLAGS}
+                        CONFIGURE_COMMAND ${ROSETTA_PREFIX} ./configure
+                                          --prefix=<INSTALL_DIR>
+                                          CFLAGS=${CMAKE_C_FLAGS}
+                        BUILD_COMMAND ${ROSETTA_PREFIX} make -j16
                         LOG_DOWNLOAD 1
                         LOG_CONFIGURE 1
                         LOG_BUILD 1
@@ -108,12 +115,14 @@ else ()
                         URL ${CMAKE_CURRENT_SOURCE_DIR}/3rd/gaol-4.2.3.tar.gz
                         PATCH_COMMAND patch -p1 -i ${GAOL_PATCH}
                         BUILD_IN_SOURCE 1
-                        CONFIGURE_COMMAND ./configure --prefix=<INSTALL_DIR>
+                        CONFIGURE_COMMAND ${ROSETTA_PREFIX} ./configure
+                                      --prefix=<INSTALL_DIR>
                                       CFLAGS=${CMAKE_C_FLAGS}
                                       CXXFLAGS=${CMAKE_CXX_FLAGS}
                                       --with-mathlib-include=${MATHLIB_INCDIR}
                                       --with-mathlib-lib=${MATHLIB_LIBDIR}
                                       ${GAOL_CONFIG_ARGS}
+                        BUILD_COMMAND ${ROSETTA_PREFIX} make -j16
                         LOG_DOWNLOAD 1
                         LOG_CONFIGURE 1
                         LOG_BUILD 1

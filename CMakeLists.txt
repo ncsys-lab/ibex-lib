@@ -6,6 +6,7 @@ message (WARNING "CMake support is in beta, please report all bugs to https://gi
 project (IBEX VERSION 2.8.8 LANGUAGES CXX)
 set (IBEX_DESCRIPTION "A C++ library for interval-based algorithm design")
 set (IBEX_URL "http://www.ibex-lib.org/")
+set(CMAKE_OSX_ARCHITECTURES "x86_64" CACHE INTERNAL "" FORCE)
 
 ################################################################################
 # Add cmake.utils to the list of CMAKE_MODULE_PATH
