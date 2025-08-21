@@ -7,6 +7,15 @@ set (IBEX_URL "http://www.ibex-lib.org/")
 set (IBEX_NAMESPACE "Ibex") # TODO use it everywhere
 set (IBEX_CMAKE_PATH_FILES_PREFIX ibex-path-hints)
 
+# Opt-in: force macOS builds to x86_64 (Rosetta). Required when consuming
+# this fork from a project that wants the gaol+mathlib Rosetta path (the
+# cav26-era policy for dReal4). dReal4 sets this ON via -D... in its
+# CMakeLists.txt; standalone ibex builds leave it OFF and use the host arch.
+option (DREAL_FORCE_X86_ON_MACOS "Force CMAKE_OSX_ARCHITECTURES=x86_64 on macOS (gaol+mathlib Rosetta path)" OFF)
+if (APPLE AND DREAL_FORCE_X86_ON_MACOS)
+    set (CMAKE_OSX_ARCHITECTURES "x86_64" CACHE INTERNAL "" FORCE)
+endif ()
+
 ################################################################################
 # Add cmake.utils to the list of CMAKE_MODULE_PATH
 ################################################################################
