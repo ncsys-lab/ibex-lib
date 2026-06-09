@@ -28,12 +28,19 @@ endforeach ()
 
 # set some macros depending on system
 if (CMAKE_SYSTEM MATCHES "Linux")
-  set (MATHLIB_LINUX ON)
   if (CMAKE_SYSTEM_PROCESSOR MATCHES "86_64")
+    set (MATHLIB_LINUX ON)
     set (X86_64BITS ON)
     set (IX86_CPU ON)
   elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "i.86")
+    set (MATHLIB_LINUX ON)
     set (IX86_CPU ON)
+  elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
+    # DPChange.c picks one platform-specific include. MATHLIB_LINUX +
+    # !X86_64BITS would route to LINUX_DPChange.c (x86 inline asm); we
+    # want the MATHLIB_AARCH64 branch instead, so we leave MATHLIB_LINUX
+    # OFF here. The two flags are only consulted by DPChange.c.
+    set (MATHLIB_AARCH64 ON)
   else ()
     set (UNSUPPORTED_ARCH ON)
   endif ()
