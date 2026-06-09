@@ -945,9 +945,18 @@ private:
 
 	Eval *_eval;
 	HC4Revise *_hc4revise;
-	// TODO: actually never used if f is vector/matrix valued
+	// Lazy-initialized on first access via lazy_grad() below; many callers
+	// (e.g. SMT/contraction consumers that only use backward()) never touch
+	// the gradient, so we skip allocating it eagerly in Function::init.
 	Gradient *_grad;
 	InHC4Revise *_inhc4revise;
+
+private:
+	// Lazy accessor for _grad. Constructs the Gradient on first call.
+	// Const because Function::gradient(), Function::jacobian(),
+	// Function::deriv_calculator() are const; uses the same drop-const cast
+	// pattern as Function::ibwd() (see lazy init of _inhc4revise).
+	inline Gradient* lazy_grad() const;
 };
 
 } // end namespace
@@ -1103,7 +1112,7 @@ inline void Function::print_expr(std::ostream& os) const {
 inline void Function::gradient(const IntervalVector& x, IntervalVector& g) const {
 	assert(g.size()==nb_var());
 	assert(x.size()==nb_var());
-	_grad->gradient(x,g);
+	lazy_grad()->gradient(x,g);
 //	if (!df) ((Function*) this)->df=new Function(*this,DIFF);
 //	g=df->eval_vector(x);
 }
@@ -1132,7 +1141,7 @@ inline void Function::jacobian(const IntervalVector& full_box, IntervalMatrix& J
 }
 
 inline void Function::jacobian(const IntervalVector& x, IntervalMatrix& J, const BitSet& components, int v) const {
-	_grad->jacobian(x, J, components, v);
+	lazy_grad()->jacobian(x, J, components, v);
 }
 
 inline void Function::hansen_matrix(const IntervalVector& x, IntervalMatrix& H) const {
@@ -1160,7 +1169,12 @@ inline Eval& Function::basic_evaluator() const {
 }
 
 inline Gradient& Function::deriv_calculator() const {
-	return *_grad;
+	return *lazy_grad();
+}
+
+inline Gradient* Function::lazy_grad() const {
+	if (!_grad) ((Function*) this)->_grad = new Gradient(*_eval);
+	return _grad;
 }
 
 inline HC4Revise& Function::hc4revise() const {

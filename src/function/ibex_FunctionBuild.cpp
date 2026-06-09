@@ -561,7 +561,11 @@ void Function::init(const Array<const ExprSymbol>& x, const ExprNode& y, const c
 
 	_eval = new Eval(*this);
 	_hc4revise = new HC4Revise(*_eval);
-	_grad = new Gradient(*_eval);
+	// _grad is allocated lazily on first access (see Function::lazy_grad in
+	// ibex_Function.h). Many callers — notably SMT consumers driving HC4 via
+	// backward() — never invoke gradient()/jacobian(), making eager
+	// construction a significant Function::init overhead.
+	_grad = nullptr;
 	_inhc4revise = new InHC4Revise(*_eval);
 
 	// ===== display adjacency (debug) =========
