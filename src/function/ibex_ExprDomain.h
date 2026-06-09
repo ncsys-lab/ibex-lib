@@ -208,7 +208,10 @@ inline void ExprTemplateDomain<D>::read_arg_domains(typename D::VECTOR& box, con
 		}
 	}
 	else {
-		load(box, ExprData<TemplateDomain<D> >::args, ExprData<TemplateDomain<D> >::f.used_vars);
+		// Non-scalar (vector/matrix-typed symbol) path. The callback-aware
+		// load() overload fires the callback per component; the legacy
+		// callback-less overload would silently miss every narrowing here.
+		load(box, ExprData<TemplateDomain<D> >::args, ExprData<TemplateDomain<D> >::f.used_vars, callback);
 	}
 }
 

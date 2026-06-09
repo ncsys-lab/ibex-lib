@@ -17,6 +17,8 @@
 #include "ibex_BitSet.h"
 #include "ibex_DoubleIndex.h"
 
+#include <functional>
+
 namespace ibex {
 
 /**
@@ -271,6 +273,26 @@ void load(typename D::VECTOR& box, const Array<const TemplateDomain<D> >& domain
  */
 template<class D>
 void load(typename D::VECTOR& box, const Array<TemplateDomain<D> >& domains, const std::vector<int>& used);
+
+/**
+ * \brief Load domains into an interval vector, firing `callback` for every
+ * component whose value changes.
+ *
+ * Each per-component assignment `box[i] = new` fires `callback(i, old, new)`
+ * before the write when `old != new`. The callback parameters reference the
+ * pre-write value of `box[i]` (copied by value so it stays valid for the
+ * callback's lifetime even if the caller retains the reference).
+ *
+ * If an assignment produces an empty interval, the callback fires for that
+ * component first (with the empty value as `new`), then `box.set_empty()` is
+ * called and the function returns. The remaining components are not visited
+ * — consistent with the existing `load` overload's behavior.
+ */
+template<class D>
+void load(typename D::VECTOR& box, const Array<TemplateDomain<D> >& domains,
+          const std::vector<int>& used,
+          const std::function<void(int index, const Interval& old_value,
+                                   const Interval& new_value)>& callback);
 
 /**
  * \brief Load domains into an interval vector.
@@ -999,6 +1021,82 @@ inline void load(typename D::VECTOR& box, const Array<TemplateDomain<D> >& domai
 	std::vector<int> b;
 	for (int i=0; i<box.size(); i++) b.push_back(i);
 	load(box, domains, b);
+}
+
+template<class D>
+void load(typename D::VECTOR& x, const Array<TemplateDomain<D> >& d,
+          const std::vector<int>& used,
+          const std::function<void(int index, const Interval& old_value,
+                                   const Interval& new_value)>& callback) {
+	int i=0; // iterates over the components of box
+	std::vector<int>::const_iterator u=used.begin(); // iterates over "used"
+
+	// Helper: copy new into x[i] with callback semantics. Returns true if
+	// the post-write x[i] is empty (caller must propagate via set_empty()).
+	auto write_with_callback = [&](int dst, const Interval& new_val) -> bool {
+		const Interval old_val = x[dst]; // copy by value so callback can retain
+		if (old_val != new_val) callback(dst, old_val, new_val);
+		x[dst] = new_val;
+		return x[dst].is_empty();
+	};
+
+	for (int s=0; (used.empty() || u!=used.end()) && s<d.size(); s++) {
+		const Dim& dim=d[s].dim;
+
+		if (!used.empty() && *u>=i+dim.size()) {
+			i+=dim.size();
+			continue;
+		}
+
+		switch (dim.type()) {
+		case Dim::SCALAR:
+			if (used.empty()) {
+				if (write_with_callback(i, d[s].i())) { x.set_empty(); return; }
+			}
+			else if (i==*u) {
+				if (write_with_callback(i, d[s].i())) { x.set_empty(); return; }
+				++u;
+				if (u==used.end()) return;
+			}
+			i++;
+			break;
+		case Dim::ROW_VECTOR:
+		case Dim::COL_VECTOR:
+		{
+			const typename D::VECTOR& v=d[s].v();
+			for (int j=0; j<dim.vec_size(); j++) {
+				if (used.empty()) {
+					if (write_with_callback(i, v[j])) { x.set_empty(); return; }
+				}
+				else if (i==*u) {
+					if (write_with_callback(i, v[j])) { x.set_empty(); return; }
+					++u;
+					if (u==used.end()) return;
+				}
+				i++;
+			}
+		}
+		break;
+		case Dim::MATRIX:
+		{
+			const typename D::MATRIX& M=d[s].m();
+			for (int k=0; k<dim.nb_rows(); k++)
+				for (int j=0; j<dim.nb_cols(); j++) {
+					if (used.empty()) {
+						if (write_with_callback(i, M[k][j])) { x.set_empty(); return; }
+					}
+					else if (i==*u) {
+						if (write_with_callback(i, M[k][j])) { x.set_empty(); return; }
+						++u;
+						if (u==used.end()) return;
+					}
+					i++;
+				}
+		}
+		break;
+		}
+	}
+	assert(used.empty() || u==used.end());
 }
 
 template<class D>
