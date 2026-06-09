@@ -1,3 +1,5 @@
+include (ibex-install-3rd)
+
 subdir_list (INTERVAL_LIB_LIST RELATIVE)
 
 # TODO filib on Windows ??
