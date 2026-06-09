@@ -4,13 +4,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository identity
 
-This is a **fork** of [ibex-team/ibex-lib](https://github.com/ibex-team/ibex-lib) (Ibex 2.9.1), tracked under three remotes:
+This is the **dReal team's canonical fork** of [ibex-team/ibex-lib](https://github.com/ibex-team/ibex-lib) (Ibex 2.9.1), tracked under three remotes:
 
-- `origin` → upstream `ibex-team/ibex-lib` (the canonical Ibex repo)
-- `fork` → `ncsys-lab/ibex-lib` (this fork's hosting)
-- `soonho-upstream` → `dreal-deps/ibex-lib` (the dReal team's downstream)
+- `origin` → upstream `ibex-team/ibex-lib` (the canonical Ibex repo; rebase target)
+- `fork` → `ncsys-lab/ibex-lib` (this fork's hosting; push target)
+- `soonho-upstream` → `dreal-deps/ibex-lib` (Soonho's old downstream — abandoned 2016, not authoritative)
 
-Ibex itself is a C++ interval-arithmetic / constraint-programming library — symbolic functions, contractors, a system solver (`ibexsolve`), and a global optimizer (`ibexopt`). This fork is consumed as a dependency by a dReal-family build.
+Ibex itself is a C++ interval-arithmetic / constraint-programming library — symbolic functions, contractors, a system solver (`ibexsolve`), and a global optimizer (`ibexopt`). This fork is consumed by dReal4 via `FetchContent` (see `dreal4-cmake/CMakeLists.txt`).
+
+**The authoritative divergence catalog lives in [MIGRATION.md](MIGRATION.md)** — read it before making non-trivial changes to the fork. It explains which 14 commits make up the dReal patch set, which tarball-time patches are applied to gaol/filib/soplex, the default-`INTERVAL_LIB` policy, the branch archaeology, and the soundness-investigation findings on gaol rounding.
+
+## Branch layout
+
+- `master` — tracks `origin/master` (= `ibex-team/ibex-lib@HEAD`). Do not commit local changes here.
+- `master-modernized` — the rebase target: 14 dReal patches applied on top of `master`. WIP — see MIGRATION.md "Status of master-modernized" for the per-file porting work that remains before this builds cleanly.
+- `archive/cav26-base` — the cav26-era `be485777`. Currently consumed directly by dReal4 until `master-modernized` ports cleanly.
+- `archive/pre-modernization-filib` — `v2.8.9-upgrade-filib-rosetta` (filib-default variant of cav26-base).
+- `archive/v2.8.9-m1-superseded`, `archive/v2.7.4-m1-superseded` — older platform-port branches; superseded.
+- `fork/fmcad25-tools-bench-CONTROL` (on the `fork` remote) — paper-artifact benchmark snapshot; preserve.
+
+## Modernization cadence
+
+Rebase `master-modernized` atop `ibex-team/ibex-lib@HEAD` on every mainline minor release. Re-run the dReal-side regression suite at `dreal4-cmake/test/dreal/contractor/test/ibex_*_test.cc` (28 tests; the standing gate) after each rebase. New mainline acceptance of any of our patches → drop the corresponding commit from the rebase.
 
 ### Fork-specific delta (read before changing the build)
 

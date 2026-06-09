@@ -125,6 +125,46 @@ The Phase 1 test files capture this as cav26 baseline (so regressions are caught
 
 **Recommended follow-up:** run the same tests against a known-correct interval library (e.g., a pure filib build, or MPFI) to determine whether the discrepancy is in gaol's semantics, in the wrapper, or in the patch.
 
+## Status of `master-modernized` (Phase 2 deliverable)
+
+The `master-modernized` branch on this repo (HEAD `738a0e7f`) is `origin/master` + 14 commits applying the cav26-era patches cumulatively:
+
+```
+738a0e7f  interval_lib_wrapper: include ibex-install-3rd for subdir_list
+bbb5e1ad  Use be485777 interval_lib_wrapper/CMakeLists.txt (cav26 gaol-3rd flow)
+cbd7f1b8  cmake: bring back IbexUtils.cmake + ibex-config-utils.cmake from be485777
+6a709a44  Force x86 if on MacOS                          [be485777, opt-in DREAL_FORCE_X86_ON_MACOS]
+46c4d8ba  Upgrade gaol+mathlib to 4.2.3/2.1.1 + FPU      [cumulative: f0e35027, fc986657, 33e296eb, 4f845aa3, cd44b915]
+88366509  TMP - Add callback to Function::backward        [4d61b841]
+553e6a3b  TMP - Null-out gradient initialization          [edbd8159]
+329d7e9f  Call gaol::init from wrapper                    [059d1fe7]
+576eb39d  Fix Interval::log and Interval::pow             [ebc65b84]
+3e8be5b2  Fix refactoring mistakes in tests               [16722942]
+d46ce9c4  Fix namespacing in assertions                   [a0be73ea]
+4646bc80  Fix sneaky namespace error in parser.yc         [95e85666]
+bcf46c04  Remove `using namespace std;` from lexer/parser [d59d2e3a]
+f784cd0b  Stop using namespace std                        [1c18a60b]
+0c37e5b7  Add MIGRATION.md + CLAUDE.md                    [docs]
+```
+
+`Fix #550` (`33408ed0`) was deliberately DROPPED — already in mainline as `0f5a2fa0`.
+
+**Build status:** the load-bearing source patches (lazy-init, backward callback, log/pow, gaol::init, namespace cleanup) cherry-pick cleanly. However, building dreal4-cmake against `master-modernized` HEAD currently fails with ~18 compile errors in mainline-evolved code that the namespace-cleanup patches didn't anticipate:
+
+- `redefinition of FORMAT_VERSION / SIGNATURE_LENGTH / SIGNATURE / subformat_level / subformat_number` — mainline added these constants in headers that are now included from multiple translation units after the namespace fixes.
+- `out-of-line definition of 'add_ctr' / 'add_goal' / 'Optimizer' does not match any declaration` — `SystemFactory` / `Optimizer` signatures evolved on mainline; our `using namespace std;` removal leaves type lookups dangling.
+- `no template named 'vector'` — `using namespace std;` removal exposes call sites that didn't get the `std::` prefix.
+
+These are pure-port work: each error is local to one file and resolvable by adding the right `std::` qualifier or matching the mainline signature. There is no architectural blocker — the cav26-era logic is on top of mainline, just needs glue.
+
+**Until porting completes, dreal4-cmake remains pinned at `be485777` directly** (the cav26 baseline that we proved builds + tests). The `master-modernized` branch is the snapshot of what to port FROM as the work proceeds.
+
+**Recommended porting order:**
+1. Resolve `vector` / `std::` qualifier issues (mechanical).
+2. Match new mainline signatures for `SystemFactory::add_ctr/add_goal` and `Optimizer::Optimizer`.
+3. Resolve `FORMAT_VERSION` etc. duplicate-symbol issues (likely an include-guard or single-source-of-truth fix).
+4. Re-run dreal4-cmake build + regression suite against the updated tip.
+
 ## Modernization cadence
 
 After Phase 5, the policy is: rebase `master` atop `ibex-team/ibex-lib@HEAD` on every mainline minor release. The 14 cherry-picks remain on top as the canonical dReal patch set. The dreal4-cmake regression suite (Phase 1B) is the standing soundness gate — re-run after every rebase.
