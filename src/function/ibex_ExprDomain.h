@@ -201,7 +201,10 @@ inline void ExprTemplateDomain<D>::read_arg_domains(typename D::VECTOR& box, con
 
 		for (std::vector<int>::const_iterator  j=ExprData<TemplateDomain<D> >::f.used_vars.begin();
 				j!=ExprData<TemplateDomain<D> >::f.used_vars.end(); ++j) {
-			const auto &old_value=box[*j];
+			// Copy old_value by value: a const reference here would alias
+			// box[*j], which the assignment on the line below overwrites.
+			// A callback that retains old_value would then see the new value.
+			const Interval old_value = box[*j];
 			const auto &new_value=ExprData<TemplateDomain<D> >::args[*j].i();
 			if (old_value != new_value) callback(*j, old_value, new_value);
 			box[*j]=new_value;
