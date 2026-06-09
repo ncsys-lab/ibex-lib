@@ -47,6 +47,13 @@ bool HC4Revise::proj(const Domain& y, IntervalVector& x, const std::function<voi
 		return is_inner;
 
 	} catch(EmptyBoxException&) {
+		// Surface narrowings that completed before backward propagation hit a
+		// contradiction. Without this, callers relying on the callback to
+		// populate an "affected variables" set would miss every variable
+		// touched during the partial backward sweep — the subsequent
+		// set_empty() then over-approximates everything to empty, losing the
+		// per-variable provenance information.
+		d.read_arg_domains(x, callback);
 		x.set_empty();
 		return false;
 	}
