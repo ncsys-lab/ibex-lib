@@ -297,7 +297,11 @@ inline Interval pow(const Interval &x, double d) {
 	if(d==NEG_INFINITY || d==POS_INFINITY)
 		return Interval::empty_set();
 	else {
-		Interval res=gaol::pow(x.itv, d);
+		// gaol exposes pow(interval, interval) but not pow(interval, double):
+		// the scalar overload silently fails on fractional d (e.g.
+		// pow([1,4],0.5) returns [1,1] instead of [1,2]). Wrap d to a
+		// degenerate interval to take the (interval, interval) overload.
+		Interval res=gaol::pow(x.itv, gaol::interval(d, d));
 		//fpu_round_up();
 		return res;
 	}
@@ -333,7 +337,7 @@ inline Interval exp(const Interval& x) {
 }
 
 inline Interval log(const Interval& x) {
-	if (x.ub()<=0) // gaol returns (-oo,-DBL_MAX) if x.ub()==0, instead of EMPTY_SET
+	if (x.ub()<0) // gaol returns (-oo,-DBL_MAX) if x.ub()==0, instead of EMPTY_SET; use strict < so log([0,0]) yields (-oo, -DBL_MAX], not empty.
 		return Interval::empty_set();
 	else {
 		Interval res=gaol::log(x.itv);
