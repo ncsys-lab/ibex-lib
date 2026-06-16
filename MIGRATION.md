@@ -1,9 +1,9 @@
 # MIGRATION.md — divergence catalog for `ncsys-lab/ibex-lib`
 
-This fork carries **seven surgical patches** on top of mainline `ibex-team/ibex-lib`. Each is intended as an independent upstream PR; once any/all merge upstream, drop the corresponding commit. When all seven land, **delete the fork**.
+This fork carries **eight surgical patches** on top of mainline `ibex-team/ibex-lib`. Each is intended as an independent upstream PR; once any/all merge upstream, drop the corresponding commit. When all eight land, **delete the fork**.
 
 Baseline: `master = origin/master = ibex-team/ibex-lib@65ed5877`.
-Patch branch: `dreal-perf-patches` (7 code commits + 1 docs commit, 11 files / +163/-19 vs mainline excluding docs).
+Patch branch: `dreal-perf-patches` (8 code commits + 1 docs commit, 12 files / +169/-21 vs mainline excluding docs).
 
 ## The patches (chronological on branch)
 
@@ -69,10 +69,23 @@ Calls `d.read_arg_domains(x, callback)` in the catch block before `set_empty()`.
 
 Files: `src/function/ibex_HC4Revise.cpp`. ~7 lines.
 
+### 8. `33eb6676` — `gaol: fix Interval::log and Interval::pow soundness gaps`
+
+Two corrections to the gaol wrapper that affect rigorous overapproximation:
+
+- **`Interval::log`** previously guarded `x.ub() <= 0` and returned `EMPTY_SET`. For `x = [0,0]` (and any input whose upper bound is exactly 0), that short-circuits before gaol's own `(-oo,-DBL_MAX]` result can surface, so `log([0,0])` came back empty. dReal's HC4 contractor on transcendentals would then declare a sound branch infeasible. Switch to strict `<`.
+- **`Interval::pow(x, double d)`** dispatched to gaol's scalar exponent overload, which silently mishandled fractional `d` (e.g. `pow([1,4], 0.5)` returned `[1,1]` instead of `[1,2]`). Wrap `d` in a degenerate `gaol::interval(d, d)` to take the (interval,interval) overload, which handles fractional exponents correctly.
+
+Updates `tests/TestArith.cpp` `log04` and `log10` to expect `(-oo,-DBL_MAX]` instead of `empty_set()` — the previously-commented-out alternative expectations become canonical under the new contract.
+
+Both wrapper fixes originate in `dreal-deps/ibex-lib` commits by Soonho Kong (Sep 2018): `fe3eb925` (log) and `60218733` (pow). Previously bundled as cav26-era `ebc65b84`; re-applied here onto modernized mainline with matching test updates.
+
+Files: `interval_lib_wrapper/gaol/ibex_IntervalLibWrapper.inl`, `tests/TestArith.cpp`. 8 lines (+ ~4 lines of explanatory comment in the wrapper).
+
 ## Build & rebase cadence
 
 - Build: `cd build && cmake -DINTERVAL_LIB=gaol -DLP_LIB=none .. && make -j && make check`. 62/62 tests pass on macOS arm64 native with clang.
-- Rebase: re-apply the 7 commits onto `ibex-team/ibex-lib@HEAD` on every mainline minor release. If one of the patches lands upstream, drop it from the rebase.
+- Rebase: re-apply the 8 commits onto `ibex-team/ibex-lib@HEAD` on every mainline minor release. If one of the patches lands upstream, drop it from the rebase.
 
 ## Archive branches (historical reference, not maintained)
 
