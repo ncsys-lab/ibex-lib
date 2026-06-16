@@ -74,6 +74,21 @@ If any of the 7 patches lands upstream, drop the corresponding commit from the r
 
 `src/CMakeLists.txt` generates an umbrella `ibex.h` at configure time by globbing public headers — new headers are picked up on re-configure.
 
+## Upstream reference docs (`doc/`)
+
+`doc/` contains the upstream Sphinx documentation (User Guide + Programmer Guide). Useful when you need conceptual background or API semantics beyond what the headers convey. Index in `doc/index.rst`. Most relevant for fork work:
+
+| File | What it covers |
+|---|---|
+| `function.rst` | `Function` semantics: eval, gradient, HC4Revise, InHC4Revise — the subsystem 6/7 patches touch |
+| `contractor.rst` | `Ctc` interface, HC4, Newton, combinators (compo/union/fixpoint) |
+| `minibex.rst` | Minibex grammar — relevant to the `parser.yc` patch |
+| `interval.rst` | `Interval` / `IntervalVector` arithmetic |
+| `solver.rst`, `optim.rst` | Top-level `Solver` / `Optimizer` engines and CLI |
+| `install-cmake.rst` | Full CMake option reference (this CLAUDE.md only lists the dReal-relevant subset) |
+
+These docs describe **upstream** Ibex behavior — for patch-specific semantics, MIGRATION.md is authoritative.
+
 ## Things worth knowing
 
 - C++ standard is **C++11** (`CMAKE_CXX_STANDARD 11`). Don't introduce C++14+ features without bumping that and verifying CI.
