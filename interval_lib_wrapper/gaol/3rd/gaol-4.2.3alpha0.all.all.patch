@@ -1,5 +1,5 @@
---- gaol-4.2.3alpha0/gaol/gaol_common.cpp	2022-02-01 12:40:40.000000000 +0100
-+++ gaol-4.2.3alpha0/gaol/gaol_common.cpp	2025-03-09 12:59:58.483700407 +0100
+--- gaol-4.2.3alpha0/gaol/gaol_common.cpp
++++ gaol-4.2.3alpha0/gaol/gaol_common.cpp
 @@ -29,7 +29,7 @@
  
  #include <iostream>
@@ -21,8 +21,8 @@
  #   if USING_SSE2_INSTRUCTIONS
              round_upward_sse();
  #   endif
---- gaol-4.2.3alpha0/gaol/gaol_double_op_apmathlib.h	2022-02-01 12:40:40.000000000 +0100
-+++ gaol-4.2.3alpha0/gaol/gaol_double_op_apmathlib.h	2025-03-08 00:37:50.585568767 +0100
+--- gaol-4.2.3alpha0/gaol/gaol_double_op_apmathlib.h
++++ gaol-4.2.3alpha0/gaol/gaol_double_op_apmathlib.h
 @@ -112,7 +112,7 @@
      	for (;;) {
        	if (odd(n)) {
@@ -65,8 +65,125 @@
  	}
        }
      }
---- gaol-4.2.3alpha0/gaol/gaol_double_op_crlibm.h	2022-02-01 12:40:40.000000000 +0100
-+++ gaol-4.2.3alpha0/gaol/gaol_double_op_crlibm.h	2025-03-08 00:38:06.848553397 +0100
+@@ -440,10 +440,116 @@
+ 	  double f = next_float(atanh(x)); // atanh() not from libultim
+ 	  GAOL_RND_RESTORE();
+ 	  return f;
++  }
++
++
++
++  /*!
++    \brief Batched directed bounds: down-rounded and up-rounded image in ONE
++    nearest-rounding region.
++
++    Each <f>_dn_up evaluates the correctly-rounded routine at x_dn (rounded
++    down into *lo) and x_up (rounded up into *hi) inside a single
++    round_nearest()/round_upward() pair instead of two -- the two mathlib calls
++    share the nearest window, halving the FPU mode toggles per interval
++    transcendental. BIT-IDENTICAL to calling <f>_dn(x_dn) then <f>_up(x_up):
++    same routine, same rounding mode, same outward ulp bump; only the
++    placement/count of the mode switches changes.
++    \caution Valid only from an FE_UPWARD ambient (restored on exit). The
++    caller's argument reduction must stay in FE_UPWARD and never enter this
++    nearest window.
++  */
++  INLINE void exp_dn_up(double x_dn, double x_up, double *lo, double *hi)
++  {
++    GAOL_RND_PRESERVE();
++    round_nearest();
++    *lo = previous_float(uexp(x_dn));
++    *hi = next_float(uexp(x_up));
++    GAOL_RND_RESTORE();
++  }
++
++  INLINE void log_dn_up(double x_dn, double x_up, double *lo, double *hi)
++  {
++    GAOL_RND_PRESERVE();
++    round_nearest();
++    *lo = previous_float(ulog(x_dn));
++    *hi = next_float(ulog(x_up));
++    GAOL_RND_RESTORE();
++  }
++
++  INLINE void cos_dn_up(double x_dn, double x_up, double *lo, double *hi)
++  {
++    GAOL_RND_PRESERVE();
++    round_nearest();
++    *lo = previous_float(ucos(x_dn));
++    *hi = next_float(ucos(x_up));
++    GAOL_RND_RESTORE();
++  }
++
++  INLINE void tan_dn_up(double x_dn, double x_up, double *lo, double *hi)
++  {
++    GAOL_RND_PRESERVE();
++    round_nearest();
++    *lo = previous_float(utan(x_dn));
++    *hi = next_float(utan(x_up));
++    GAOL_RND_RESTORE();
+   }
+ 
++  INLINE void asin_dn_up(double x_dn, double x_up, double *lo, double *hi)
++  {
++    GAOL_RND_PRESERVE();
++    round_nearest();
++    *lo = previous_float(uasin(x_dn));
++    *hi = next_float(uasin(x_up));
++    GAOL_RND_RESTORE();
++  }
+ 
++  INLINE void acos_dn_up(double x_dn, double x_up, double *lo, double *hi)
++  {
++    GAOL_RND_PRESERVE();
++    round_nearest();
++    *lo = previous_float(uacos(x_dn));
++    *hi = next_float(uacos(x_up));
++    GAOL_RND_RESTORE();
++  }
+ 
++  INLINE void atan_dn_up(double x_dn, double x_up, double *lo, double *hi)
++  {
++    GAOL_RND_PRESERVE();
++    round_nearest();
++    *lo = previous_float(uatan(x_dn));
++    *hi = next_float(uatan(x_up));
++    GAOL_RND_RESTORE();
++  }
++
++  INLINE void sinh_dn_up(double x_dn, double x_up, double *lo, double *hi)
++  {
++    GAOL_RND_PRESERVE();
++    round_nearest();
++    *lo = previous_float(sinh(x_dn)); // From libm, not libultim
++    *hi = next_float(sinh(x_up));
++    GAOL_RND_RESTORE();
++  }
++
++  INLINE void cosh_dn_up(double x_dn, double x_up, double *lo, double *hi)
++  {
++    GAOL_RND_PRESERVE();
++    round_nearest();
++    *lo = previous_float(cosh(x_dn)); // From libm, not libultim
++    *hi = next_float(cosh(x_up));
++    GAOL_RND_RESTORE();
++  }
++
++  INLINE void tanh_dn_up(double x_dn, double x_up, double *lo, double *hi)
++  {
++    GAOL_RND_PRESERVE();
++    round_nearest();
++    *lo = previous_float(tanh(x_dn)); // From libm, not libultim
++    *hi = next_float(tanh(x_up));
++    GAOL_RND_RESTORE();
++  }
++
++
+ } // namespace gaol
+ 
+ #endif /* __gaol_double_op_apmathlib_h__ */
+--- gaol-4.2.3alpha0/gaol/gaol_double_op_crlibm.h
++++ gaol-4.2.3alpha0/gaol/gaol_double_op_crlibm.h
 @@ -88,7 +88,7 @@
      	for (;;) {
        	if (odd(n)) {
@@ -109,8 +226,8 @@
  	}
        }
      }
---- gaol-4.2.3alpha0/gaol/gaol_double_op_m.h	2022-02-01 12:40:40.000000000 +0100
-+++ gaol-4.2.3alpha0/gaol/gaol_double_op_m.h	2025-03-08 00:38:17.143543648 +0100
+--- gaol-4.2.3alpha0/gaol/gaol_double_op_m.h
++++ gaol-4.2.3alpha0/gaol/gaol_double_op_m.h
 @@ -115,7 +115,7 @@
      	for (;;) {
        	if (odd(n)) {
@@ -153,8 +270,8 @@
  	}
        }
      }
---- gaol-4.2.3alpha0/gaol/gaol_interval.cpp	2022-02-01 12:40:40.000000000 +0100
-+++ gaol-4.2.3alpha0/gaol/gaol_interval.cpp	2025-03-09 10:32:42.047131593 +0100
+--- gaol-4.2.3alpha0/gaol/gaol_interval.cpp
++++ gaol-4.2.3alpha0/gaol/gaol_interval.cpp
 @@ -243,7 +243,8 @@
    {
      //    double l = ((I.left()==0.0) ? 0.0  : I.left()); // Avoids printing -0
@@ -174,7 +291,112 @@
      return os;
    }
  
-@@ -1105,7 +1106,7 @@
+@@ -578,7 +579,9 @@
+ 	/* We intersect the result with [0, +oo] to ensure that the result is strictly positive
+  		Otherwise, we might have: exp([-oo, -MAX] = [-v, +v] with v very small.
+ 	*/
+-    return interval(maximum(0.0,exp_dn(I.left())),exp_up(I.right()));
++    double lo, hi;
++    exp_dn_up(I.left(), I.right(), &lo, &hi);
++    return interval(maximum(0.0, lo), hi);
+   }
+ 
+   interval log(const interval& I)
+@@ -589,7 +592,9 @@
+       return interval::emptyset();
+     }
+ 
+-    return interval(log_dn(J.left()), log_up(J.right()));
++    double lo, hi;
++    log_dn_up(J.left(), J.right(), &lo, &hi);
++    return interval(lo, hi);
+   }
+ 
+ 
+@@ -676,7 +681,9 @@
+       return interval::universe();
+     }
+     GAOL_RND_LEAVE();
+-    return interval(tan_dn(I.left()),tan_up(I.right()));
++    double lo, hi;
++    tan_dn_up(I.left(), I.right(), &lo, &hi);
++    return interval(lo, hi);
+   }
+ 
+ 
+@@ -689,7 +696,9 @@
+       return interval::emptyset();
+     }
+ 
+-    return interval(acos_dn(J.right()),acos_up(J.left()));
++    double lo, hi;
++    acos_dn_up(J.right(), J.left(), &lo, &hi);
++    return interval(lo, hi);
+   }
+ 
+   interval asin(const interval& I)
+@@ -700,7 +709,9 @@
+     if (J.is_empty()) {
+       return interval::emptyset();
+     }
+-    return interval(asin_dn(J.left()),asin_up(J.right()));
++    double lo, hi;
++    asin_dn_up(J.left(), J.right(), &lo, &hi);
++    return interval(lo, hi);
+   }
+ 
+   interval atan(const interval& I)
+@@ -708,7 +719,9 @@
+ 	if (I.is_empty()) {
+ 	  return I;
+ 	}
+-    return interval(atan_dn(I.left()),atan_up(I.right()));
++    double lo, hi;
++    atan_dn_up(I.left(), I.right(), &lo, &hi);
++    return interval(lo, hi);
+   }
+ 
+   interval atan2(const interval& Y, const interval& X)
+@@ -723,10 +736,14 @@
+ 		return I;
+ 	}
+     if (I.right() < 0) {
+-      return interval(cosh_dn(I.right()),cosh_up(I.left()));
++      double lo, hi;
++      cosh_dn_up(I.right(), I.left(), &lo, &hi);
++      return interval(lo, hi);
+     }
+     if (I.left() > 0) {
+-      return interval(cosh_dn(I.left()),cosh_up(I.right()));
++      double lo, hi;
++      cosh_dn_up(I.left(), I.right(), &lo, &hi);
++      return interval(lo, hi);
+     }
+     // 0 \in I
+     double abs_l = -I.left();
+@@ -742,7 +759,9 @@
+ 	if (I.is_empty()) {
+ 		return I;
+ 	}
+-	return interval(sinh_dn(I.left()),sinh_up(I.right()));
++	double lo, hi;
++	sinh_dn_up(I.left(), I.right(), &lo, &hi);
++	return interval(lo, hi);
+   }
+ 
+   interval tanh(const interval& I)
+@@ -750,7 +769,9 @@
+ 	if (I.is_empty()) {
+ 		return I;
+ 	}
+-  	return interval(tanh_dn(I.left()),tanh_up(I.right())) & interval::minus_one_plus_one();
++  	double lo, hi;
++  	tanh_dn_up(I.left(), I.right(), &lo, &hi);
++  	return interval(lo, hi) & interval::minus_one_plus_one();
+   }
+ 
+ 
+@@ -1105,7 +1126,7 @@
    }
  
  
@@ -183,7 +405,7 @@
    {
      std::ostringstream output;
      output.precision(interval::precision());
-@@ -1143,12 +1144,13 @@
+@@ -1143,12 +1164,13 @@
        return std::numeric_limits<double>::max();
      }
  
@@ -199,8 +421,22 @@
      return middle;
    }
  
---- gaol-4.2.3alpha0/gaol/gaol_port.h	2022-02-08 14:33:29.000000000 +0100
-+++ gaol-4.2.3alpha0/gaol/gaol_port.h	2025-03-08 00:40:24.629422564 +0100
+@@ -1244,11 +1266,9 @@
+     if (nm < 2.0) {
+       if (feven(m)) { // even(m)? No conversion to int in order
+ 	// to avoid overflow
+-	u=cos_dn(Iright);// use of cos(x)=cos(-x)
+-	v=cos_up(Ileft);
++	cos_dn_up(Iright, Ileft, &u, &v); // use of cos(x)=cos(-x)
+       } else { // odd(m)?
+-	u=cos_dn(Ileft);
+-	v=cos_up(Iright);
++	cos_dn_up(Ileft, Iright, &u, &v);
+       }
+     } else {
+       if (nm == 2.0) {
+--- gaol-4.2.3alpha0/gaol/gaol_port.h
++++ gaol-4.2.3alpha0/gaol/gaol_port.h
 @@ -89,9 +89,9 @@
  
  #if HAVE_ROUNDING_MATH_OPTION
