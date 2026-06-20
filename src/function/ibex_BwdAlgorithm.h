@@ -24,166 +24,166 @@ class BwdAlgorithm {
 
 protected:
 	/** TO BE DEFINED (by the subclass) */
-	void idx_bwd(int x, int y);
+	bool idx_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void idx_cp_bwd(int x, int y);
+	bool idx_cp_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void vector_bwd(int* x, int y);
+	bool vector_bwd(int* x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void symbol_bwd(int y);
+	bool symbol_bwd(int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void cst_bwd(int y);
+	bool cst_bwd(int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void apply_bwd(int* x, int y);
+	bool apply_bwd(int* x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void chi_bwd(  int a, int b, int c, int y);
+	bool chi_bwd(  int a, int b, int c, int y);
 
 	/*==================== binary operators =========================*/
 	/** TO BE DEFINED (by the subclass) */
-	void gen2_bwd(int x, int y);
+	bool gen2_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void add_bwd(int x1, int x2, int y);
+	bool add_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void add_V_bwd(int x1, int x2, int y);
+	bool add_V_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void add_M_bwd(int x1, int x2, int y);
+	bool add_M_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void mul_bwd(int x1, int x2, int y);
+	bool mul_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void mul_SV_bwd(int x1, int x2, int y);
+	bool mul_SV_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void mul_SM_bwd(int x1, int x2, int y);
+	bool mul_SM_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void mul_VV_bwd(int x1, int x2, int y);
+	bool mul_VV_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void mul_MV_bwd(int x1, int x2, int y);
+	bool mul_MV_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void mul_VM_bwd(int x1, int x2, int y);
+	bool mul_VM_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void mul_MM_bwd(int x1, int x2, int y);
+	bool mul_MM_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void sub_bwd(int x1, int x2, int y);
+	bool sub_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void sub_V_bwd(int x1, int x2, int y);
+	bool sub_V_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void sub_M_bwd(int x1, int x2, int y);
+	bool sub_M_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void div_bwd(int x1, int x2, int y);
+	bool div_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void max_bwd(int x1, int x2, int y);
+	bool max_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void min_bwd(int x1, int x2, int y);
+	bool min_bwd(int x1, int x2, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void atan2_bwd(int x1, int x2, int y);
+	bool atan2_bwd(int x1, int x2, int y);
 
 	/*==================== unary operators =========================*/
 
 	/** TO BE DEFINED (by the subclass) */
-	void gen1_bwd(int x, int y);
+	bool gen1_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void minus_bwd(int x, int y);
+	bool minus_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void minus_V_bwd(int x, int y);
+	bool minus_V_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void minus_M_bwd(int x, int y);
+	bool minus_M_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void trans_V_bwd(int x, int y);
+	bool trans_V_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void trans_M_bwd(int x, int y);
+	bool trans_M_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void sign_bwd(int x, int y);
+	bool sign_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void abs_bwd(int x, int y);
+	bool abs_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void power_bwd(int x, int y, int p);
+	bool power_bwd(int x, int y, int p);
 
 	/** TO BE DEFINED (by the subclass) */
-	void sqr_bwd(int x, int y);
+	bool sqr_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void sqrt_bwd(int x, int y);
+	bool sqrt_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void exp_bwd(int x, int y);
+	bool exp_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void log_bwd(int x, int y);
+	bool log_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void cos_bwd(int x, int y);
+	bool cos_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void sin_bwd(int x, int y);
+	bool sin_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void tan_bwd(int x, int y);
+	bool tan_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void cosh_bwd(int x, int y);
+	bool cosh_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void sinh_bwd(int x, int y);
+	bool sinh_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void tanh_bwd(int x, int y);
+	bool tanh_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void acos_bwd(int x, int y);
+	bool acos_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void asin_bwd(int x, int y);
+	bool asin_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void atan_bwd(int x, int y);
+	bool atan_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void acosh_bwd(int x, int y);
+	bool acosh_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void asinh_bwd(int x, int y);
+	bool asinh_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void atanh_bwd(int x, int y);
+	bool atanh_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void floor_bwd(int x, int y);
+	bool floor_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void ceil_bwd(int x, int y);
+	bool ceil_bwd(int x, int y);
 
 	/** TO BE DEFINED (by the subclass) */
-	void saw_bwd(int x, int y);
+	bool saw_bwd(int x, int y);
 };
 
 } // namespace ibex

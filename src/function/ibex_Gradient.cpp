@@ -278,16 +278,17 @@ void Gradient::vector_fwd(int* x, int y) {
 		g[y].m().clear();
 }
 
-void Gradient::idx_cp_bwd(int x, int y) {
+bool Gradient::idx_cp_bwd(int x, int y) {
 	assert(dynamic_cast<const ExprIndex*> (&f.node(y)));
 
 	const ExprIndex& e = (const ExprIndex&) f.node(y);
 	Domain gx=g[x][e.index];
 	gx = gx + g[y];
 	g[x].put(e.index.first_row(), e.index.first_col(), gx);
+	return true;
 }
 
-void Gradient::vector_bwd(int* x, int y) {
+bool Gradient::vector_bwd(int* x, int y) {
 	assert(dynamic_cast<const ExprVector*>(&(f.node(y))));
 
 	const ExprVector& v = (const ExprVector&) f.node(y);
@@ -332,9 +333,10 @@ void Gradient::vector_bwd(int* x, int y) {
 			}
 		}
 	}
+	return true;
 }
 
-void Gradient::apply_bwd(int* x, int y) {
+bool Gradient::apply_bwd(int* x, int y) {
 
 	const ExprApply& a = (const ExprApply&) f.node(y);
 
@@ -370,9 +372,10 @@ void Gradient::apply_bwd(int* x, int y) {
 		tmp_g += old_g;
 		load(g2,tmp_g);
 	}
+	return true;
 }
 
-void Gradient::chi_bwd(int a, int b, int c, int y) {
+bool Gradient::chi_bwd(int a, int b, int c, int y) {
 	Interval ga,gb,gc;
 
 	if (d[a].i().ub()<0) {
@@ -406,10 +409,11 @@ void Gradient::chi_bwd(int a, int b, int c, int y) {
 	g[a].i() += g[y].i() * ga;
 	g[b].i() += g[y].i() * gb;
 	g[c].i() += g[y].i() * gc;
+	return true;
 }
 
 
-void Gradient::max_bwd(int x1, int x2, int y) {
+bool Gradient::max_bwd(int x1, int x2, int y) {
 	Interval gx1,gx2;
 
 	if (d[x1].i().lb() > d[x2].i().ub()) {
@@ -426,9 +430,10 @@ void Gradient::max_bwd(int x1, int x2, int y) {
 
 	g[x1].i() += g[y].i() * gx1;
 	g[x2].i() += g[y].i() * gx2;
+	return true;
 }
 
-void Gradient::min_bwd(int x1, int x2, int y) {
+bool Gradient::min_bwd(int x1, int x2, int y) {
 	Interval gx1,gx2;
 
 	if (d[x1].i().lb() > d[x2].i().ub()) {
@@ -445,51 +450,60 @@ void Gradient::min_bwd(int x1, int x2, int y) {
 
 	g[x1].i() += g[y].i() * gx1;
 	g[x2].i() += g[y].i() * gx2;
+	return true;
 }
 
-void Gradient::sign_bwd(int x, int y) {
+bool Gradient::sign_bwd(int x, int y) {
 	if (d[x].i().contains(0)) g[x].i() += g[y].i()*Interval::pos_reals();
 	else ; // nothing to do: derivative is zero
+	return true;
 }
 
-void Gradient::floor_bwd(int x, int y) {
+bool Gradient::floor_bwd(int x, int y) {
 	if (std::floor(d[x].i().ub()) >= d[x].i().lb()) g[x].i() += g[y].i()*Interval::pos_reals();
 	else ; // nothing to do: derivative is zero
+	return true;
 }
 
-void Gradient::ceil_bwd(int x, int y) {
+bool Gradient::ceil_bwd(int x, int y) {
 	if (std::floor(d[x].i().ub()) >= d[x].i().lb()) g[x].i() += g[y].i()*Interval::pos_reals();
 	else ; // nothing to do: derivative is zero
+	return true;
 }
 
-void Gradient::saw_bwd(int x, int y) {
+bool Gradient::saw_bwd(int x, int y) {
 	if (round(d[x].i().lb()) == round(d[x].i().ub()))
 		g[x].i() += g[y].i();
 	else
 		g[x].i() += g[y].i()*Interval(NEG_INFINITY,1);
+	return true;
 }
 
-void Gradient::abs_bwd (int x, int y) {
+bool Gradient::abs_bwd (int x, int y) {
 	if (d[x].i().lb()>0) g[x].i() += 1.0*g[y].i();
 	else if (d[x].i().ub()<0) g[x].i() += -1.0*g[y].i();
 	else g[x].i() += Interval(-1,1)*g[y].i();
+	return true;
 }
 
-void Gradient::atan2_bwd(int x1, int x2, int y) {
+bool Gradient::atan2_bwd(int x1, int x2, int y) {
     g[x1].i() += g[y].i() * d[x2].i() / (sqr(d[x2].i()) + sqr(d[x1].i()));
     g[x2].i() += g[y].i() * - d[x1].i() / (sqr(d[x2].i()) + sqr(d[x1].i()));
+	return true;
 }
 
-void Gradient::gen2_bwd(int x1, int x2, int y) {
+bool Gradient::gen2_bwd(int x1, int x2, int y) {
 	/* TODO */
+	return true;
 }
 
-void Gradient::gen1_bwd(int x, int y) {
+bool Gradient::gen1_bwd(int x, int y) {
 	assert(dynamic_cast<const ExprGenericUnaryOp*>(&(f.node(y))));
 
 	const ExprGenericUnaryOp& e = (const ExprGenericUnaryOp&) f.node(y);
 
 	g[x] = g[x] + e.num_diff(d[x],g[y]); // TODO: implement += for Domain?
+	return true;
 }
 
 } // namespace ibex

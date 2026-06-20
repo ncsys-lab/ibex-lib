@@ -129,60 +129,60 @@ public:
 
 	/* ====================================== Backward =================================== */
 
-	inline void idx_bwd    (int, int) { }
-	       void idx_cp_bwd (int, int);
-	       void vector_bwd (int* x, int y);
-	inline void symbol_bwd (int) { /*cout << "symbol bwd=" << g[y].v() << endl;*/ /* nothing to do */ }
-	inline void cst_bwd    (int) { /* nothing to do */ }
-	       void apply_bwd  (int* x, int y);
-	       void chi_bwd    (int x1, int x2, int x3, int y);
-	       void gen2_bwd   (int x1, int x2, int y);
-	inline void add_bwd    (int x1, int x2, int y) { g[x1].i() += g[y].i();  g[x2].i() += g[y].i(); }
-	inline void mul_bwd    (int x1, int x2, int y) { g[x1].i() += g[y].i() * d[x2].i(); g[x2].i() += g[y].i() * d[x1].i(); }
-	inline void sub_bwd    (int x1, int x2, int y) { g[x1].i() += g[y].i();  g[x2].i() += -g[y].i(); }
-	inline void div_bwd    (int x1, int x2, int y) { g[x1].i() += g[y].i() / d[x2].i(); g[x2].i() += g[y].i()*(-d[x1].i())/sqr(d[x2].i()); }
-	       void max_bwd    (int x1, int x2, int y);
-	       void min_bwd    (int x1, int x2, int y);
-	       void atan2_bwd  (int x1, int x2, int y);
-	       void gen1_bwd   (int x, int y);
-	inline void minus_bwd  (int x, int y) { g[x].i() += -1.0*g[y].i(); }
-	inline void minus_V_bwd(int x, int y) { g[x].v() += -1.0*g[y].v(); }
-	inline void minus_M_bwd(int x, int y) { g[x].m() += -1.0*g[y].m(); }
-        inline void trans_V_bwd(int, int) { /* nothing to do because g[x].v() is a reference to g[y].v() */ }
-        inline void trans_M_bwd(int x, int y) { g[x].m() += g[y].m().transpose(); }
-	       void sign_bwd   (int x, int y);
-	       void abs_bwd    (int x, int y);
-	inline void power_bwd  (int x, int y, int p) { g[x].i() += g[y].i() * p * pow(d[x].i(), p-1); }
-	inline void sqr_bwd   (int x, int y) { g[x].i() += g[y].i() * 2.0 * d[x].i(); }
-	inline void sqrt_bwd  (int x, int y) { g[x].i() += g[y].i() * 0.5 / sqrt(d[x].i());  }
-	inline void exp_bwd   (int x, int y) { g[x].i() += g[y].i() * exp(d[x].i()); }
-	inline void log_bwd   (int x, int y) { g[x].i() += g[y].i() / d[x].i(); }
-	inline void cos_bwd   (int x, int y) { g[x].i() += g[y].i() * -sin(d[x].i()); }
-	inline void sin_bwd   (int x, int y) { g[x].i() += g[y].i() * cos(d[x].i()); }
-	inline void tan_bwd   (int x, int y) { g[x].i() += g[y].i() * (1.0 + sqr(tan(d[x].i()))); }
-	inline void cosh_bwd  (int x, int y) { g[x].i() += g[y].i() * sinh(d[x].i()); }
-	inline void sinh_bwd  (int x, int y) { g[x].i() += g[y].i() * cosh(d[x].i()); }
-	inline void tanh_bwd  (int x, int y) { g[x].i() += g[y].i() * (1.0 - sqr(tanh(d[x].i()))); }
-	inline void acos_bwd  (int x, int y) { g[x].i() += g[y].i() * -1.0 / sqrt(1.0-sqr(d[x].i())); }
-	inline void asin_bwd  (int x, int y) { g[x].i() += g[y].i() * 1.0 / sqrt(1.0-sqr(d[x].i())); }
-	inline void atan_bwd  (int x, int y) { g[x].i() += g[y].i() * 1.0 / (1.0+sqr(d[x].i())); }
-	inline void acosh_bwd (int x, int y) { g[x].i() += g[y].i() * 1.0 / sqrt(sqr(d[x].i()) -1.0); }
-	inline void asinh_bwd (int x, int y) { g[x].i() += g[y].i() * 1.0 / sqrt(1.0+sqr(d[x].i())); }
-	inline void atanh_bwd (int x, int y) { g[x].i() += g[y].i() * 1.0 / (1.0-sqr(d[x].i())); }
-	inline void floor_bwd (int x, int y);
-	inline void ceil_bwd  (int x, int y);
-	inline void saw_bwd   (int x, int y);
+	inline bool idx_bwd    (int, int) {  return true; }
+	       bool idx_cp_bwd (int, int);
+	       bool vector_bwd (int* x, int y);
+	inline bool symbol_bwd (int) { /*cout << "symbol bwd=" << g[y].v() << endl;*/ /* nothing to do */  return true; }
+	inline bool cst_bwd    (int) { /* nothing to do */  return true; }
+	       bool apply_bwd  (int* x, int y);
+	       bool chi_bwd    (int x1, int x2, int x3, int y);
+	       bool gen2_bwd   (int x1, int x2, int y);
+	inline bool add_bwd    (int x1, int x2, int y) { g[x1].i() += g[y].i();  g[x2].i() += g[y].i();  return true; }
+	inline bool mul_bwd    (int x1, int x2, int y) { g[x1].i() += g[y].i() * d[x2].i(); g[x2].i() += g[y].i() * d[x1].i();  return true; }
+	inline bool sub_bwd    (int x1, int x2, int y) { g[x1].i() += g[y].i();  g[x2].i() += -g[y].i();  return true; }
+	inline bool div_bwd    (int x1, int x2, int y) { g[x1].i() += g[y].i() / d[x2].i(); g[x2].i() += g[y].i()*(-d[x1].i())/sqr(d[x2].i());  return true; }
+	       bool max_bwd    (int x1, int x2, int y);
+	       bool min_bwd    (int x1, int x2, int y);
+	       bool atan2_bwd  (int x1, int x2, int y);
+	       bool gen1_bwd   (int x, int y);
+	inline bool minus_bwd  (int x, int y) { g[x].i() += -1.0*g[y].i();  return true; }
+	inline bool minus_V_bwd(int x, int y) { g[x].v() += -1.0*g[y].v();  return true; }
+	inline bool minus_M_bwd(int x, int y) { g[x].m() += -1.0*g[y].m();  return true; }
+        inline bool trans_V_bwd(int, int) { /* nothing to do because g[x].v() is a reference to g[y].v() */  return true; }
+        inline bool trans_M_bwd(int x, int y) { g[x].m() += g[y].m().transpose();  return true; }
+	       bool sign_bwd   (int x, int y);
+	       bool abs_bwd    (int x, int y);
+	inline bool power_bwd  (int x, int y, int p) { g[x].i() += g[y].i() * p * pow(d[x].i(), p-1);  return true; }
+	inline bool sqr_bwd   (int x, int y) { g[x].i() += g[y].i() * 2.0 * d[x].i();  return true; }
+	inline bool sqrt_bwd  (int x, int y) { g[x].i() += g[y].i() * 0.5 / sqrt(d[x].i());   return true; }
+	inline bool exp_bwd   (int x, int y) { g[x].i() += g[y].i() * exp(d[x].i());  return true; }
+	inline bool log_bwd   (int x, int y) { g[x].i() += g[y].i() / d[x].i();  return true; }
+	inline bool cos_bwd   (int x, int y) { g[x].i() += g[y].i() * -sin(d[x].i());  return true; }
+	inline bool sin_bwd   (int x, int y) { g[x].i() += g[y].i() * cos(d[x].i());  return true; }
+	inline bool tan_bwd   (int x, int y) { g[x].i() += g[y].i() * (1.0 + sqr(tan(d[x].i())));  return true; }
+	inline bool cosh_bwd  (int x, int y) { g[x].i() += g[y].i() * sinh(d[x].i());  return true; }
+	inline bool sinh_bwd  (int x, int y) { g[x].i() += g[y].i() * cosh(d[x].i());  return true; }
+	inline bool tanh_bwd  (int x, int y) { g[x].i() += g[y].i() * (1.0 - sqr(tanh(d[x].i())));  return true; }
+	inline bool acos_bwd  (int x, int y) { g[x].i() += g[y].i() * -1.0 / sqrt(1.0-sqr(d[x].i()));  return true; }
+	inline bool asin_bwd  (int x, int y) { g[x].i() += g[y].i() * 1.0 / sqrt(1.0-sqr(d[x].i()));  return true; }
+	inline bool atan_bwd  (int x, int y) { g[x].i() += g[y].i() * 1.0 / (1.0+sqr(d[x].i()));  return true; }
+	inline bool acosh_bwd (int x, int y) { g[x].i() += g[y].i() * 1.0 / sqrt(sqr(d[x].i()) -1.0);  return true; }
+	inline bool asinh_bwd (int x, int y) { g[x].i() += g[y].i() * 1.0 / sqrt(1.0+sqr(d[x].i()));  return true; }
+	inline bool atanh_bwd (int x, int y) { g[x].i() += g[y].i() * 1.0 / (1.0-sqr(d[x].i()));  return true; }
+	inline bool floor_bwd (int x, int y);
+	inline bool ceil_bwd  (int x, int y);
+	inline bool saw_bwd   (int x, int y);
 
-	inline void add_V_bwd (int x1, int x2, int y) { g[x1].v() += g[y].v();        g[x2].v() += g[y].v(); }
-	inline void add_M_bwd (int x1, int x2, int y) { g[x1].m() += g[y].m();        g[x2].m() += g[y].m(); }
-	inline void mul_SV_bwd(int x1, int x2, int y) { g[x1].i() += g[y].v()*d[x2].v(); g[x2].v() += d[x1].i()*g[y].v(); }
-	inline void mul_SM_bwd(int x1, int x2, int y) { for (int i=0; i<d[y].m().nb_rows(); i++) g[x1].i()+=g[y].m()[i]*d[x2].m()[i]; g[x2].m() += d[x1].i()*g[y].m();  }
-	inline void mul_VV_bwd(int x1, int x2, int y) { g[x1].v() += g[y].i()*d[x2].v(); g[x2].v() += g[y].i()*d[x1].v(); }
-	inline void mul_MV_bwd(int x1, int x2, int y) { g[x1].m() += outer_product(g[y].v(),d[x2].v()); g[x2].v() += d[x1].m().transpose()*g[y].v(); }
-	inline void mul_MM_bwd(int x1, int x2, int y) { g[x1].m() += g[y].m()*d[x2].m().transpose(); g[x2].m() += d[x1].m().transpose()*g[y].m(); }
-	inline void mul_VM_bwd(int x1, int x2, int y) { g[x1].v() += d[x2].m()*g[y].v(); g[x2].m() += outer_product(d[x1].v(),g[y].v()); }
-	inline void sub_V_bwd (int x1, int x2, int y) { g[x1].v() += g[y].v(); g[x2].v() -= g[y].v(); }
-	inline void sub_M_bwd (int x1, int x2, int y) { g[x1].m() += g[y].m(); g[x2].m() -= g[y].m(); }
+	inline bool add_V_bwd (int x1, int x2, int y) { g[x1].v() += g[y].v();        g[x2].v() += g[y].v();  return true; }
+	inline bool add_M_bwd (int x1, int x2, int y) { g[x1].m() += g[y].m();        g[x2].m() += g[y].m();  return true; }
+	inline bool mul_SV_bwd(int x1, int x2, int y) { g[x1].i() += g[y].v()*d[x2].v(); g[x2].v() += d[x1].i()*g[y].v();  return true; }
+	inline bool mul_SM_bwd(int x1, int x2, int y) { for (int i=0; i<d[y].m().nb_rows(); i++) g[x1].i()+=g[y].m()[i]*d[x2].m()[i]; g[x2].m() += d[x1].i()*g[y].m();   return true; }
+	inline bool mul_VV_bwd(int x1, int x2, int y) { g[x1].v() += g[y].i()*d[x2].v(); g[x2].v() += g[y].i()*d[x1].v();  return true; }
+	inline bool mul_MV_bwd(int x1, int x2, int y) { g[x1].m() += outer_product(g[y].v(),d[x2].v()); g[x2].v() += d[x1].m().transpose()*g[y].v();  return true; }
+	inline bool mul_MM_bwd(int x1, int x2, int y) { g[x1].m() += g[y].m()*d[x2].m().transpose(); g[x2].m() += d[x1].m().transpose()*g[y].m();  return true; }
+	inline bool mul_VM_bwd(int x1, int x2, int y) { g[x1].v() += d[x2].m()*g[y].v(); g[x2].m() += outer_product(d[x1].v(),g[y].v());  return true; }
+	inline bool sub_V_bwd (int x1, int x2, int y) { g[x1].v() += g[y].v(); g[x2].v() -= g[y].v();  return true; }
+	inline bool sub_M_bwd (int x1, int x2, int y) { g[x1].m() += g[y].m(); g[x2].m() -= g[y].m();  return true; }
 
 	Function& f;
 	Eval& _eval;

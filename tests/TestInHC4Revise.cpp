@@ -163,5 +163,15 @@ void TestInHC4Revise::issue70() {
 }
 
 
+// Inner backward empty: f(x) = x over the area [-10,-1] cannot guarantee
+// f(x) in [5,10] for any point, so the inner region is empty and the box must
+// be emptied. (add02 above confirms box.is_empty() is a valid ibwd outcome.)
+void TestInHC4Revise::empty01() {
+	Function f("x","x");
+	IntervalVector box(1,Interval(-10,-1));
+	f.ibwd(Interval(5,10),box);
+	CPPUNIT_ASSERT(box.is_empty());
+}
+
 } // end namespace
 

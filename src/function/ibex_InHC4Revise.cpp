@@ -115,18 +115,17 @@ void InHC4Revise::iproj(const Domain& y, IntervalVector& x, const IntervalVector
 
 	*d.top &= y;
 
-	try {
-		f.backward<InHC4Revise>(*this);
-
+	// backward() returns false iff a domain emptied (signalled by return value,
+	// not a thrown EmptyBoxException).
+	if (f.backward<InHC4Revise>(*this)) {
 		d.read_arg_domains(x);
-
-	} catch(EmptyBoxException&) {
+	} else {
 		assert(xin.is_empty());
 		x.set_empty();
 	}
 }
 
-void InHC4Revise::iproj(const Domain& y, Array<Domain>& x, const Array<Domain>& argP) {
+bool InHC4Revise::iproj(const Domain& y, Array<Domain>& x, const Array<Domain>& argP) {
 	if (!argP[0].is_empty()) { // if the first domain is empty, so they all are
 		p_eval.eval(argP);
 	} else {
@@ -140,21 +139,24 @@ void InHC4Revise::iproj(const Domain& y, Array<Domain>& x, const Array<Domain>& 
 
 	*d.top = y;
 
-	// may throw EmptyBoxException&) {
-	f.backward<InHC4Revise>(*this);
+	// Returns false iff a domain emptied; propagate to apply_bwd (no exception).
+	if (!f.backward<InHC4Revise>(*this))
+		return false;
 
 	d.read_arg_domains(x);
+	return true;
 }
 
-void InHC4Revise::idx_cp_bwd(int x, int y) {
+bool InHC4Revise::idx_cp_bwd(int x, int y) {
 	assert(dynamic_cast<const ExprIndex*> (&f.node(y)));
 
 	const ExprIndex& e = (const ExprIndex&) f.node(y);
 
 	d[x].put(e.index.first_row(), e.index.first_col(), d[y]);
+	return true;
 }
 
-void InHC4Revise::apply_bwd(int* x, int y) {
+bool InHC4Revise::apply_bwd(int* x, int y) {
 
 	assert(dynamic_cast<const ExprApply*> (&f.node(y)));
 
@@ -170,11 +172,9 @@ void InHC4Revise::apply_bwd(int* x, int y) {
 		p2.set_ref(i,p[x[i]]);
 	}
 
-	// if next instruction throws an EmptyBoxException,
-	// it will be caught by iproj(...,IntervalVector& x).
-	// (it is a protected function, not called outside of the class
-	// so there is no risk)
-	a.func.inhc4revise().iproj(d[y],d2,p2);
+	// iproj() returns false iff the nested function emptied a domain; propagate
+	// it as this node's return value so the backward sweep short-circuits.
+	return a.func.inhc4revise().iproj(d[y],d2,p2);
 }
 
 } // end namespace ibex

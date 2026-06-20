@@ -638,7 +638,7 @@ public:
 	 * Note that the type V is just passed in order to have static linkage.
 	 */
 	template<class V>
-	void backward(const V& algo) const;
+	bool backward(const V& algo) const;
 
 	/**
 	 * \brief Calculate f(box) using interval arithmetic.
@@ -1071,8 +1071,8 @@ inline IntervalVector Function::eval_vector(const IntervalVector& box, const Bit
 }
 
 template<class V>
-inline void Function::backward(const V& algo) const {
-	cf.backward<V>(algo);
+inline bool Function::backward(const V& algo) const {
+	return cf.backward<V>(algo);
 }
 
 inline bool Function::backward(const Domain& y, IntervalVector& x, const std::function<void(int index, const Interval &old_value, const Interval &new_value)> &callback) const {

@@ -34,6 +34,7 @@ public:
 //		CPPUNIT_TEST(bugr900);
 //		CPPUNIT_TEST(issue69);
 		CPPUNIT_TEST(issue70);
+		CPPUNIT_TEST(empty01);
 	CPPUNIT_TEST_SUITE_END();
 
 	void add01();
@@ -46,6 +47,9 @@ public:
 	void add_mult01();
 	void bugr900();
 	void issue70();
+	// inner backward must empty the box when no point of the area can be
+	// guaranteed to satisfy the constraint.
+	void empty01();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TestInHC4Revise);

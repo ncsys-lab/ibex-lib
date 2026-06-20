@@ -42,69 +42,64 @@ public:
 	ExprDomain& p;
 
 protected:
-	/**
-	 * Class used internally to interrupt the
-	 * backward procedure when an empty domain occurs.
-	 */
-	class EmptyBoxException { };
-
-	void iproj(const Domain& y, Array<Domain>& x, const Array<Domain>& xin);
+	// \return false iff a domain emptied (a contradiction).
+	bool iproj(const Domain& y, Array<Domain>& x, const Array<Domain>& xin);
 
 public: // because called from CompiledFunction
 
-	inline void symbol_bwd (int)                    { /* nothing to do */ }
-	inline void cst_bwd    (int y)                  { /* TODO: improve this. */ if (d[y]!=((const ExprConstant&) f.nodes[y]).get()) throw EmptyBoxException(); }
-	inline void idx_bwd    (int , int)              { /* nothing to do */ }
-	       void idx_cp_bwd (int , int);
-	       void vector_bwd (int* , int)             { not_implemented("Inner projection of \"vector\""); }
-	inline void apply_bwd  (int* x, int y);
-	inline void chi_bwd    (int, int, int, int)     { not_implemented("Inner projection of \"chi\""); }
-	inline void add_bwd    (int x1, int x2, int y)  { if (!ibwd_add(d[y].i(),d[x1].i(),d[x2].i(),p[x1].i(),p[x2].i())) throw EmptyBoxException(); }
-	inline void gen2_bwd   (int , int , int)        { not_implemented("Inner projection of binary generic operator"); }
-	inline void add_V_bwd  (int , int , int)        { not_implemented("Inner projection of \"add_V\""); }
-	inline void add_M_bwd  (int , int , int)        { not_implemented("Inner projection of \"add_M\""); }
-	inline void mul_bwd    (int x1, int x2, int y)  { if (!ibwd_mul(d[y].i(),d[x1].i(),d[x2].i(),p[x1].i(),p[x2].i())) throw EmptyBoxException(); }
-	inline void mul_SV_bwd (int , int , int)        { not_implemented("Inner projection of \"mul_SV\""); }
-	inline void mul_SM_bwd (int , int , int)        { not_implemented("Inner projection of \"mul_SM\""); }
-	inline void mul_VV_bwd (int , int , int)        { not_implemented("Inner projection of \"mul_VV\""); }
-	inline void mul_MV_bwd (int , int , int)        { not_implemented("Inner projection of \"mul_MV\""); }
-	inline void mul_VM_bwd (int , int , int)        { not_implemented("Inner projection of \"mul_VM\""); }
-	inline void mul_MM_bwd (int , int , int)        { not_implemented("Inner projection of \"mul_MM\""); }
-	inline void sub_bwd    (int x1, int x2, int y)  { if (!ibwd_sub(d[y].i(),d[x1].i(),d[x2].i(),p[x1].i(),p[x2].i())) throw EmptyBoxException(); }
-	inline void sub_V_bwd  (int , int, int)         { not_implemented("Inner projection of \"sub_V\""); }
-	inline void sub_M_bwd  (int , int, int)         { not_implemented("Inner projection of \"sub_M\""); }
-	inline void div_bwd    (int x1, int x2, int y)  { if (!ibwd_div(d[y].i(),d[x1].i(),d[x2].i(),p[x1].i(),p[x2].i())) throw EmptyBoxException(); }
-	inline void max_bwd    (int x1, int x2, int y)  { if (!ibwd_max(d[y].i(),d[x1].i(),d[x2].i(),p[x1].i(),p[x2].i())) throw EmptyBoxException(); }
-	inline void min_bwd    (int x1, int x2, int y)  { if (!ibwd_min(d[y].i(),d[x1].i(),d[x2].i(),p[x1].i(),p[x2].i())) throw EmptyBoxException(); }
-	inline void atan2_bwd  (int , int , int)        { not_implemented("Inner projection of \"atan2\""); }
-	inline void gen1_bwd   (int , int)              { not_implemented("Inner projection of generic unary operator"); }
-	inline void minus_bwd  (int x, int y)           { if (!ibwd_minus(d[y].i(),d[x].i())) throw EmptyBoxException(); }
-	inline void minus_V_bwd(int x, int y)           { not_implemented("Inner projection of \"minus_V\""); }
-	inline void minus_M_bwd(int x, int y)           { not_implemented("Inner projection of \"minus_M\""); }
-    inline void trans_V_bwd(int , int)              { not_implemented("Inner projection of \"transpose\""); }
-    inline void trans_M_bwd(int , int)              { not_implemented("Inner projection of \"transpose\""); }
-	inline void sign_bwd   (int , int)              { not_implemented("Inner projection of \"sign\""); }
-	inline void abs_bwd    (int x, int y)           { if (!ibwd_abs(d[y].i(),d[x].i())) throw EmptyBoxException(); }
-	inline void power_bwd  (int x, int y, int expo) { if (!ibwd_pow(d[y].i(),d[x].i(),expo,p[x].i())) throw EmptyBoxException(); }
-	inline void sqr_bwd    (int x, int y)           { if (!ibwd_sqr(d[y].i(),d[x].i(),p[x].i())) throw EmptyBoxException(); }
-	inline void sqrt_bwd   (int x, int y)           { if (!ibwd_sqrt(d[y].i(),d[x].i())) throw EmptyBoxException(); }
-	inline void exp_bwd    (int x, int y)           { if (!ibwd_exp(d[y].i(),d[x].i())) throw EmptyBoxException(); }
-	inline void log_bwd    (int x, int y)           { if (!ibwd_log(d[y].i(),d[x].i())) throw EmptyBoxException(); }
-	inline void cos_bwd    (int x, int y)           { if (!ibwd_cos(d[y].i(),d[x].i(),p[x].i())) throw EmptyBoxException(); }
-	inline void sin_bwd    (int x, int y)           { if (!ibwd_sin(d[y].i(),d[x].i(),p[x].i())) throw EmptyBoxException();}
-	inline void tan_bwd    (int x, int y)           { if (!ibwd_tan(d[y].i(),d[x].i(),p[x].i())) throw EmptyBoxException(); }
-	inline void cosh_bwd   (int , int)              { not_implemented("Inner projection of \"cosh\""); }
-	inline void sinh_bwd   (int , int)              { not_implemented("Inner projection of \"sinh\""); }
-	inline void tanh_bwd   (int , int)              { not_implemented("Inner projection of \"tanh\""); }
-	inline void acos_bwd   (int , int)              { not_implemented("Inner projection of \"acos\""); }
-	inline void asin_bwd   (int , int)              { not_implemented("Inner projection of \"asin\""); }
-	inline void atan_bwd   (int , int)              { not_implemented("Inner projection of \"atan\""); }
-	inline void acosh_bwd  (int , int)              { not_implemented("Inner projection of \"acosh\""); }
-	inline void asinh_bwd  (int , int)              { not_implemented("Inner projection of \"asinh\""); }
-	inline void atanh_bwd  (int , int)              { not_implemented("Inner projection of \"atanh\""); }
-	inline void floor_bwd  (int , int)              { not_implemented("Inner projection of \"floor\""); }
-	inline void ceil_bwd   (int , int)              { not_implemented("Inner projection of \"ceil\""); }
-	inline void saw_bwd   (int , int)               { not_implemented("Inner projection of \"saw\""); }
+	inline bool symbol_bwd (int)                    { return true; }
+	inline bool cst_bwd    (int y)                  { /* TODO: improve this. */ return !(d[y]!=((const ExprConstant&) f.nodes[y]).get()); }
+	inline bool idx_bwd    (int , int)              { return true; }
+	       bool idx_cp_bwd (int , int);
+	       bool vector_bwd (int* , int)             { not_implemented("Inner projection of \"vector\""); }
+	inline bool apply_bwd  (int* x, int y);
+	inline bool chi_bwd    (int, int, int, int)     { not_implemented("Inner projection of \"chi\""); }
+	inline bool add_bwd    (int x1, int x2, int y)  { return ibwd_add(d[y].i(),d[x1].i(),d[x2].i(),p[x1].i(),p[x2].i()); }
+	inline bool gen2_bwd   (int , int , int)        { not_implemented("Inner projection of binary generic operator"); }
+	inline bool add_V_bwd  (int , int , int)        { not_implemented("Inner projection of \"add_V\""); }
+	inline bool add_M_bwd  (int , int , int)        { not_implemented("Inner projection of \"add_M\""); }
+	inline bool mul_bwd    (int x1, int x2, int y)  { return ibwd_mul(d[y].i(),d[x1].i(),d[x2].i(),p[x1].i(),p[x2].i()); }
+	inline bool mul_SV_bwd (int , int , int)        { not_implemented("Inner projection of \"mul_SV\""); }
+	inline bool mul_SM_bwd (int , int , int)        { not_implemented("Inner projection of \"mul_SM\""); }
+	inline bool mul_VV_bwd (int , int , int)        { not_implemented("Inner projection of \"mul_VV\""); }
+	inline bool mul_MV_bwd (int , int , int)        { not_implemented("Inner projection of \"mul_MV\""); }
+	inline bool mul_VM_bwd (int , int , int)        { not_implemented("Inner projection of \"mul_VM\""); }
+	inline bool mul_MM_bwd (int , int , int)        { not_implemented("Inner projection of \"mul_MM\""); }
+	inline bool sub_bwd    (int x1, int x2, int y)  { return ibwd_sub(d[y].i(),d[x1].i(),d[x2].i(),p[x1].i(),p[x2].i()); }
+	inline bool sub_V_bwd  (int , int, int)         { not_implemented("Inner projection of \"sub_V\""); }
+	inline bool sub_M_bwd  (int , int, int)         { not_implemented("Inner projection of \"sub_M\""); }
+	inline bool div_bwd    (int x1, int x2, int y)  { return ibwd_div(d[y].i(),d[x1].i(),d[x2].i(),p[x1].i(),p[x2].i()); }
+	inline bool max_bwd    (int x1, int x2, int y)  { return ibwd_max(d[y].i(),d[x1].i(),d[x2].i(),p[x1].i(),p[x2].i()); }
+	inline bool min_bwd    (int x1, int x2, int y)  { return ibwd_min(d[y].i(),d[x1].i(),d[x2].i(),p[x1].i(),p[x2].i()); }
+	inline bool atan2_bwd  (int , int , int)        { not_implemented("Inner projection of \"atan2\""); }
+	inline bool gen1_bwd   (int , int)              { not_implemented("Inner projection of generic unary operator"); }
+	inline bool minus_bwd  (int x, int y)           { return ibwd_minus(d[y].i(),d[x].i()); }
+	inline bool minus_V_bwd(int x, int y)           { not_implemented("Inner projection of \"minus_V\""); }
+	inline bool minus_M_bwd(int x, int y)           { not_implemented("Inner projection of \"minus_M\""); }
+    inline bool trans_V_bwd(int , int)              { not_implemented("Inner projection of \"transpose\""); }
+    inline bool trans_M_bwd(int , int)              { not_implemented("Inner projection of \"transpose\""); }
+	inline bool sign_bwd   (int , int)              { not_implemented("Inner projection of \"sign\""); }
+	inline bool abs_bwd    (int x, int y)           { return ibwd_abs(d[y].i(),d[x].i()); }
+	inline bool power_bwd  (int x, int y, int expo) { return ibwd_pow(d[y].i(),d[x].i(),expo,p[x].i()); }
+	inline bool sqr_bwd    (int x, int y)           { return ibwd_sqr(d[y].i(),d[x].i(),p[x].i()); }
+	inline bool sqrt_bwd   (int x, int y)           { return ibwd_sqrt(d[y].i(),d[x].i()); }
+	inline bool exp_bwd    (int x, int y)           { return ibwd_exp(d[y].i(),d[x].i()); }
+	inline bool log_bwd    (int x, int y)           { return ibwd_log(d[y].i(),d[x].i()); }
+	inline bool cos_bwd    (int x, int y)           { return ibwd_cos(d[y].i(),d[x].i(),p[x].i()); }
+	inline bool sin_bwd    (int x, int y)           { return ibwd_sin(d[y].i(),d[x].i(),p[x].i()); }
+	inline bool tan_bwd    (int x, int y)           { return ibwd_tan(d[y].i(),d[x].i(),p[x].i()); }
+	inline bool cosh_bwd   (int , int)              { not_implemented("Inner projection of \"cosh\""); }
+	inline bool sinh_bwd   (int , int)              { not_implemented("Inner projection of \"sinh\""); }
+	inline bool tanh_bwd   (int , int)              { not_implemented("Inner projection of \"tanh\""); }
+	inline bool acos_bwd   (int , int)              { not_implemented("Inner projection of \"acos\""); }
+	inline bool asin_bwd   (int , int)              { not_implemented("Inner projection of \"asin\""); }
+	inline bool atan_bwd   (int , int)              { not_implemented("Inner projection of \"atan\""); }
+	inline bool acosh_bwd  (int , int)              { not_implemented("Inner projection of \"acosh\""); }
+	inline bool asinh_bwd  (int , int)              { not_implemented("Inner projection of \"asinh\""); }
+	inline bool atanh_bwd  (int , int)              { not_implemented("Inner projection of \"atanh\""); }
+	inline bool floor_bwd  (int , int)              { not_implemented("Inner projection of \"floor\""); }
+	inline bool ceil_bwd   (int , int)              { not_implemented("Inner projection of \"ceil\""); }
+	inline bool saw_bwd   (int , int)               { not_implemented("Inner projection of \"saw\""); }
 };
 
 } // end namespace ibex

@@ -39,6 +39,8 @@ public:
 	CPPUNIT_TEST(vec02);
 	CPPUNIT_TEST(vec03);
 	CPPUNIT_TEST(issue431);
+	CPPUNIT_TEST(empty01);
+	CPPUNIT_TEST(empty02);
 	CPPUNIT_TEST_SUITE_END();
 
 	void id01();
@@ -60,6 +62,12 @@ public:
 	// but x is not fully inside the definition
 	// domain of f.
 	void issue431();
+
+	// HC4Revise backward must empty the box when the constraint is
+	// infeasible: empty01 is a root-intersection empty (forward image
+	// disjoint from the target), empty02 an out-of-range transcendental.
+	void empty01();
+	void empty02();
 
 };
 

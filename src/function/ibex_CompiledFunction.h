@@ -66,13 +66,13 @@ public:
 	 * Note that the type V is just passed in order to have static linkage.
 	 */
 	template<class V>
-	void backward(const V& algo) const;
+	bool backward(const V& algo) const;
 
 	/**
 	 * Backward phase on a specific set of operations (in the agenda).
 	 */
 	template<class V>
-	void backward(const V& algo, const Agenda& a) const;
+	bool backward(const V& algo, const Agenda& a) const;
 
 	/**
 	 * Return an agenda of all the operations
@@ -165,7 +165,7 @@ private:
 	void forward(const V& algo, int i) const;
 
 	template<class V>
-	void backward(const V& algo, int i) const;
+	bool backward(const V& algo, int i) const;
 
 	friend std::ostream& operator<<(std::ostream& os, const CompiledFunction& data);
 
@@ -269,82 +269,87 @@ void CompiledFunction::forward(const V& algo, int i) const {
 }
 
 template<class V>
-void CompiledFunction::backward(const V& algo) const {
+bool CompiledFunction::backward(const V& algo) const {
 
 	assert(dynamic_cast<const BwdAlgorithm* >(&algo)!=NULL);
 
+	// Each node's *_bwd returns false when its backward projection empties a
+	// domain (a contradiction); short-circuit immediately so the empty signal
+	// propagates as a return value instead of a thrown EmptyBoxException.
 	for (int i=0; i<n; i++) {
-		backward(algo, i);
+		if (!backward(algo, i)) return false;
 	}
+	return true;
 }
 
 template<class V>
-void CompiledFunction::backward(const V& algo, const Agenda& a) const {
+bool CompiledFunction::backward(const V& algo, const Agenda& a) const {
 
 	assert(dynamic_cast<const BwdAlgorithm* >(&algo)!=NULL);
 
 	for (int i=a.first(); i!=a.end(); i=a.next(i)) {
-		backward(algo, i);
+		if (!backward(algo, i)) return false;
 	}
+	return true;
 }
 
 template<class V>
-void CompiledFunction::backward(const V& algo, int i) const {
+bool CompiledFunction::backward(const V& algo, int i) const {
 	switch(code[i]) {
-	case IDX:    ((V&) algo).idx_bwd    (args[i][0], i); break;
-	case IDX_CP: ((V&) algo).idx_cp_bwd (args[i][0], i); break;
-	case VEC:    ((V&) algo).vector_bwd (args[i], i); break;
-	case SYM:    ((V&) algo).symbol_bwd (i); break;
-	case CST:    ((V&) algo).cst_bwd    (i); break;
-	case APPLY:  ((V&) algo).apply_bwd  (args[i], i); break;
-	case CHI:    ((V&) algo).chi_bwd    (args[i][0], args[i][1], args[i][2], i); break;
-	case GEN2:   ((V&) algo).gen2_bwd   (args[i][0], args[i][1], i); break;
-	case ADD:    ((V&) algo).add_bwd    (args[i][0], args[i][1], i); break;
-	case ADD_V:  ((V&) algo).add_V_bwd  (args[i][0], args[i][1], i); break;
-	case ADD_M:  ((V&) algo).add_M_bwd  (args[i][0], args[i][1], i); break;
-	case MUL:    ((V&) algo).mul_bwd    (args[i][0], args[i][1], i); break;
-	case MUL_SV: ((V&) algo).mul_SV_bwd (args[i][0], args[i][1], i); break;
-	case MUL_SM: ((V&) algo).mul_SM_bwd (args[i][0], args[i][1], i); break;
-	case MUL_VV: ((V&) algo).mul_VV_bwd (args[i][0], args[i][1], i); break;
-	case MUL_MV: ((V&) algo).mul_MV_bwd (args[i][0], args[i][1], i); break;
-	case MUL_MM: ((V&) algo).mul_MM_bwd (args[i][0], args[i][1], i); break;
-	case MUL_VM: ((V&) algo).mul_VM_bwd (args[i][0], args[i][1], i); break;
-	case SUB:    ((V&) algo).sub_bwd    (args[i][0], args[i][1], i); break;
-	case SUB_V:  ((V&) algo).sub_V_bwd  (args[i][0], args[i][1], i); break;
-	case SUB_M:  ((V&) algo).sub_M_bwd  (args[i][0], args[i][1], i); break;
-	case DIV:    ((V&) algo).div_bwd    (args[i][0], args[i][1], i); break;
-	case MAX:    ((V&) algo).max_bwd    (args[i][0], args[i][1], i); break;
-	case MIN:    ((V&) algo).min_bwd    (args[i][0], args[i][1], i); break;
-	case ATAN2:  ((V&) algo).atan2_bwd  (args[i][0], args[i][1], i); break;
-	case GEN1:   ((V&) algo).gen1_bwd   (args[i][0], i); break;
-	case MINUS:  ((V&) algo).minus_bwd  (args[i][0], i); break;
-	case MINUS_V:((V&) algo).minus_V_bwd(args[i][0], i); break;
-	case MINUS_M:((V&) algo).minus_M_bwd(args[i][0], i); break;
-	case TRANS_V:((V&) algo).trans_V_bwd(args[i][0], i); break;
-	case TRANS_M:((V&) algo).trans_M_bwd(args[i][0], i); break;
-	case SIGN:   ((V&) algo).sign_bwd   (args[i][0], i); break;
-	case ABS:    ((V&) algo).abs_bwd    (args[i][0], i); break;
-	case POWER:  ((V&) algo).power_bwd  (args[i][0], i, ((const ExprPower&) (*nodes)[i]).expon); break;
-	case SQR:    ((V&) algo).sqr_bwd    (args[i][0], i); break;
-	case SQRT:   ((V&) algo).sqrt_bwd   (args[i][0], i); break;
-	case EXP:    ((V&) algo).exp_bwd    (args[i][0], i); break;
-	case LOG:    ((V&) algo).log_bwd    (args[i][0], i); break;
-	case COS:    ((V&) algo).cos_bwd    (args[i][0], i); break;
-	case SIN:    ((V&) algo).sin_bwd    (args[i][0], i); break;
-	case TAN:    ((V&) algo).tan_bwd    (args[i][0], i); break;
-	case COSH:   ((V&) algo).cosh_bwd   (args[i][0], i); break;
-	case SINH:   ((V&) algo).sinh_bwd   (args[i][0], i); break;
-	case TANH:   ((V&) algo).tanh_bwd   (args[i][0], i); break;
-	case ACOS:   ((V&) algo).acos_bwd   (args[i][0], i); break;
-	case ASIN:   ((V&) algo).asin_bwd   (args[i][0], i); break;
-	case ATAN:   ((V&) algo).atan_bwd   (args[i][0], i); break;
-	case ACOSH:  ((V&) algo).acosh_bwd  (args[i][0], i); break;
-	case ASINH:  ((V&) algo).asinh_bwd  (args[i][0], i); break;
-	case ATANH:  ((V&) algo).atanh_bwd  (args[i][0], i); break;
-	case FLOOR:  ((V&) algo).floor_bwd  (args[i][0], i); break;
-	case CEIL:   ((V&) algo).ceil_bwd   (args[i][0], i); break;
-	case SAW:    ((V&) algo).saw_bwd    (args[i][0], i); break;
-	default: 	 assert(false);
+	case IDX:    return ((V&) algo).idx_bwd    (args[i][0], i);
+	case IDX_CP: return ((V&) algo).idx_cp_bwd (args[i][0], i);
+	case VEC:    return ((V&) algo).vector_bwd (args[i], i);
+	case SYM:    return ((V&) algo).symbol_bwd (i);
+	case CST:    return ((V&) algo).cst_bwd    (i);
+	case APPLY:  return ((V&) algo).apply_bwd  (args[i], i);
+	case CHI:    return ((V&) algo).chi_bwd    (args[i][0], args[i][1], args[i][2], i);
+	case GEN2:   return ((V&) algo).gen2_bwd   (args[i][0], args[i][1], i);
+	case ADD:    return ((V&) algo).add_bwd    (args[i][0], args[i][1], i);
+	case ADD_V:  return ((V&) algo).add_V_bwd  (args[i][0], args[i][1], i);
+	case ADD_M:  return ((V&) algo).add_M_bwd  (args[i][0], args[i][1], i);
+	case MUL:    return ((V&) algo).mul_bwd    (args[i][0], args[i][1], i);
+	case MUL_SV: return ((V&) algo).mul_SV_bwd (args[i][0], args[i][1], i);
+	case MUL_SM: return ((V&) algo).mul_SM_bwd (args[i][0], args[i][1], i);
+	case MUL_VV: return ((V&) algo).mul_VV_bwd (args[i][0], args[i][1], i);
+	case MUL_MV: return ((V&) algo).mul_MV_bwd (args[i][0], args[i][1], i);
+	case MUL_MM: return ((V&) algo).mul_MM_bwd (args[i][0], args[i][1], i);
+	case MUL_VM: return ((V&) algo).mul_VM_bwd (args[i][0], args[i][1], i);
+	case SUB:    return ((V&) algo).sub_bwd    (args[i][0], args[i][1], i);
+	case SUB_V:  return ((V&) algo).sub_V_bwd  (args[i][0], args[i][1], i);
+	case SUB_M:  return ((V&) algo).sub_M_bwd  (args[i][0], args[i][1], i);
+	case DIV:    return ((V&) algo).div_bwd    (args[i][0], args[i][1], i);
+	case MAX:    return ((V&) algo).max_bwd    (args[i][0], args[i][1], i);
+	case MIN:    return ((V&) algo).min_bwd    (args[i][0], args[i][1], i);
+	case ATAN2:  return ((V&) algo).atan2_bwd  (args[i][0], args[i][1], i);
+	case GEN1:   return ((V&) algo).gen1_bwd   (args[i][0], i);
+	case MINUS:  return ((V&) algo).minus_bwd  (args[i][0], i);
+	case MINUS_V:return ((V&) algo).minus_V_bwd(args[i][0], i);
+	case MINUS_M:return ((V&) algo).minus_M_bwd(args[i][0], i);
+	case TRANS_V:return ((V&) algo).trans_V_bwd(args[i][0], i);
+	case TRANS_M:return ((V&) algo).trans_M_bwd(args[i][0], i);
+	case SIGN:   return ((V&) algo).sign_bwd   (args[i][0], i);
+	case ABS:    return ((V&) algo).abs_bwd    (args[i][0], i);
+	case POWER:  return ((V&) algo).power_bwd  (args[i][0], i, ((const ExprPower&) (*nodes)[i]).expon);
+	case SQR:    return ((V&) algo).sqr_bwd    (args[i][0], i);
+	case SQRT:   return ((V&) algo).sqrt_bwd   (args[i][0], i);
+	case EXP:    return ((V&) algo).exp_bwd    (args[i][0], i);
+	case LOG:    return ((V&) algo).log_bwd    (args[i][0], i);
+	case COS:    return ((V&) algo).cos_bwd    (args[i][0], i);
+	case SIN:    return ((V&) algo).sin_bwd    (args[i][0], i);
+	case TAN:    return ((V&) algo).tan_bwd    (args[i][0], i);
+	case COSH:   return ((V&) algo).cosh_bwd   (args[i][0], i);
+	case SINH:   return ((V&) algo).sinh_bwd   (args[i][0], i);
+	case TANH:   return ((V&) algo).tanh_bwd   (args[i][0], i);
+	case ACOS:   return ((V&) algo).acos_bwd   (args[i][0], i);
+	case ASIN:   return ((V&) algo).asin_bwd   (args[i][0], i);
+	case ATAN:   return ((V&) algo).atan_bwd   (args[i][0], i);
+	case ACOSH:  return ((V&) algo).acosh_bwd  (args[i][0], i);
+	case ASINH:  return ((V&) algo).asinh_bwd  (args[i][0], i);
+	case ATANH:  return ((V&) algo).atanh_bwd  (args[i][0], i);
+	case FLOOR:  return ((V&) algo).floor_bwd  (args[i][0], i);
+	case CEIL:   return ((V&) algo).ceil_bwd   (args[i][0], i);
+	case SAW:    return ((V&) algo).saw_bwd    (args[i][0], i);
+	default: 	 assert(false); return true;
 	}
 }
 

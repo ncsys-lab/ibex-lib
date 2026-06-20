@@ -187,5 +187,30 @@ void TestHC4Revise::issue431() {
 	CPPUNIT_ASSERT(x[0]==Interval::zero());
 }
 
+// Root-intersection empty: the forward image of x+y over [0,1]x[0,1] is [0,2],
+// which is disjoint from the target {5}. HC4Revise must empty the box. This is
+// the throw site Tier-0 converts to a return-status; the box-emptied
+// post-condition must be preserved bit-for-bit.
+void TestHC4Revise::empty01() {
+	const ExprSymbol& x = ExprSymbol::new_("x");
+	const ExprSymbol& y = ExprSymbol::new_("y");
+	Function f(x,y,x+y);
+	double init_xy[][2]= { {0,1}, {0,1} };
+	IntervalVector box(2,init_xy);
+	f.backward(Interval(5,5), box);
+	CPPUNIT_ASSERT(box.is_empty());
+}
+
+// Out-of-range transcendental: sin has range [-1,1], so sin(x) == 2 is
+// infeasible for every x; the box must be emptied. Uses exactly-representable
+// values so the result is independent of FPU rounding mode.
+void TestHC4Revise::empty02() {
+	const ExprSymbol& x = ExprSymbol::new_("x");
+	Function f(x,sin(x));
+	IntervalVector box(1,Interval(-5,5));
+	f.backward(Interval(2,2), box);
+	CPPUNIT_ASSERT(box.is_empty());
+}
+
 } // end namespace
 
