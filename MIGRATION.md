@@ -1,9 +1,9 @@
 # MIGRATION.md — divergence catalog for `ncsys-lab/ibex-lib`
 
-This fork carries **ten surgical patches** on top of mainline `ibex-team/ibex-lib`. Each is intended as an independent upstream PR; once any/all merge upstream, drop the corresponding commit. When all ten land, **delete the fork**.
+This fork carries **eleven surgical patches** on top of mainline `ibex-team/ibex-lib`. Each is intended as an independent upstream PR; once any/all merge upstream, drop the corresponding commit. When all eleven land, **delete the fork**.
 
 Baseline: `master = origin/master = ibex-team/ibex-lib@65ed5877`.
-Patch branch: `dreal-perf-patches` (10 code commits + 1 docs commit, 12 files / +480/-37 vs mainline excluding docs).
+Patch branch: `dreal-perf-patches` (11 code commits + per-patch docs commits, 23 files / +1019/-399 vs mainline excluding docs).
 
 ## The patches (chronological on branch)
 
@@ -98,10 +98,20 @@ Builds on #9. Each interval transcendental computed its two directed bounds via 
 
 Files: `interval_lib_wrapper/gaol/3rd/gaol-4.2.3alpha0.all.all.patch`. +250/−14 patch lines.
 
+### 11. `cc6fb001` — `function: signal empty domains via return-status instead of EmptyBoxException`
+
+The forward-backward contractor (`HC4Revise`) and its siblings signalled "a domain emptied" by **throwing** a protected, nested `EmptyBoxException`, caught in `proj()`/`iproj()`. On systems that prune to empty at high frequency (UNSAT-style decrease/positivity proofs), the per-throw C++ unwinding (`__cxa_throw`/`_Unwind_*`, table-based on ARM64) is paid on the contraction hot path — macOS `sample` measured it at up to **~27%** of CPU on the throw-densest benchmarks.
+
+Replaces the exception control flow with a `bool` return-status threaded through the shared backward engine: `BwdAlgorithm`'s `*_bwd` interface returns `bool`; `CompiledFunction::backward<V>` short-circuits on the first `false` (an emptied domain) and returns it; `HC4Revise`/`InHC4Revise` `*_bwd`/`backward`/`iproj` return their primitive's bool and the nested `EmptyBoxException` classes + all `try/catch` are removed; `Gradient`'s `*_bwd` return `true` (gradient never contradicts); `Function::backward<V>` returns `bool`. The **public** `Function::backward(y, x, callback)` signature/semantics are unchanged, so external callers (`CtcFwdBwd`, `CtcInverse`, `SepInverse`) and downstream users (dReal) are source-compatible — they already detect emptiness via `x.is_empty()`. No globals/thread-locals; `Eval`'s forward `*_fwd` path is untouched (it catches its own forward exceptions internally; the resulting empty root is reported by `backward()`).
+
+**Bit-identical contraction** (a control-flow refactor, not numeric): all existing HC4/InHC4/Gradient/contractor tests pass unchanged. Adds `TestHC4Revise::empty01/empty02` and `TestInHC4Revise::empty01` (direct empty-propagation assertions). Landed via a measured Tier-0 → escalate strategy in dReal (convert the shallow root throw, profile, then convert the deep `*_bwd` throws); the final patch is the coherent whole. Eliminates `__cxa_throw` from the dReal odeexpr hot path entirely (26.6%/5.2% → 0% on the two throw-densest benchmarks); see dReal's `OPTIMIZATION_LOG.md`.
+
+Files: `src/function/ibex_{BwdAlgorithm,CompiledFunction,Function,Gradient,HC4Revise,InHC4Revise}.{h,cpp}`, `tests/Test{HC4Revise,InHC4Revise}.{h,cpp}`. +432/−370.
+
 ## Build & rebase cadence
 
 - Build: `cd build && cmake -DINTERVAL_LIB=gaol -DLP_LIB=none .. && make -j && make check`. 62/62 tests pass on macOS arm64 native with clang.
-- Rebase: re-apply the 10 commits onto `ibex-team/ibex-lib@HEAD` on every mainline minor release. If one of the patches lands upstream, drop it from the rebase.
+- Rebase: re-apply the 11 commits onto `ibex-team/ibex-lib@HEAD` on every mainline minor release. If one of the patches lands upstream, drop it from the rebase.
 
 ## Archive branches (historical reference, not maintained)
 
