@@ -223,3 +223,59 @@
  #endif
  
    // #define GAOL_INFINITY std::numeric_limits<double>::infinity()
+--- gaol-4.2.3alpha0/gaol/gaol_fpu_fenv.h
++++ gaol-4.2.3alpha0/gaol/gaol_fpu_fenv.h
+@@ -91,9 +91,45 @@
+ #endif // USING_SSE2_INSTRUCTIONS
+ 
+ 
++#if defined(__aarch64__)
++// aarch64 fast-path for the three hot rounding-mode setters. The directed
++// interval transcendentals (gaol_double_op_apmathlib.h) toggle the FPU mode
++// nearest<->upward around every correctly-rounded mathlib call; on ARM64 the
++// libc fesetround() is a non-inlined call frame that dominates interval
++// transcendental cost. Here we instead inline an mrs/msr read-modify-write of
++// just the FPCR RMode field (bits [23:22]), preserving every other FPCR bit --
++// the same primitive CAPD's NATIVE DoubleRounding uses. Bit-identical to
++// fesetround() by construction: identical RMode encoding (00=nearest,
++// 01=+inf/upward, 10=-inf/downward), all other bits untouched.
++INLINE void gaol_aarch64_set_rmode(unsigned long rmode)
++{
++  unsigned long fpcr;
++  __asm__ __volatile__("mrs %0, fpcr" : "=r"(fpcr));
++  fpcr = (fpcr & ~(3UL << 22)) | (rmode << 22);
++  __asm__ __volatile__("msr fpcr, %0" : : "r"(fpcr));
++}
++
+ INLINE  void
+ round_downward(void)
+ {
++  gaol_aarch64_set_rmode(2UL); // -oo
++}
++
++INLINE  void
++round_upward(void)
++{
++  gaol_aarch64_set_rmode(1UL); // +oo
++}
++
++INLINE  void
++round_nearest(void)
++{
++  gaol_aarch64_set_rmode(0UL); // nearest
++}
++#else // !__aarch64__
++INLINE  void
++round_downward(void)
++{
+   fesetround(FE_DOWNWARD);
+ }
+ 
+@@ -108,6 +144,7 @@
+ {
+   fesetround(FE_TONEAREST);
+ }
++#endif // __aarch64__
+ 
+ INLINE unsigned short int get_fpu_cw()
+ {
