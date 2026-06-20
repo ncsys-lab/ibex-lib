@@ -1,9 +1,9 @@
 # MIGRATION.md — divergence catalog for `ncsys-lab/ibex-lib`
 
-This fork carries **eight surgical patches** on top of mainline `ibex-team/ibex-lib`. Each is intended as an independent upstream PR; once any/all merge upstream, drop the corresponding commit. When all eight land, **delete the fork**.
+This fork carries **ten surgical patches** on top of mainline `ibex-team/ibex-lib`. Each is intended as an independent upstream PR; once any/all merge upstream, drop the corresponding commit. When all ten land, **delete the fork**.
 
 Baseline: `master = origin/master = ibex-team/ibex-lib@65ed5877`.
-Patch branch: `dreal-perf-patches` (8 code commits + 1 docs commit, 12 files / +169/-21 vs mainline excluding docs).
+Patch branch: `dreal-perf-patches` (10 code commits + 1 docs commit, 12 files / +480/-37 vs mainline excluding docs).
 
 ## The patches (chronological on branch)
 
@@ -82,10 +82,26 @@ Both wrapper fixes originate in `dreal-deps/ibex-lib` commits by Soonho Kong (Se
 
 Files: `interval_lib_wrapper/gaol/ibex_IntervalLibWrapper.inl`, `tests/TestArith.cpp`. 8 lines (+ ~4 lines of explanatory comment in the wrapper).
 
+### 9. `e0311233` — gaol: inline aarch64 FPCR rounding-mode fast-path
+
+The directed interval transcendentals (`gaol_double_op_apmathlib.h`) toggle the FPU rounding mode nearest⟷upward around every correctly-rounded IBM-mathlib call. On ARM64 each toggle is a libc `fesetround()` call (`gaol_fpu_fenv.h` `round_downward`/`round_upward`/`round_nearest`); profiling dReal's transcendental-dense (`odeexpr`) workloads attributes **23–44% of solve time** to it. Replace the three setters' bodies, under `#if defined(__aarch64__)`, with an inline `mrs`/`msr` read-modify-write of just the FPCR RMode field (bits [23:22]) — the primitive CAPD's NATIVE `DoubleRounding` already uses. **Bit-identical** to `fesetround`: identical RMode encoding (00=nearest, 01=+∞, 10=−∞), every other FPCR bit preserved. macOS `fesetround` is itself literally `mrs`/`msr` with no `isb`, so this is the same instruction sequence minus the non-inlined call frame. The `fesetround` body is retained for every other architecture.
+
+Lives in the vendored-gaol build patch, not ibex source: a new `gaol_fpu_fenv.h` hunk in `gaol-4.2.3alpha0.all.all.patch`. Upstreamable to gaol (Frédéric Goualard) or to ibex's vendored gaol patch. Verified bit-identical to baseline by dReal's `gaol_transcendental_bitidentity` gate (in libgaol's `gaol_interval.o`: baseline's external `_fesetround` → 121 inline `msr fpcr`, 0 `fesetround`).
+
+Files: `interval_lib_wrapper/gaol/3rd/gaol-4.2.3alpha0.all.all.patch`. +56 patch lines.
+
+### 10. `3902fa35` — gaol: batch the nearest-rounding region in transcendentals
+
+Builds on #9. Each interval transcendental computed its two directed bounds via separate `<f>_dn`/`<f>_up` helpers, and each helper does `round_nearest()` … `round_upward()` — so one interval transcendental toggled the FPU mode nearest⟷upward **twice** (~4 mode writes). Add paired `<f>_dn_up(x_dn, x_up, *lo, *hi)` helpers in `gaol_double_op_apmathlib.h` that evaluate both correctly-rounded calls inside **one** `round_nearest()`/`round_upward()` pair, and switch the `gaol_interval.cpp` call sites to them (exp, log, tan, acos, asin, atan, cosh, sinh, tanh, cos; `sin` routes through `cos`). Halves the mode toggles per transcendental (~4→2). The soundness-critical argument reduction (`Il/pi_up`, `Ir/pi_dn`) stays in FE_UPWARD, never pulled into the nearest window. apmathlib is the only active backend (the gaol build copies `gaol_double_op_apmathlib.h` to `gaol_double_op.h`), so the helpers live there; the rare `cos` `nm==2` branch and single-call `cosh` branches are left unbatched.
+
+**Bit-identical** to the unbatched helpers by construction: same mathlib routine, same FE_TONEAREST window, same `previous_float`/`next_float` outward bump, same order (lo from `x_dn`, then hi from `x_up`) — only the placement/count of the FPU mode switches changes. Verified by the same `gaol_transcendental_bitidentity` gate. Separate commit from #9 so the two levers can be benchmarked/reverted independently.
+
+Files: `interval_lib_wrapper/gaol/3rd/gaol-4.2.3alpha0.all.all.patch`. +250/−14 patch lines.
+
 ## Build & rebase cadence
 
 - Build: `cd build && cmake -DINTERVAL_LIB=gaol -DLP_LIB=none .. && make -j && make check`. 62/62 tests pass on macOS arm64 native with clang.
-- Rebase: re-apply the 8 commits onto `ibex-team/ibex-lib@HEAD` on every mainline minor release. If one of the patches lands upstream, drop it from the rebase.
+- Rebase: re-apply the 10 commits onto `ibex-team/ibex-lib@HEAD` on every mainline minor release. If one of the patches lands upstream, drop it from the rebase.
 
 ## Archive branches (historical reference, not maintained)
 
