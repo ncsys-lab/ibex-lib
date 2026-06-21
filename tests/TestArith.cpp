@@ -668,6 +668,17 @@ void TestArith::bwd_pow14() { checkbwd_pow(Interval(8,27), Interval(4,4), Interv
 void TestArith::bwd_pow15() { checkbwd_pow(Interval(-27,-8), Interval(-1,-1), Interval::empty_set(), 3); }
 void TestArith::bwd_pow16() { checkbwd_pow(Interval(-27,-8), Interval(-4,-4), Interval::empty_set(), 3); }
 void TestArith::bwd_pow17() { checkbwd_pow(Interval(0,1), Interval(-10,10), Interval(-10,10), -2); }
+// dreal/dreal4#321: bwd_pow of a subnormal target must keep a feasible base.
+// pow(0.5,1075)=2^-1075 underflows; forward gives [0,DBL_TRUE_MIN], so the
+// preimage of {DBL_TRUE_MIN} must still contain 0.5. underflow_saturate widens
+// the subnormal-band target to include 0 before the (tight) nth_root; without it
+// the base [0.5,0.5] is wrongly emptied (false unsat). gaol is sound only under
+// FE_UPWARD and this fork dropped gaol's FPU auto-init, so establish it here.
+void TestArith::bwd_pow18() {
+	ibex::fpu_round_up();
+	checkbwd_pow(Interval(ibex::next_float(0)), Interval(0.5,0.5), Interval(0.5,0.5), 1075);
+	ibex::fpu_round_near();
+}
 
 void TestArith::check_div2(const Interval& x, const Interval& y, const Interval& out1, const Interval& out2) {
 	Interval _out1,_out2;

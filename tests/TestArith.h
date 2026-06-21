@@ -329,6 +329,7 @@ public:
 	CPPUNIT_TEST(bwd_pow15);
 	CPPUNIT_TEST(bwd_pow16);
 	CPPUNIT_TEST(bwd_pow17);
+	CPPUNIT_TEST(bwd_pow18);
 
 	// ===== temporarily commented ===============
 			CPPUNIT_TEST(bwd_atan2_01);
@@ -765,6 +766,7 @@ private:
 	void bwd_pow15();
 	void bwd_pow16();
 	void bwd_pow17();
+	void bwd_pow18();
 
 	void bwd_atan2_01();
 	void bwd_atan2_02();

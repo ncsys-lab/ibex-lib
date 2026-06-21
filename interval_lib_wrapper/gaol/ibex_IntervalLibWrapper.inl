@@ -3,6 +3,8 @@
 
 #include "ibex_Exception.h"
 
+#include <limits>  // std::numeric_limits (smallest normal, for underflow_saturate)
+
 #ifdef _WIN32
 #include <float.h>
 #endif
@@ -454,14 +456,36 @@ inline Interval ceil(const Interval& x) {
 	return gaol::ceil(x.itv);
 }
 
+// dreal/dreal4#321 underflow-consistency helper. A forward op (pow/exp/mul/...)
+// soundly over-approximates an underflowed result up to the subnormal ceiling
+// [0, DBL_TRUE_MIN] (resp. down to [-DBL_TRUE_MIN, 0]). A backward op that then
+// inverts a target y lying entirely in that subnormal band via a *tight* gaol
+// primitive (nth_root / sqrt_rel / div_rel / log) is tighter than the forward
+// and can wrongly empty a feasible operand domain -> false unsat. Saturating y
+// to include 0 before the tight inverse restores forward/backward consistency;
+// it only ever ENLARGES y, so it can never prune a feasible point (sound). It
+// fires only when the WHOLE interval lies in the subnormal band (every |value|
+// <= the smallest normal), i.e. y could only have come from an underflowed
+// forward result; a y that merely reaches down into the subnormal range but
+// extends into the normal range (e.g. [DBL_TRUE_MIN, +inf]) has normal-magnitude
+// preimages and must NOT be widened. So the test is on the endpoint *farthest*
+// from 0 (ub for a positive interval, lb for a negative one).
+inline Interval underflow_saturate(const Interval& y) {
+	const double tiny = std::numeric_limits<double>::min();  // smallest normal
+	if (0.0 < y.lb() && y.ub() <= tiny)  return Interval(0.0, y.ub());
+	if (y.ub() < 0.0 && y.lb() >= -tiny) return Interval(y.lb(), 0.0);
+	return y;
+}
+
 inline bool bwd_mul(const Interval& y, Interval& x1, Interval& x2) {
-	x1 = gaol::div_rel(y.itv, x2.itv, x1.itv);
-	x2 = gaol::div_rel(y.itv, x1.itv, x2.itv);
+	const Interval ys = underflow_saturate(y);
+	x1 = gaol::div_rel(ys.itv, x2.itv, x1.itv);
+	x2 = gaol::div_rel(ys.itv, x1.itv, x2.itv);
 	return (!x1.is_empty()) && (!x2.is_empty());
 }
 
 inline bool bwd_sqr(const Interval& y, Interval& x) {
-	x = gaol::sqrt_rel(y.itv,x.itv);
+	x = gaol::sqrt_rel(underflow_saturate(y).itv, x.itv);
 	return !x.is_empty();
 }
 
@@ -477,14 +501,17 @@ inline bool bwd_pow(const Interval& y, int expon, Interval& x) {
 	// with negative exponents (that is why the root function
 	// has also been wrapped)
 
+	// dreal/dreal4#321: keep the backward root consistent with the forward pow's
+	// underflow over-approximation (see underflow_saturate above).
+	const Interval ys = underflow_saturate(y);
 	if (expon % 2 ==0) {
-		Interval proj=root(y,expon);
+		Interval proj=root(ys,expon);
 		Interval pos_proj= proj & x;
 		Interval neg_proj = (-proj) & x;
 		//std::cout << "expon=" << expon << " proj=" << proj << " x=" << x << std::endl;
 		x = pos_proj | neg_proj;
 	} else {
-		x &= root(y, expon);
+		x &= root(ys, expon);
 	}
 
 	return !x.is_empty();

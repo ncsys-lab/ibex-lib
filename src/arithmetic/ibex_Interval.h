@@ -1055,8 +1055,12 @@ inline bool bwd_sub(const Interval& y, Interval& x1, Interval& x2) {
 }
 
 inline bool bwd_div(const Interval& y, Interval& x1, Interval& x2) {
-	if ((x1 &= y*x2).is_empty()) { x2.set_empty(); return false; }
-	Interval tmp=y;
+	// dreal/dreal4#321: forward div flattens an underflowed quotient up to the
+	// subnormal ceiling; saturate y so the tight backward (x1 &= y*x2 with y a
+	// subnormal point, then bwd_mul) stays consistent with the forward.
+	const Interval ys = underflow_saturate(y);
+	if ((x1 &= ys*x2).is_empty()) { x2.set_empty(); return false; }
+	Interval tmp=ys;
 	bwd_mul(x1, tmp, x2);
 	if (x2.is_empty()) { x1.set_empty(); return false; }
 	return true;
@@ -1079,7 +1083,9 @@ inline bool bwd_root(const Interval& y, int n, Interval& x) {
 }
 
 inline bool bwd_exp(const Interval& y,  Interval& x) {
-	x &= log(y);
+	// dreal/dreal4#321: forward exp flattens an underflowed result up to the
+	// subnormal ceiling; saturate y so the tight backward log stays consistent.
+	x &= log(underflow_saturate(y));
 	return !x.is_empty();
 }
 
