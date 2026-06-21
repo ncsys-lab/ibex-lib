@@ -1,9 +1,9 @@
 # MIGRATION.md — divergence catalog for `ncsys-lab/ibex-lib`
 
-This fork carries **eleven surgical patches** on top of mainline `ibex-team/ibex-lib`. Each is intended as an independent upstream PR; once any/all merge upstream, drop the corresponding commit. When all eleven land, **delete the fork**.
+This fork carries **twelve surgical patches** on top of mainline `ibex-team/ibex-lib`. Each is intended as an independent upstream PR; once any/all merge upstream, drop the corresponding commit. When all twelve land, **delete the fork**.
 
 Baseline: `master = origin/master = ibex-team/ibex-lib@65ed5877`.
-Patch branch: `dreal-perf-patches` (11 code commits + per-patch docs commits, 23 files / +1019/-399 vs mainline excluding docs).
+Patch branch: `dreal-perf-patches` (12 code commits + per-patch docs commits, 25 files / +1073/-407 vs mainline excluding this catalog).
 
 ## The patches (chronological on branch)
 
@@ -108,10 +108,20 @@ Replaces the exception control flow with a `bool` return-status threaded through
 
 Files: `src/function/ibex_{BwdAlgorithm,CompiledFunction,Function,Gradient,HC4Revise,InHC4Revise}.{h,cpp}`, `tests/Test{HC4Revise,InHC4Revise}.{h,cpp}`. +432/−370.
 
+### 12. `9500de6b` — `gaol: underflow_saturate backward targets (dreal/dreal4#321)`
+
+A forward interval op soundly over-approximates an *underflowed* result up to the subnormal ceiling — `pow(0.5,1075) = 2^-1075` returns `[0, DBL_TRUE_MIN]`. But the HC4 backward ops that invert a narrowed target via a **tight** gaol primitive (`nth_root` / `sqrt_rel` / `div_rel` / `log`) are tighter than the forward, so when the backward target lands entirely in the subnormal band they wrongly **empty a feasible operand domain** → false `unsat` (a delta-completeness violation). An empirical `FE_UPWARD` audit confirmed five ops emptied a relaxation-consistent subnormal preimage: `bwd_pow`, `bwd_exp`, `bwd_sqr`, `bwd_mul`, `bwd_div`.
+
+Adds one backend-agnostic helper, `underflow_saturate(y)`, that widens a target lying **entirely** in the subnormal band (every `|value| <=` the smallest normal) to include `0`, and applies it to the backward target of each tight-inverting op (`bwd_pow`/`bwd_sqr`/`bwd_mul` in the gaol wrapper, `bwd_exp`/`bwd_div` in `ibex_Interval.h`). The helper only ever **enlarges** `y`, so it can never prune a feasible point (sound); it keys on the endpoint *farthest* from 0 so a target that merely reaches into the subnormal range but extends to normal magnitudes (e.g. `[DBL_TRUE_MIN, +inf]`) is left untouched — that distinction is what keeps `bwd_div08` and the rest of the existing arith suite bit-identical. Audited siblings `bwd_sqrt`/`bwd_log`/`bwd_root` invert via a *loose* forward op and are already sound (no change). Uses `std::numeric_limits` (the wrapper only pulls `<float.h>` on `_WIN32`, so `DBL_MIN` is otherwise undefined).
+
+Adds `TestArith::bwd_pow18` (subnormal-target backward stays non-empty; establishes `FE_UPWARD` since the fork dropped gaol's FPU auto-init). 62/62 ibex tests pass. Validated end-to-end in dReal: the `#321` chain (`x - pow(0.5,1075) = 0`) no longer false-`unsat`s; see dReal's `ibex_log_pow_edge_cases_test.cc` and `gaol_directed_rounding_false_unsat_test.cc`.
+
+Files: `interval_lib_wrapper/gaol/ibex_IntervalLibWrapper.inl`, `src/arithmetic/ibex_Interval.h`, `tests/TestArith.{h,cpp}`. +54/−8.
+
 ## Build & rebase cadence
 
 - Build: `cd build && cmake -DINTERVAL_LIB=gaol -DLP_LIB=none .. && make -j && make check`. 62/62 tests pass on macOS arm64 native with clang.
-- Rebase: re-apply the 11 commits onto `ibex-team/ibex-lib@HEAD` on every mainline minor release. If one of the patches lands upstream, drop it from the rebase.
+- Rebase: re-apply the 12 commits onto `ibex-team/ibex-lib@HEAD` on every mainline minor release. If one of the patches lands upstream, drop it from the rebase.
 
 ## Archive branches (historical reference, not maintained)
 
