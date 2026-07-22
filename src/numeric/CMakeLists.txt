@@ -13,6 +13,8 @@ target_sources (ibex PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_LinearException.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_Linearizer.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_Linearizer.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_LinearizerAffine2.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_LinearizerAffine2.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_LinearizerCompo.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_LinearizerCompo.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_LinearizerDuality.cpp
