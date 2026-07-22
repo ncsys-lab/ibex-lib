@@ -106,6 +106,8 @@ Always re-run from the right build dir against the right HEAD, and cite both in 
 
 This repo is a fork of `ibex-team/ibex-lib`. Every patch we carry has to be re-rebased on every upstream release — the fork is a maintenance liability, not an asset. Keep the diff small and PR-able.
 
+> **Standing exception to the global `minimize-logic.md` rule.** That rule's default is to optimize for *less logic*, not smaller diffs — and to accept a large rip-and-replace rewrite when it nets out to less logic. **This repo inverts that:** because every line of fork diff is re-rebased onto upstream on each release, prefer the minimal patch even over a cleaner-but-larger rewrite. Here, diff size wins.
+
 Before adding a commit to the fork, evaluate it against:
 
 > "Would the upstream maintainers accept this as a standalone PR?"
