@@ -1,9 +1,9 @@
 # MIGRATION.md — divergence catalog for `ncsys-lab/ibex-lib`
 
-This fork carries **twelve surgical patches** on top of mainline `ibex-team/ibex-lib`. Each is intended as an independent upstream PR; once any/all merge upstream, drop the corresponding commit. When all twelve land, **delete the fork**.
+This fork carries a series of **surgical patches** on top of mainline `ibex-team/ibex-lib` — the numbered entries below are the live catalog. Each is intended as an independent upstream PR; once any/all merge upstream, drop the corresponding commit. When all land, **delete the fork**.
 
 Baseline: `master = origin/master = ibex-team/ibex-lib@65ed5877`.
-Patch branch: `dreal-perf-patches` (12 code commits + per-patch docs commits, 25 files / +1073/-407 vs mainline excluding this catalog).
+Patch branch: `dreal-perf-patches` (one code commit per patch + per-patch docs commits).
 
 ## The patches (chronological on branch)
 
@@ -118,10 +118,20 @@ Adds `TestArith::bwd_pow18` (subnormal-target backward stays non-empty; establis
 
 Files: `interval_lib_wrapper/gaol/ibex_IntervalLibWrapper.inl`, `src/arithmetic/ibex_Interval.h`, `tests/TestArith.{h,cpp}`. +54/−8.
 
+### 13. `a507cd10` — `arith: guard infinite x endpoints in forward atan2 straddle branch (dreal/dreal4#258)`
+
+In the x-straddles-zero branch of the forward `atan2(y,x)` (`src/arithmetic/ibex_Interval.h`), the `y.lb()>=0` case divides by the scalar endpoints `x.ub()`/`x.lb()` with **no infinity guards**, while its `y.ub()<=0` sibling has them. `Interval/(±∞)` is the empty set by gaol-wrapper convention (`interval_lib_wrapper/gaol/ibex_IntervalLibWrapper.inl`), so `atan2([3,3], [-∞,∞])` returned the **empty set** — a feasible domain collapsed to empty. In dReal this surfaced as a false `unsat` on `(assert (= z (arctan2 3 y)))` with unbounded `y` (dreal/dreal4#258): HC4's forward evaluation of the atan2 node emptied the box before backward projection ever ran. With exactly one infinite endpoint, the corresponding hull piece (`atan(y/x.ub())` or `atan(y/x.lb())+π`) silently vanished instead — an unsound narrowing of the forward image.
+
+Mirrors the sibling's guard structure exactly: `x.ub()==+∞` contributes `Interval::zero()` (angle → 0 as x → +∞), `x.lb()==-∞` contributes `Interval::pi()` (angle → π as x → −∞). Bounded arguments take the unchanged both-finite expression bit-identically.
+
+Adds `TestArith::atan2_16..18` (previously red: empty result / missing right piece / missing left piece). `make check` 62/62; `TestArith` OK (347). Validated end-to-end in dReal: `DrealBugsRegression.Issue258_Atan2UnboundedSecondArg_DeltaSat`.
+
+Files: `src/arithmetic/ibex_Interval.h`, `tests/TestArith.{h,cpp}`. +31/−2.
+
 ## Build & rebase cadence
 
 - Build: `cd build && cmake -DINTERVAL_LIB=gaol -DLP_LIB=none .. && make -j && make check`. 62/62 tests pass on macOS arm64 native with clang.
-- Rebase: re-apply the 12 commits onto `ibex-team/ibex-lib@HEAD` on every mainline minor release. If one of the patches lands upstream, drop it from the rebase.
+- Rebase: re-apply the patch commits onto `ibex-team/ibex-lib@HEAD` on every mainline minor release. If one of the patches lands upstream, drop it from the rebase.
 
 ## Archive branches (historical reference, not maintained)
 

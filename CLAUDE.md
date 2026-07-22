@@ -4,18 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-This is the dReal team's fork of [ibex-team/ibex-lib](https://github.com/ibex-team/ibex-lib) (Ibex 2.9.1) — a C++ interval-arithmetic / constraint-programming library. The fork exists **only** to host eight surgical patches that are pending upstream submission.
+This is the dReal team's fork of [ibex-team/ibex-lib](https://github.com/ibex-team/ibex-lib) (Ibex 2.9.1) — a C++ interval-arithmetic / constraint-programming library. The fork exists **only** to host a series of surgical patches that are pending upstream submission.
 
 Remotes:
 - `origin` → upstream `ibex-team/ibex-lib` (the canonical Ibex repo and rebase target)
 - `fork` → `ncsys-lab/ibex-lib` (this fork's hosting; push target)
 
-**Read [MIGRATION.md](MIGRATION.md) before making non-trivial changes.** It catalogs the 8 patches (what / why / file scope) and their upstream-PR status.
+**Read [MIGRATION.md](MIGRATION.md) before making non-trivial changes.** It catalogs the patches (what / why / file scope) and their upstream-PR status.
 
 ## Branches
 
 - `master` — tracks `origin/master`. Do not commit local changes here.
-- `dreal-perf-patches` — the 8-patch series (12 files / +169/−21 vs mainline, excluding docs). This is the branch `dreal4-cmake` should depend on.
+- `dreal-perf-patches` — the patch series (see MIGRATION.md for the live catalog). This is the branch `dreal4-cmake` should depend on.
 - `archive/cav26-base`, `archive/pre-modernization-filib`, `archive/v2.8.9-m1-superseded`, `archive/v2.7.4-m1-superseded` — historical reference, not maintained.
 
 ## Build & test
@@ -50,7 +50,7 @@ git rebase origin/master
 make -j && make check                            # verification gate
 ```
 
-If any of the 8 patches lands upstream, drop the corresponding commit from the rebase.
+If any of the patches lands upstream, drop the corresponding commit from the rebase.
 
 ## Architecture
 
@@ -80,7 +80,7 @@ If any of the 8 patches lands upstream, drop the corresponding commit from the r
 
 | File | What it covers |
 |---|---|
-| `function.rst` | `Function` semantics: eval, gradient, HC4Revise, InHC4Revise — the subsystem 6/8 patches touch |
+| `function.rst` | `Function` semantics: eval, gradient, HC4Revise, InHC4Revise — the subsystem most patches touch |
 | `contractor.rst` | `Ctc` interface, HC4, Newton, combinators (compo/union/fixpoint) |
 | `minibex.rst` | Minibex grammar — relevant to the `parser.yc` patch |
 | `interval.rst` | `Interval` / `IntervalVector` arithmetic |
