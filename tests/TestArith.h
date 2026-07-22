@@ -216,6 +216,9 @@ public:
 	CPPUNIT_TEST(atan2_13);
 	CPPUNIT_TEST(atan2_14);
 	CPPUNIT_TEST(atan2_15);
+	CPPUNIT_TEST(atan2_16);
+	CPPUNIT_TEST(atan2_17);
+	CPPUNIT_TEST(atan2_18);
 
 	CPPUNIT_TEST(floor01);
 	CPPUNIT_TEST(floor02);
@@ -650,6 +653,9 @@ private:
 	void atan2_13();
 	void atan2_14();
 	void atan2_15();
+	void atan2_16();
+	void atan2_17();
+	void atan2_18();
 
 	void floor01();
 	void floor02();

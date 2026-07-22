@@ -381,6 +381,13 @@ void TestArith::atan2_12() { check(atan2(Interval(-1,1),Interval(1,POS_INFINITY)
 void TestArith::atan2_13() { check(atan2(Interval(-1,1),Interval(NEG_INFINITY,-1)), Interval(-1,1)*Interval::pi()); }
 void TestArith::atan2_14() { check(atan2(Interval::all_reals(),Interval::all_reals()),Interval(-1,1)*Interval::pi()); }
 void TestArith::atan2_15() { check(atan2(Interval::zero(),Interval::zero()),Interval::empty_set()); }
+// atan2_16..18: y>0 with x straddling 0 and an INFINITE endpoint (dreal/dreal4#258).
+// The y.lb()>=0 branch divided by the scalar endpoints x.ub()/x.lb() without the
+// infinity guards its y.ub()<=0 sibling has; Interval/double with d=+-oo is the
+// empty set by convention, so the result collapsed to empty (false infeasibility).
+void TestArith::atan2_16() { check(atan2(Interval(3,3),Interval::all_reals()), Interval(0,1)*Interval::pi()); }
+void TestArith::atan2_17() { check(atan2(Interval(3,3),Interval(-1,POS_INFINITY)), Interval::zero() | (atan(Interval(-3.0))+Interval::pi())); }
+void TestArith::atan2_18() { check(atan2(Interval(3,3),Interval(NEG_INFINITY,1)), atan(Interval(3.0)) | Interval::pi()); }
 
 void TestArith::check_pow(const Interval& x, int p, const Interval& y_expected) {
 	check(pow(x,p),y_expected);

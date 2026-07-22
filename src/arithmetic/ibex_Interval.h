@@ -1020,8 +1020,24 @@ inline Interval atan2(const Interval& y, const Interval& x) {
 		else
 			return Interval(-1,1)*Interval::pi();
 	} else {
-		if (y.lb()>=0)
-			return atan(y/x.ub()) | (atan(y/x.lb()) + Interval::pi());
+		if (y.lb()>=0){
+			// dreal/dreal4#258: guard the infinite endpoints exactly like the
+			// y.ub()<=0 sibling below — Interval/(±oo) is the empty set by
+			// convention, which silently collapsed the result to empty.
+			if(x.lb()!=NEG_INFINITY){
+				if(x.ub()!=POS_INFINITY){
+					return atan(y/x.ub()) | (atan(y/x.lb()) + Interval::pi());
+				}
+				else
+					return Interval::zero() | (atan(y/x.lb()) + Interval::pi());
+			}
+			else{
+				if(x.ub()!=POS_INFINITY)
+					return atan(y/x.ub()) | Interval::pi();
+				else
+					return Interval::zero() | Interval::pi();
+			}
+		}
 		else if (y.ub()<=0){
 			if(x.lb()!=NEG_INFINITY){
 				if(x.ub()!=POS_INFINITY){
