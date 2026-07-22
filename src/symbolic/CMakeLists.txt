@@ -88,6 +88,8 @@ target_sources (ibex PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_ExprSimplify2.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_ExprSize.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_ExprSize.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_ExprSplitOcc.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_ExprSplitOcc.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_ExprSubNodes.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_ExprSubNodes.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_ExprVisitor.h
