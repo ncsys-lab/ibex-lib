@@ -472,8 +472,8 @@ inline Interval ceil(const Interval& x) {
 // from 0 (ub for a positive interval, lb for a negative one).
 inline Interval underflow_saturate(const Interval& y) {
 	const double tiny = std::numeric_limits<double>::min();  // smallest normal
-	if (0.0 < y.lb() && y.ub() <= tiny)  return Interval(0.0, y.ub());
-	if (y.ub() < 0.0 && y.lb() >= -tiny) return Interval(y.lb(), 0.0);
+	if (0.0 < y.lb() && y.ub() <= +tiny) return Interval(0.0, y.ub());
+	if (-tiny <= y.lb() && y.ub() < 0.0) return Interval(y.lb(), 0.0);
 	return y;
 }
 
