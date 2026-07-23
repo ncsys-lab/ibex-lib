@@ -4,6 +4,15 @@
 # Paths to files should be absolute.
 
 target_sources (ibex PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_Affine.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_Affine2.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_Affine2_fAF2.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_Affine2_fAF2.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_Affine3_fAFFullI.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_Affine3_fAFFullI.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_AffineDomain.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_AffineMatrix.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_AffineVector.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_Dim.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_Dim.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_Domain.h

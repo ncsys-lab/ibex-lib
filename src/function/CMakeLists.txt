@@ -1,6 +1,8 @@
 # see arithmetic/CMakeLists.txt for comments
 
 target_sources (ibex PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_AffineEval.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_AffineEval.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_BwdAlgorithm.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_CompiledFunction.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_CompiledFunction.h

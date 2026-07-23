@@ -9,7 +9,9 @@ if (CPPUNIT_FOUND)
   
   set (srcdir_test_flag -DSRCDIR_TESTS="${CMAKE_CURRENT_SOURCE_DIR}")
 
-  set (TESTS_LIST TestAgenda TestArith TestBitSet TestBoolInterval
+  set (TESTS_LIST TestAffineArith TestAffineBase TestAffineEval
+                  TestAffineVector
+                  TestAgenda TestArith TestBitSet TestBoolInterval
                   TestBxpSystemCache TestCell TestCov TestCross TestCtcExist
                   TestCtcForAll TestCtcFwdBwd TestCtcHC4 TestCtcInteger TestCtcMohc
                   TestCtcNotIn TestDim TestDomain TestDoubleHeap TestDoubleIndex
