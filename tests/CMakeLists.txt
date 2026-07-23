@@ -11,12 +11,12 @@ if (CPPUNIT_FOUND)
 
   set (TESTS_LIST TestAgenda TestArith TestBitSet TestBoolInterval
                   TestBxpSystemCache TestCell TestCov TestCross TestCtcExist
-                  TestCtcForAll TestCtcFwdBwd TestCtcHC4 TestCtcInteger
+                  TestCtcForAll TestCtcFwdBwd TestCtcHC4 TestCtcInteger TestCtcMohc
                   TestCtcNotIn TestDim TestDomain TestDoubleHeap TestDoubleIndex
                   TestEval TestExpr2DAG TestExpr2Minibex TestExprCmp
                   TestExprCopy TestExpr TestExprDiff TestExprLinearity
                   TestExprMonomial TestExprPolynomial TestExprSimplify
-                  TestExprSimplify2 TestFncKuhnTucker TestKuhnTuckerSystem
+                  TestExprSimplify2 TestExprSplitOcc TestFncKuhnTucker TestKuhnTuckerSystem
                   TestFunction TestGradient TestHC4Revise TestInHC4Revise
                   TestInnerArith TestInterval TestIntervalMatrix
                   TestIntervalVector TestKernel TestLinear TestLPSolver

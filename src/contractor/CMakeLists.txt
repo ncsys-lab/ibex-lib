@@ -26,6 +26,8 @@ target_sources (ibex PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_CtcIdentity.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_CtcInteger.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_CtcInteger.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_CtcMohc.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ibex_CtcMohc.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_CtcInverse.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_CtcInverse.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ibex_CtcKuhnTucker.cpp
