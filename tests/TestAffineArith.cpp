@@ -13,6 +13,8 @@
 #include "TestAffineArith.h"
 #include "ibex_AffineEval.h"
 
+#include <cfenv>
+
 template<class T>
 bool TestAffineArith<T>::compare_results (comp_t c, Interval r, AffineMain<T>  a) {
 	Interval ra = a.itv();
@@ -1015,3 +1017,74 @@ void TestAffineArith<T>::test101()   {
 
 
 
+
+
+/* ============== AFFINE-AUDIT D1 tripwire (see TestAffineArith.h) ============== */
+
+namespace {
+
+// Run a test body under FE_UPWARD — the ambient rounding mode dReal's polytope
+// Prune establishes for the whole contract/linearize call.
+class UpwardRoundingScopeForTest {
+public:
+	UpwardRoundingScopeForTest() : saved_(fegetround()) { fesetround(FE_UPWARD); }
+	~UpwardRoundingScopeForTest() { fesetround(saved_); }
+private:
+	int saved_;
+};
+
+// itv() must contain the exact real value s + t (s a double anchor, t the exact
+// residual, |t| << |s|). The endpoint differences lb-s / ub-s are exact by
+// Sterbenz: with the wrap, itv()'s endpoints sit within a few accounting ulps of
+// s; in the unwrapped-red case they equal s. Either way the subtractions are
+// exactly representable, hence mode-independent.
+bool contains_exact_sum(const ibex::Interval& res, double s, double t) {
+	return (res.lb() - s) <= t && t <= (res.ub() - s);
+}
+
+}  // namespace
+
+void TestAffineEftUpwardTripwire::test_kernel_counterexample() {
+	UpwardRoundingScopeForTest up;
+	// audit §3.1, verified by hand there: under FE_UPWARD the twoSum of (a,b)
+	// returns s = a with computed residual t = 0, while the true residual is
+	// b != 0 — the accounting then absorbs AF_EE * 0 = nothing and _err misses
+	// the entire deviation. Exact reference: |b| << ulp(a)/2, so RN(a+b) = a and
+	// the exact residual is b itself.
+	const double a = -0x1.1b9e462499d4cp+60;
+	const double b = -0x1.4c7a833d7b36ep-55;
+	AffineMain<AF_fAF2> af, bf;
+	af = a;
+	bf = b;
+	af += bf;  // operator+=(const AffineMain&): EFT on the centers, prior _err = 0
+	CPPUNIT_ASSERT(contains_exact_sum(af.itv(), a, b));
+}
+
+void TestAffineEftUpwardTripwire::test_parametric_family() {
+	UpwardRoundingScopeForTest up;
+	for (int j = -20; j <= 20; ++j) {
+		for (int k = 1; k <= 70; ++k) {
+			for (int sgn = 0; sgn < 4; ++sgn) {
+				double a = ldexp((sgn & 1) ? -1.0 : 1.0, j);
+				double b = ldexp(1.0, j - k) + ldexp(1.0, j - k - 52);
+				if (sgn & 2) b = -b;
+				// Exact reference pair via nearest-mode 2Sum (s + t == a + b
+				// exactly). volatile pins each step so the compiler cannot move
+				// the FP ops across the fesetround calls.
+				fesetround(FE_TONEAREST);
+				volatile double s = a + b;
+				volatile double a2 = s - b;
+				volatile double b2 = s - a2;
+				volatile double da = a - a2;
+				volatile double db = b - b2;
+				volatile double t = da + db;
+				fesetround(FE_UPWARD);
+				AffineMain<AF_fAF2> af, bf;
+				af = a;
+				bf = b;
+				af += bf;
+				CPPUNIT_ASSERT(contains_exact_sum(af.itv(), s, t));
+			}
+		}
+	}
+}

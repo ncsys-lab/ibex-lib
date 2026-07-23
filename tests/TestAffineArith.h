@@ -239,6 +239,29 @@ public:
 	void test101();
 };
 
+/* AFFINE-AUDIT D1 tripwire (dreal4-cmake ibex_docs/affine-rounding-audit.md §6 layer 1,
+ * unit granularity). Runs fAF2 ops under ambient FE_UPWARD — the phase mode dReal's
+ * polytope Prune inherits — and asserts that the resulting form's itv() contains the
+ * exact real result. Red without the EftNearestGuard wrap in ibex_Affine2_fAF2.cpp:
+ * the audit §3.1 twoSum counterexample makes the upward-executed EFT compute residual 0
+ * while the true residual is nonzero, so _err misses it entirely and itv() collapses to
+ * a point interval that excludes the true sum. Green with the wrap (EFT exactness under
+ * FE_TONEAREST). fAF2-specific by design — do not template over AF_Other. */
+class TestAffineEftUpwardTripwire : public CppUnit::TestFixture {
+public:
+	CPPUNIT_TEST_SUITE(TestAffineEftUpwardTripwire);
+	CPPUNIT_TEST(test_kernel_counterexample);
+	CPPUNIT_TEST(test_parametric_family);
+	CPPUNIT_TEST_SUITE_END();
+
+	// audit §3.1: (a,b) = (-0x1.1b9e462499d4cp+60, -0x1.4c7a833d7b36ep-55)
+	void test_kernel_counterexample();
+	// audit §6.1: a = ±2^j, b = ±(2^(j-k) + 2^(j-k-52)), k in [1,70]
+	void test_parametric_family();
+};
+
+CPPUNIT_TEST_SUITE_REGISTRATION(TestAffineEftUpwardTripwire);
+
 CPPUNIT_TEST_SUITE_REGISTRATION(TestAffineArith<AF_Default>);
 CPPUNIT_TEST_SUITE_REGISTRATION(TestAffineArith<AF_Other>);
 

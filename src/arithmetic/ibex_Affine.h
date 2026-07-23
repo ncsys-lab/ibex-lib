@@ -2044,8 +2044,25 @@ inline AffineMain<T>& AffineMain<T>::Aabs(const Interval& itv){
 		Interval TEMP1(0.0), TEMP2(0.0), band(0.0);
 
 		alpha = ((abs(Interval(itv.ub()))-abs(Interval(itv.lb())))/itv.diam()).ub();
+		// AFFINE-AUDIT D6 (audit §5 obligation 3, §2.3): the true chord slope of |x|
+		// over a zero-straddling interval lies strictly inside (-1,1), but the
+		// upward-rounded .ub() above can exceed +1 (it cannot fall below -1: it
+		// upper-bounds a slope > -1). For alpha > 1 the deviation |x| - alpha*x dips
+		// below the pinned band floor 0 at x = ub by (alpha-1)*ub — an under-coverage.
+		// Any alpha in [-1,1] is an admissible slope; clamp, and the band computation
+		// below re-measures the deviations with the clamped value.
+		if (alpha > 1.0) alpha = 1.0;
 
-		TEMP1 = res_itv.lb()-alpha*Interval(itv.lb());
+		// AFFINE-AUDIT D6-adjacent (found at implementation time; reported back to the
+		// audit): TEMP1 previously used res_itv.lb() (= 0 on a zero-straddling itv),
+		// which is NOT the endpoint deviation at x = lb, so the band ceiling relied on
+		// TEMP2 alone; whenever rounding gives alpha above the exact chord slope
+		// alpha*, TEMP2 = ub*(1-alpha) shrinks while dev(lb) = |lb|*(1+alpha) grows,
+		// under-covering by (alpha-alpha*)*(ub+|lb|) — same second order as D6. Use the
+		// actual endpoint value |lb| so TEMP1 rigorously encloses dev(lb) for the
+		// as-computed alpha (restores the audit §2.3 class-(ii) "endpoint deviations"
+		// property; can only widen the band, and only at second order).
+		TEMP1 = abs(Interval(itv.lb()))-alpha*Interval(itv.lb());
 		TEMP2 = res_itv.ub()-alpha*Interval(itv.ub());
 		if (TEMP1.ub()>TEMP2.ub()) {
 			// u = 0

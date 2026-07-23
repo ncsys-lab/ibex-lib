@@ -179,7 +179,16 @@ int LinearizerAffine2::linearize(const IntervalVector& box, LPSolver& lp_solver)
 			// convert the epsilon variables to the original box
 			double tmp=0;
 			center =0;
-			err =0;
+			// AFFINE-AUDIT D5 (audit §5 obligation 2, §2.1): absolute slack floor for
+			// subnormal EFT dust. twoProd's residual is silently lost when |x*y| is
+			// below ~2^-969 (<= 2^-1074 — one subnormal ulp — per op; mode-independent,
+			// shared with upstream under round-to-nearest, so the FE_TONEAREST wrap in
+			// ibex_Affine2_fAF2.cpp cannot recover it). A constraint's evaluation DAG
+			// performs far fewer than 2^74 EFT ops, so #ops * 2^-1074 < 2^-1000: one
+			// absolute 2^-1000 per-constraint floor dominates the total lost dust in
+			// the emitted row. (The interval-refutation channel's exposure to the same
+			// dust is the audit's documented shared-with-upstream residue.)
+			err = ldexp(1.0, -1000);
 			for (int i =0;(!b_abort) &&(i <sys.nb_var); i++) {
 				tmp = box[i].rad();
 				if (tmp==0) { // sensible case to avoid rowconst[i]=NaN
@@ -189,9 +198,23 @@ int LinearizerAffine2::linearize(const IntervalVector& box, LPSolver& lp_solver)
 						b_abort =true;
 					}
 				} else {
-					rowconst[i] =af2.val(i) / tmp;
-					center += rowconst[i]*box[i].mid();
-					err += fabs(rowconst[i])*  pow(2,-50);
+					// AFFINE-AUDIT D2 (audit §5 obligation 1, §4): sound row emission
+					// under the ambient FE_UPWARD. The previous plain-double leaks
+					// (a_i = c_i/r_i, center += a_i*m_i) were first-order vs. the fixed
+					// 2^-50 slack once r_i > ~4 (LEQ) / |m_i|+r_i > ~4 (GEQ/EQ), an
+					// over-cutting row — SOUNDNESS (asserts phi T-unsatisfiable on a
+					// T-satisfiable phi — false unsat). Fix: enclose c_i/r_i in gaol,
+					// emit any interior double as the row coefficient, charge its
+					// deviation times r_i — mag(Interval(a_i)*Interval(r_i) -
+					// Interval(c_i)) — to err (this also covers the old
+					// c_i/r_i-underflows-to-0 corner: the whole |c_i| lands in err),
+					// and accumulate center as an exact interval product. Rows are now
+					// sound for every box geometry; the magic 2^-50 term is retired.
+					const Interval ci(af2.val(i));
+					const Interval ri(tmp);
+					rowconst[i] = (ci/ri).mid();
+					err += (Interval(rowconst[i])*ri - ci).mag();
+					center += Interval(rowconst[i]) * Interval(box[i].mid());
 				}
 			}
 			if (!b_abort) {

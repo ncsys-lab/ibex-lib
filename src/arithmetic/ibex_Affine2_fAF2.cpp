@@ -11,6 +11,33 @@
 #include "ibex_Affine2_fAF2.h"
 #include "ibex_Affine.h"
 
+#include <cfenv>
+
+namespace {
+// AFFINE-AUDIT D1 (dreal4-cmake ibex_docs/affine-rounding-audit.md §5): dReal runs the
+// polytope Prune — and therefore every affine evaluation — under ambient FE_UPWARD, but
+// the Dekker/Knuth error-free transforms (twoSum/twoProd) that maintain _err are only
+// exact under FE_TONEAREST (audit §3.1: a hand-verified twoSum counterexample whose
+// computed residual is 0 while the true residual is nonzero). Every straight-line EFT
+// general-case block below runs inside this RAII guard: save the entering mode, switch
+// to FE_TONEAREST, restore the SAVED mode on scope exit (never hardcode FE_UPWARD — the
+// plugin must stay correct for non-dReal callers, and the wrapped blocks allocate, so
+// restoration must be exception-safe). The wrap also discharges the Dekker/non-FMA
+// twoProd obligation (proven under nearest only).
+// Everything gaol stays OUTSIDE the guard — operator=(const Interval&), the
+// AffineMain(size,var,itv) var-load ctor, itv(), the Affine.h band/ddelta computations,
+// AffineEval, linearize — because gaol's directed rounding requires the ambient
+// FE_UPWARD and is inverted under FE_TONEAREST (audit §5 "do not wrap" list).
+class EftNearestGuard {
+public:
+	EftNearestGuard() : saved_(fegetround()) { fesetround(FE_TONEAREST); }
+	~EftNearestGuard() { fesetround(saved_); }
+	EftNearestGuard(const EftNearestGuard&) = delete;
+	EftNearestGuard& operator=(const EftNearestGuard&) = delete;
+private:
+	int saved_;
+};
+}  // namespace
 
 namespace ibex {
 
@@ -119,6 +146,15 @@ AffineVarMain<AF_fAF2>& AffineVarMain<AF_fAF2>::operator=(const Interval& x) {
 			_elt._val = NULL;
 		}
 	} else  {
+		// AFFINE-AUDIT D7 (audit §5 obligation 3, §2.2): reset _err on bounded
+		// (re)assignment. Previously neither branch below did, so a stale _err from a
+		// prior half-line state (-3/-4 store a BOUND — possibly negative — in _err)
+		// survived and would enter later sums additively, under-accounting the error
+		// term. A freshly assigned var form is exactly mid + rad·eps_var, i.e. _err = 0
+		// (the AffineMain(size,var,itv) ctor path establishes the same). Unreachable via
+		// the linearizer (AffineEval builds fresh AffineMainVector(box) per eval), fixed
+		// at the site per the audit's vendor-time recommendation.
+		_elt._err = 0.0;
 		if (_elt._val && _n > var) {
 			_elt._val[0] = x.mid();
 			_elt._val[var+1]	= x.rad();
@@ -129,10 +165,6 @@ AffineVarMain<AF_fAF2>& AffineVarMain<AF_fAF2>::operator=(const Interval& x) {
 			// and _n too small for val(var). Re-allocated mirroring the
 			// AffineMain(size,var,itv) ctor with size=var+1 (center slot 0,
 			// coefficients zeroed, variable's radius at slot var+1).
-			// NOTE for the auditor: pre-existing and untouched here — neither
-			// this branch nor the reuse branch above resets _elt._err, so a
-			// stale _err from a prior half-line state (-3/-4 set _err to a
-			// bound, possibly negative) survives a bounded re-assignment.
 			delete[] _elt._val;
 			_n = var+1;
 			_elt._val	= new double[var+2];
@@ -380,6 +412,7 @@ AffineMain<AF_fAF2>& AffineMain<AF_fAF2>::operator*=(double alpha) {
 			}
 			_elt._err = 0;
 		} else if ( fabs(alpha) < POS_INFINITY) {
+			EftNearestGuard round_nearest;	// AFFINE-AUDIT D1 wrap (site 1/7, audit §5)
 			ttt= 0.0;
 			sss= 0.0;
 			for (int i=0; i<=_n;i++) {
@@ -439,6 +472,7 @@ AffineMain<AF_fAF2>& AffineMain<AF_fAF2>::operator+=(const AffineMain<AF_fAF2>& 
 
 	double temp, ttt, sss, eee;
 	if (is_actif() && y.is_actif()) {
+		EftNearestGuard round_nearest;	// AFFINE-AUDIT D1 wrap (site 2/7, audit §5; includes resize)
 		if (_n < y.size()) {
 			resize(y.size());
 		}
@@ -492,6 +526,7 @@ template<>
 AffineMain<AF_fAF2>& AffineMain<AF_fAF2>::operator+=(double beta) {
 	double temp, ttt, sss, eee;
 	if (is_actif() && fabs(beta)<POS_INFINITY) {
+		EftNearestGuard round_nearest;	// AFFINE-AUDIT D1 wrap (site 3/7, audit §5)
 		ttt=0.0;
 		sss=0.0;
 		eee = _elt.twoSum(_elt._val[0],beta,&temp);
@@ -520,6 +555,7 @@ template<>
 AffineMain<AF_fAF2>& AffineMain<AF_fAF2>::inflate(double ddelta) {
 	double temp, ttt, sss, eee;
 	if (is_actif() && (fabs(ddelta))<POS_INFINITY) {
+		EftNearestGuard round_nearest;	// AFFINE-AUDIT D1 wrap (site 4/7, audit §5)
 		ttt=0.0;
 		sss=0.0;
 		eee = _elt.twoSum(_elt._err,fabs(ddelta), &temp);
@@ -546,6 +582,7 @@ AffineMain<AF_fAF2>& AffineMain<AF_fAF2>::operator*=(const AffineMain<AF_fAF2>& 
 	//std::cout << "IN  *= "<<std::endl<< *this << std::endl<<y << std::endl;
 
 	if (is_actif() && (y.is_actif())) {
+		EftNearestGuard round_nearest;	// AFFINE-AUDIT D1 wrap (site 5/7, audit §5; includes resize + new[], RAII-safe)
 
 		if (_n < y.size()) {
 			resize(y.size());
@@ -731,6 +768,7 @@ AffineMain<AF_fAF2>& AffineMain<AF_fAF2>::Asqr(const Interval& itv) {
 		*this = pow(itv,2);
 
 	} else  {
+		EftNearestGuard round_nearest;	// AFFINE-AUDIT D1 wrap (site 6/7, audit §5)
 
 		double Sx, Sx2, ttt, sss, ppp, x0, eee,tmp;
 		Sx = 0; Sx2 = 0; ttt = 0; sss = 0; ppp = 0; x0 = 0; eee =0.0; tmp =0.0;
@@ -829,6 +867,9 @@ AffineMain<AF_fAF2>& AffineMain<AF_fAF2>::Asqr(const Interval& itv) {
 
 template<>
 void AffineMain<AF_fAF2>::compact(double tol){
+	// AFFINE-AUDIT D1 wrap (site 7/7, audit §5 "loop body"): the loop is EFT-only
+	// (twoSum + accounting, no gaol), so one guard around it covers every iteration.
+	EftNearestGuard round_nearest;
 	for (int i=1;i<=_n;i++) {
 		if (fabs(_elt._val[i])<tol) {
 			double temp=0.0;
