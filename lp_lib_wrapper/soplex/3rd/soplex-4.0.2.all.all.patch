@@ -73,3 +73,15 @@
           break;
  
        case 3:
+--- soplex-4.0.2/src/soplex/datahashtable.h	2019-06-28 15:48:00.000000000 +0200
++++ soplex-4.0.2/src/soplex/datahashtable.h	2026-09-22 12:00:00.000000000 -0700
+@@ -344,7 +344,8 @@
+       m_memfactor = base.m_memfactor;
+       m_used = base.m_used;
+       m_hashsize = base.m_hashsize;
+-      primes = base.primes;
++      for(int i = 0; i < 50; ++i)
++         primes[i] = base.primes[i];
+       nprimes = base.nprimes;
+ 
+       assert(m_memfactor > 1.0);
