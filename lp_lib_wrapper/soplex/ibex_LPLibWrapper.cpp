@@ -129,6 +129,15 @@ void LPSolver::init(LPSolver::Mode mode, double tolerance, double timeout, int m
 	mysoplex->setIntParam(SoPlex::SOLVEMODE, SoPlex::SOLVEMODE_REAL);
     mysoplex->setIntParam(SoPlex::OBJSENSE, SoPlex::OBJSENSE_MINIMIZE);
     mysoplex->setBoolParam(SoPlex::ENSURERAY, true);
+    // No presolve. SoPlex 4.0.2's SPxMainSM assumes no stored coefficient has
+    // magnitude <= 1e-100, but X-Taylor rows carry denormal ones (±4e-323, a
+    // zero gradient widened outward). On such an LP presolve breaks the
+    // row/column consistency of its copy and then writes out of bounds in
+    // duplicateCols (dReal BUG-014: signals, heap corruption). Isolated with an
+    // assert-enabled SoPlex: dropping the sub-1e-100 entries removes every
+    // assertion. The simplex itself needs no presolve, and the certificates
+    // read the LP as given.
+    mysoplex->setIntParam(SoPlex::SIMPLIFIER, SoPlex::SIMPLIFIER_OFF);
 }
 
 /*void LPSolver::add_variable(const Interval& bounds, double obj) {
