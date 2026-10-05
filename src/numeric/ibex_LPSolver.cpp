@@ -57,15 +57,21 @@ std::ostream& operator<<(std::ostream& os, const LPSolver::Status x){
 	return os;
 }
 
+// Both Neumaier-Shcherbina certificates need the residual A^T y enclosed
+// rigorously: Matrix * IntervalVector does that, where the former
+// Matrix * Vector was a plain floating-point product. A certificate also
+// proves nothing when its data is non-finite: a NaN or infinite entry in A,
+// b, the bounds or the dual makes the interval result empty (gaol), so an
+// empty result is a failed certificate, never a proof.
 bool LPSolver::neumaier_shcherbina_postprocessing() {
     Matrix A_trans = rows_transposed();
     IntervalVector b = lhs_rhs();
-    IntervalVector rest = A_trans*uncertified_dual_;
+    IntervalVector rest = A_trans*IntervalVector(uncertified_dual_);
 	rest -= cost();
 	//Interval certified_obj_raw = uncertified_dual_*b - rest*ivec_bounds_;
 	//certified_obj_ = Interval(certified_obj_raw.lb(), uncertified_obj_.ub());
     obj_ = uncertified_dual_*b - rest*ivec_bounds_;
-	return true;
+	return !obj_.is_empty();
 }
 
 bool LPSolver::neumaier_shcherbina_infeasibility_test() {
@@ -80,11 +86,11 @@ bool LPSolver::neumaier_shcherbina_infeasibility_test() {
     }
 
 
-    IntervalVector rest = A_trans * lambda ;
+    IntervalVector rest = A_trans * IntervalVector(lambda);
     Interval d = rest * ivec_bounds_ - lambda * b;
 
-    // if 0 does not belong to d, the infeasibility is proved
-    return !d.contains(0.0);
+    // if 0 does not belong to a non-empty d, the infeasibility is proved
+    return !d.is_empty() && !d.contains(0.0);
 }
 
 

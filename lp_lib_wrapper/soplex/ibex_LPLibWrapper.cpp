@@ -8,6 +8,8 @@
 
 #include "ibex_LPSolver.h"
 
+#include <stdexcept>
+
 namespace {
 
 soplex::DSVectorReal ivec2dsvec(const ibex::Vector& ivec) {
@@ -164,7 +166,10 @@ void LPSolver::add_variables(const Matrix& cols, const IntervalVector& bounds, c
 int LPSolver::add_constraint(double lhs, const Vector& row, double rhs) {
     assert(row.size() == nb_vars());
     //assert(std::isfinite(lhs) && std::isfinite(rhs));
-    assert(isfinite(row));
+    // Always on (the asserts compile out in Release): SoPlex has no NaN
+    // checks, and a non-finite row reaches the certificates.
+    if (!isfinite(row))
+        throw std::invalid_argument("LPSolver::add_constraint: non-finite coefficient");
 
     has_changed = true;
     mysoplex->addRowReal(LPRowReal(lhs, ivec2dsvec(row), rhs));
@@ -173,8 +178,8 @@ int LPSolver::add_constraint(double lhs, const Vector& row, double rhs) {
 
 int LPSolver::add_constraint(const Vector& row, CmpOp op, double rhs) {
     assert(row.size() == nb_vars());
-    assert(isfinite(row));
-    assert(std::isfinite(rhs));
+    if (!isfinite(row) || !std::isfinite(rhs))
+        throw std::invalid_argument("LPSolver::add_constraint: non-finite coefficient or bound");
 
     has_changed = true;
     using Type = soplex::LPRowReal::Type;
@@ -224,13 +229,13 @@ LPSolver::Status LPSolver::minimize() {
             uncertified_dual_ = dvec2ivec(dvec_dual);
             uncertified_primal_ = dvec2ivec(dvec_primal);
             has_solution_ = true;
-            if(mode_ == LPSolver::Mode::Certified) {
-                // Neumaier Shcherbina cannot fail
-                neumaier_shcherbina_postprocessing();
-                status_ = LPSolver::Status::OptimalProved;
-            } else {
-                status_ = LPSolver::Status::Optimal;
-            }
+            // The certified bound fails on non-finite data (see
+            // neumaier_shcherbina_postprocessing); the LP is then optimal
+            // but not proved.
+            status_ = (mode_ == LPSolver::Mode::Certified &&
+                       neumaier_shcherbina_postprocessing())
+                ? LPSolver::Status::OptimalProved
+                : LPSolver::Status::Optimal;
         }
         break;
     case SPxSolver::ABORT_TIME:
