@@ -17,6 +17,7 @@
 #include "ibex_NormalizedSystem.h"
 #include "ibex_BxpSystemCache.h"
 
+#include <cmath>
 #include <vector>
 
 using namespace std;
@@ -282,10 +283,6 @@ IntervalVector LinearizerXTaylor::get_corner_point(const IntervalVector& box) {
 int LinearizerXTaylor::linearize_leq_corner(const IntervalVector& box, IntervalVector& corner, const IntervalVector& dg_box, const Interval& g_corner) {
 	Vector a(n); // vector of coefficients
 
-	if (dg_box.is_unbounded()) {
-		throw BadConstraint();
-	}
-
 	// ========= compute matrix of coefficients ===========
 	// Fix each coefficient to the lower/upper bound of the
 	// constraint gradient, depending on the position of the
@@ -302,6 +299,15 @@ int LinearizerXTaylor::linearize_leq_corner(const IntervalVector& box, IntervalV
 	Interval rhs = -g_corner + a*corner;
 
 	double b = mode==RESTRICT? rhs.lb() - lp_solver->tolerance() : rhs.ub();
+
+	// An empty or unbounded gradient component, or an empty g(corner), shows up
+	// here as a NaN or infinite coefficient or bound. Checked per component:
+	// IntervalVector::is_empty / is_unbounded look only at component 0. Such a
+	// row is skipped (BadConstraint), which is sound in RELAX mode.
+	for (int j=0; j<n; j++) {
+		if (!std::isfinite(a[j])) throw BadConstraint();
+	}
+	if (!std::isfinite(b)) throw BadConstraint();
 
 	// may throw Unsatisfiability
 	return check_and_add_constraint(box,a,b);
