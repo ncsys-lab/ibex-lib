@@ -128,6 +128,32 @@ Adds `TestArith::atan2_16..18` (previously red: empty result / missing right pie
 
 Files: `src/arithmetic/ibex_Interval.h`, `tests/TestArith.{h,cpp}`. +31/−2.
 
+### 14. `b52f8626` — `lp: fail-closed Neumaier–Shcherbina certificates; refuse non-finite LP rows`
+
+Both certificates (`src/numeric/ibex_LPSolver.cpp`) computed the residual Aᵀy as a plain
+floating-point `Matrix * Vector`; it is now `Matrix * IntervalVector`. An empty interval result
+(gaol's reading of a NaN or infinite input) passed the infeasibility test as `InfeasibleProved`;
+an empty `d` or objective is now a failed certificate, and `minimize()` reports `OptimalProved`
+only when postprocessing succeeds. `LPSolver::add_constraint` (soplex wrapper) throws
+`std::invalid_argument` on a non-finite coefficient or bound (the checks were Release-stripped
+asserts). dReal BUG-019; tested by dReal's `LpSolverBoundary.NonFiniteRowIsRejected`.
+
+### 15. `03712a0a` — `linearizer: X-Taylor skips a row with a non-finite coefficient or bound`
+
+`LinearizerXTaylor::linearize_leq_corner` checks each coefficient and the bound and throws
+`BadConstraint` (row skipped, sound in RELAX mode); `IntervalVector::is_empty`/`is_unbounded`
+look only at component 0, so an empty gradient component j > 0 (sqrt' at 0) became a NaN row.
+Replaces the `[0]`-only `dg_box.is_unbounded()` pre-check. dReal test:
+`ContractorIbexPolytopeLinearizerTest.EmptyGradientComponentSkipsRow`.
+
+### 16. `6b1b2c10` — `lp: turn SoPlex presolve off`
+
+`LPSolver::init` sets `SoPlex::SIMPLIFIER_OFF`. SoPlex 4.0.2's presolve (SPxMainSM) assumes no
+stored coefficient has magnitude ≤ 1e-100; X-Taylor rows carry denormal ones (±3.95e-323), and
+on such an LP presolve broke its row/column consistency and wrote out of bounds in
+`duplicateCols` (dReal BUG-014). Isolated with an assert-enabled SoPlex build. dReal test:
+`DrealBugsRegressionDeathTest.Bug014_XTaylorBothSurvivesF3`.
+
 ## Build & rebase cadence
 
 - Build: `cd build && cmake -DINTERVAL_LIB=gaol -DLP_LIB=none .. && make -j && make check`. 62/62 tests pass on macOS arm64 native with clang.
