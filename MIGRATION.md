@@ -154,6 +154,15 @@ on such an LP presolve broke its row/column consistency and wrote out of bounds 
 `duplicateCols` (dReal BUG-014). Isolated with an assert-enabled SoPlex build. dReal test:
 `DrealBugsRegressionDeathTest.Bug014_XTaylorBothSurvivesF3`.
 
+### 17. `33b883f2` — `SoPlex 4.0.2: replace the invalid array assignment in DataHashTable::operator=`
+
+A hunk in `lp_lib_wrapper/soplex/3rd/soplex-4.0.2.all.all.patch` copies `primes` element by
+element instead of `primes = base.primes`. That assignment is ill-formed (an array), and GCC 14
+rejects it even though the template member is never instantiated; clang and GCC 12 accept it.
+No generated code changes. Upstream ibex-lib has no fix (checked 2026-10-07). First written as
+`6637e6e7` on branch `soplex-gcc14` (= `b5e7a212` + this hunk), which builds the pre-BUG-014 pin
+with GCC 14.
+
 ## Build & rebase cadence
 
 - Build: `cd build && cmake -DINTERVAL_LIB=gaol -DLP_LIB=none .. && make -j && make check`. 62/62 tests pass on macOS arm64 native with clang.
