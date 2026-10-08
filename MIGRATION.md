@@ -144,7 +144,8 @@ x ∈ [−1e200, 0], y ∈ [0, 1e200], −1e-7·x + y ≤ 1e-7, whose minimum is
 bound is now −1.11e184 (status still `OptimalProved`); at `b52f8626^` all 68 tests pass. The bound
 is still valid, so this is looseness, not unsoundness. Hypothesis, not isolated within the
 commit: the interval Aᵀy has a residual of about 1e-16, which the certificate multiplies by the
-1e200 bounds. The test still asserts the old value; whether to change it is the owner's call.
+1e200 bounds. The test now asserts a valid bound (finite, ≤ −1) instead of −1 (owner,
+2026-10-08).
 
 ### 15. `03712a0a` — `linearizer: X-Taylor skips a row with a non-finite coefficient or bound`
 

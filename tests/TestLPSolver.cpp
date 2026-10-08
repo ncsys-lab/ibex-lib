@@ -210,7 +210,9 @@ void TestLinearSolver::nearly_parallel_constraints() {
 	LPSolver::Status status = lp.minimize();
 	CPPUNIT_ASSERT(status == LPSolver::Status::OptimalProved);
 	double obj = lp.minimum().lb();
-	check_relatif(obj, -1, 1e-9);
+	// The minimum is -1. A certified minimum is a valid lower bound on it, not a tight one:
+	// with bounds of 1e200 the rigorous certificate gives about -1e184 (MIGRATION entry 14).
+	CPPUNIT_ASSERT(obj <= -1 && obj > NEG_INFINITY);
 }
 
 void TestLinearSolver::cost_parallel_to_constraint() {
