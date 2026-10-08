@@ -138,6 +138,14 @@ only when postprocessing succeeds. `LPSolver::add_constraint` (soplex wrapper) t
 `std::invalid_argument` on a non-finite coefficient or bound (the checks were Release-stripped
 asserts). dReal BUG-019; tested by dReal's `LpSolverBoundary.NonFiniteRowIsRejected`.
 
+Cost, found 2026-10-08 (only a `-DLP_LIB=soplex` build compiles the test): the fork's own
+`TestLinearSolver::nearly_parallel_constraints` fails from this commit on. It minimizes x over
+x ∈ [−1e200, 0], y ∈ [0, 1e200], −1e-7·x + y ≤ 1e-7, whose minimum is −1, and the certified lower
+bound is now −1.11e184 (status still `OptimalProved`); at `b52f8626^` all 68 tests pass. The bound
+is still valid, so this is looseness, not unsoundness. Hypothesis, not isolated within the
+commit: the interval Aᵀy has a residual of about 1e-16, which the certificate multiplies by the
+1e200 bounds. The test still asserts the old value; whether to change it is the owner's call.
+
 ### 15. `03712a0a` — `linearizer: X-Taylor skips a row with a non-finite coefficient or bound`
 
 `LinearizerXTaylor::linearize_leq_corner` checks each coefficient and the bound and throws
@@ -158,8 +166,11 @@ on such an LP presolve broke its row/column consistency and wrote out of bounds 
 
 A hunk in `lp_lib_wrapper/soplex/3rd/soplex-4.0.2.all.all.patch` copies `primes` element by
 element instead of `primes = base.primes`. That assignment is ill-formed (an array), and GCC 14
-rejects it even though the template member is never instantiated; clang and GCC 12 accept it.
-No generated code changes. Upstream ibex-lib has no fix (checked 2026-10-07). First written as
+rejects it even though the template member is never instantiated; Apple clang 21 and GCC 12
+accept it, and clang 23 (as clang-tidy 23) rejects it too. No generated code changes. The copy
+constructor's `primes(base.primes)`, an array initialized from an array, is still in place: the
+compilers that build dReal accept it, but clang-tidy 23 rejects it, which stops dReal's
+`copy_lint.sh` (`dreal4-cmake/docs/todo.md`). Upstream ibex-lib has no fix (checked 2026-10-07). First written as
 `6637e6e7` on branch `soplex-gcc14` (= `b5e7a212` + this hunk), which builds the pre-BUG-014 pin
 with GCC 14.
 

@@ -22,9 +22,9 @@ Remotes:
 
 ```bash
 mkdir build && cd build
-cmake -DINTERVAL_LIB=gaol -DLP_LIB=none ..      # gaol default; soplex/clp/cplex available
+cmake -DINTERVAL_LIB=gaol -DLP_LIB=none ..      # quick; dReal builds with -DLP_LIB=soplex
 make -j
-make check                                       # 62 cppunit tests, requires brew install cppunit
+make check                                       # the cppunit suite; requires brew install cppunit
 ```
 
 Key cmake options (see `doc/install-cmake.rst` for the full list):
@@ -32,7 +32,7 @@ Key cmake options (see `doc/install-cmake.rst` for the full list):
 | Option | Notes |
 |---|---|
 | `-DINTERVAL_LIB=` | `gaol` (default, works on arm64 since mainline `971f8eb0`), `filib` (blocked on arm64-native by `f4b98ccf`), `bias`, `direct` (non-rigorous) |
-| `-DLP_LIB=` | `none` (default for dReal's use), `soplex`, `clp`, `cplex` |
+| `-DLP_LIB=` | `soplex` (what `dreal4-cmake` builds), `none` (the quick build above; it compiles no SoPlex, so the SoPlex-side patches of MIGRATION entries 14, 16 and 17 go unbuilt), `clp`, `cplex` |
 | `-DBUILD_SHARED_LIBS=ON` | required for the Java interface |
 | `-DBUILD_TESTING=0` | skip the test tree |
 | `-DCMAKE_BUILD_TYPE=Debug` | drops `-O0 -g -pg`, enables internal asserts |
